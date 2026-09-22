@@ -1,0 +1,605 @@
+<!doctype html>
+<html lang="zh-CN" data-brand="meixipro">
+<head>
+<meta charset="utf-8">
+<title>[必填] 替换为图片消息标题 · 小绿书/贴图号卡组</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Martian+Mono:wght@300;400;500;700;800&family=Noto+Sans+SC:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@400,500,700,800&display=swap">
+<style>
+@import url("https://fontsapi.zeoseven.com/92/main/result.css");   /* 得意黑 Smiley Sans 2.0.1 */
+@import url("https://fontsapi.zeoseven.com/292/main/result.css");  /* LXGW WenKai · 仅红笔批改 */
+</style>
+<style>
+/* =========================================================
+   Greenbook / 贴图号 — 「算式」Worked Arithmetic 种子模板
+   ---------------------------------------------------------
+   板型（唯一板型，平台只吃 3:4）：
+     .board            1080×1440   (3:4 图片消息 / 小绿书 / 贴图号)
+
+   租户切换： <html data-brand="…">
+     meixipro (美西转运) | bjd (宝嘉达) | jy (集运演示)
+
+   配方 G01–G07，见 references/greenbook-specs.md
+   设计真源见 DESIGN.md
+   ========================================================= */
+
+/* ---------- 1. 租户品牌预设（互斥，换租户=换这一块） ---------- */
+:root,
+[data-brand="meixipro"] {
+  --verify:     #0060C9;          /* 品牌主色。只标合计线与合计数 */
+  --brand-name: "美西转运";
+  --brand-en:   "MeixiPro";
+  --brand-host: "meixipro.com";
+}
+[data-brand="bjd"] {
+  --verify:     #003666;
+  --brand-name: "宝嘉达国际物流";
+  --brand-en:   "BJD Logistics";
+  --brand-host: "bjd.jiyunapp.com";
+}
+[data-brand="jy"] {
+  --verify:     #003666;
+  --brand-name: "萧船长集运";
+  --brand-en:   "JY Freight";
+  --brand-host: "jy.jiyunapp.com";
+}
+
+/* ---------- 2. 跨租户恒定色（不随 data-brand 变） ---------- */
+:root {
+  --paper:      #fffaf1;   /* 卡面底 · $paper */
+  --paper-rule: #f4ecde;   /* 发丝规线 / 次级面 · $paper-soft */
+  --paper-page: #f5ede1;   /* 预览页底 · $paper-page */
+  --ink:        #102546;   /* 中文 display + 算式数字 · 14.7:1 */
+  --ink-soft:   #27466d;   /* 次级正文 · 9.25:1 */
+  --text:       #1A1D26;   /* 正文 · 14.1:1 */
+  --text-warm:  #7c5922;   /* 暖底弱化文字 / 发丝线 · 6.05:1 */
+  --annotate:   #d0433b;   /* $airmail-red · 红笔。4.44:1，仅 ≥24px 粗体数字与划线 */
+  --edge-blue:  #2e5fa3;   /* $airmail-blue · 仅 .airmail-edge，禁止进版心 */
+}
+
+/* ---------- 3. 字体角色（换花体只改 --display-zh 一行） ---------- */
+:root {
+  --display-zh: "Smiley Sans Oblique", "Noto Sans SC", "PingFang SC", sans-serif;
+  --fig:        "Martian Mono", ui-monospace, "SF Mono", monospace;
+  --body-zh:    "Noto Sans SC", "PingFang SC", "Microsoft YaHei UI", sans-serif;
+  --latin:      "Cabinet Grotesk", "Noto Sans SC", sans-serif;
+  --hand:       "LXGW WenKai", "Noto Sans SC", cursive;
+}
+
+/* ---------- 4. 间距阶梯（与 Swiss 模板同构，勿另立） ---------- */
+:root {
+  --sp-3:8px; --sp-4:12px; --sp-5:16px; --sp-6:24px; --sp-7:32px;
+  --sp-8:40px; --sp-9:48px; --sp-10:64px; --sp-11:80px; --sp-12:96px; --sp-13:160px;
+  --gutter: 96px;            /* 侧边安全边距 */
+  --band-top: 416px;         /* 16:9 裁切安全带上沿 */
+  --band-h: 608px;           /* 1080 × 9/16 = 607.5 → 608 */
+  --base-label: 470px;       /* 跨卡锁定：标签基线 */
+  --base-fig: 880px;         /* 跨卡锁定：数字基线 */
+}
+
+/* ---------- 5. 板 ---------- */
+* { box-sizing: border-box; }
+html { background: var(--paper-page); }
+body {
+  margin: 0; padding: 48px;
+  font-family: var(--body-zh);
+  color: var(--text);
+  display: flex; flex-direction: column; align-items: center; gap: 56px;
+}
+.board {
+  position: relative;
+  width: 1080px; height: 1440px;
+  background: var(--paper);
+  color: var(--text);
+  overflow: hidden;
+  isolation: isolate;
+  flex: none;
+}
+.inner {
+  position: absolute; inset: 0;
+  padding: var(--sp-11) var(--gutter);
+  z-index: 2;
+}
+
+/* ---------- 6. 航空邮件边饰（唯一允许 --edge-blue 的地方） ---------- */
+.airmail-edge {
+  position: absolute; z-index: 3; pointer-events: none;
+  background-image: repeating-linear-gradient(
+    45deg,
+    var(--annotate) 0 22px,
+    var(--paper)    22px 44px,
+    var(--edge-blue) 44px 66px,
+    var(--paper)    66px 88px
+  );
+}
+.airmail-edge.top    { top: 0; left: 0; right: 0; height: 14px; }
+.airmail-edge.bottom { bottom: 0; left: 0; right: 0; height: 14px; }
+
+/* ---------- 7. 纸的物质感：发丝规线，不加任何装饰形状 ---------- */
+.rules {
+  position: absolute; inset: 0; z-index: 0; pointer-events: none;
+  background-image: repeating-linear-gradient(
+    to bottom, transparent 0 63px, var(--paper-rule) 63px 64px
+  );
+  opacity: .55;
+}
+
+/* ---------- 8. 字号阶梯（1080×1440 上最小可读 26px） ---------- */
+.t-label {                       /* 标签 / 元信息 */
+  font-family: var(--fig); font-weight: 500; font-size: 26px;
+  letter-spacing: .16em; color: var(--text-warm); text-transform: uppercase;
+}
+.t-label-zh {
+  font-family: var(--body-zh); font-weight: 500; font-size: 28px;
+  letter-spacing: .12em; color: var(--text-warm);
+}
+.t-head {                        /* 中文 display · 永不低于 500 */
+  font-family: var(--display-zh); font-weight: 500;
+  font-size: 118px; line-height: 1.06; letter-spacing: .01em;
+  color: var(--ink); margin: 0;
+}
+.t-head.sm { font-size: 88px; }
+.t-sub {
+  font-family: var(--body-zh); font-weight: 500; font-size: 34px;
+  line-height: 1.5; color: var(--ink-soft); margin: 0;
+}
+.t-body {
+  font-family: var(--body-zh); font-weight: 400; font-size: 30px;
+  line-height: 1.72; color: var(--text); margin: 0;
+}
+.t-fine {
+  font-family: var(--body-zh); font-weight: 400; font-size: 26px;
+  line-height: 1.6; color: var(--text-warm); margin: 0;
+}
+.t-latin {
+  font-family: var(--latin); font-weight: 700; font-size: 30px;
+  letter-spacing: .04em; color: var(--ink);
+}
+
+/* 数字：轻交给拉丁，重留给中文 */
+.fig      { font-family: var(--fig); font-variant-numeric: tabular-nums;
+            font-weight: 300; color: var(--ink); font-stretch: 75%; }
+.fig-mega { font-size: 200px; line-height: .9; letter-spacing: -.04em; }
+.fig-xl   { font-size: 128px; line-height: .95; letter-spacing: -.03em; }
+.fig-md   { font-size: 64px;  line-height: 1;   font-weight: 400; }
+.fig-sm   { font-size: 38px;  line-height: 1.2; font-weight: 400; }
+.fig-unit { font-family: var(--body-zh); font-weight: 500; font-size: 34px;
+            color: var(--ink-soft); white-space: nowrap; }
+
+/* ---------- 9. 红笔：全卡只出现一次 ---------- */
+.pen        { color: var(--annotate); font-family: var(--hand); }
+.pen-strike { position: relative; color: var(--text-warm); font-family: var(--fig);
+              font-weight: 400; font-size: 52px; font-variant-numeric: tabular-nums; }
+.pen-strike::after {
+  content: ""; position: absolute; left: -8px; right: -8px; top: 52%;
+  height: 5px; background: var(--annotate); transform: rotate(-7deg);
+}
+.pen-note { font-family: var(--hand); font-size: 44px; color: var(--annotate);
+            transform: rotate(-4deg); display: inline-block; }
+
+/* ---------- 10. 账目行（加法列，对齐即论证） ---------- */
+.ledger { width: 100%; border-collapse: collapse; }
+.ledger td { padding: 14px 0; vertical-align: baseline; }
+.ledger .lb { font-family: var(--body-zh); font-weight: 400; font-size: 32px; color: var(--text); }
+.ledger .lv { font-family: var(--fig); font-weight: 400; font-size: 44px;
+              font-variant-numeric: tabular-nums; color: var(--ink);
+              text-align: right; white-space: nowrap; }
+.ledger .hint { font-family: var(--body-zh); font-size: 26px; color: var(--text-warm); }
+.rule-total { height: 4px; background: var(--verify); border: 0; margin: 18px 0 8px; }
+.rule-hair  { height: 1px; background: var(--text-warm); opacity: .38; border: 0; margin: 10px 0; }
+.total-row  { display: flex; align-items: baseline; justify-content: space-between; gap: 24px; }
+.total-row .tv { font-family: var(--fig); font-weight: 500; font-size: 96px;
+                 font-variant-numeric: tabular-nums; color: var(--verify);
+                 letter-spacing: -.03em; }
+
+/* ---------- 11. 三个显式竖区（模板强制，不靠自觉） ----------
+   zone-head  y   0–416   可被 16:9 裁掉 · 运单抬头
+   zone-band  y 416–1024  安全带 · 论点必须完整活在这里
+   zone-foot  y1024–1440  可被 16:9 裁掉 · 凭据条
+   ------------------------------------------------------------ */
+.zone-head, .zone-band, .zone-foot {
+  position: absolute; left: var(--gutter); right: var(--gutter); z-index: 2;
+}
+.zone-head { top: var(--sp-8); height: calc(var(--band-top) - var(--sp-8) - var(--sp-6));
+             display: flex; flex-direction: column; justify-content: space-between; }
+.zone-band { top: var(--band-top); height: var(--band-h);
+             padding: 14px 0 18px; display: flex; flex-direction: column;
+             justify-content: space-between; }
+.zone-foot { top: calc(var(--band-top) + var(--band-h) + var(--sp-6));
+             bottom: var(--sp-8);
+             display: flex; flex-direction: column; justify-content: space-between; }
+
+/* 跨卡锁定基线：前三张并排横读成一条账 */
+.lock-label { min-height: 54px; }
+.lock-fig   { margin-top: auto; }
+
+/* 运单抬头：寄件栏样式的元信息，天然属于顶区，裁掉不损论点 */
+.waybill { display: grid; grid-template-columns: 1fr 1fr; gap: 0; border-top: 2px solid var(--ink);
+           border-bottom: 1px solid var(--text-warm); }
+.waybill .cellw { padding: 20px 24px 22px 0; }
+.waybill .cellw + .cellw { padding-left: 28px; border-left: 1px solid var(--text-warm); }
+.waybill .k { font-family: var(--fig); font-size: 22px; letter-spacing: .14em;
+              color: var(--text-warm); text-transform: uppercase; display: block; margin-bottom: 10px; }
+.waybill .v { font-family: var(--body-zh); font-weight: 500; font-size: 34px; color: var(--ink); }
+.waybill .v.mono { font-family: var(--fig); font-weight: 400; font-variant-numeric: tabular-nums; }
+
+/* 凭据条：附注 + 动作，同样可裁 */
+.stub { display: flex; justify-content: space-between; align-items: flex-end; gap: 32px;
+        border-top: 1px solid var(--text-warm); padding-top: 24px; }
+.stub .qr { width: 132px; height: 132px; flex: none; border: 2px solid var(--ink);
+            display: grid; place-items: center; font-family: var(--fig); font-size: 20px;
+            color: var(--text-warm); letter-spacing: .06em; text-align: center; line-height: 1.3; }
+
+/* ---------- 12. 字标 / 域名 / 页码（品牌名由 data-brand 注入） ---------- */
+.wordmark { font-family: var(--display-zh); font-weight: 500; font-size: 42px;
+            color: var(--ink); letter-spacing: .04em; line-height: 1.2; }
+.wordmark::before { content: var(--brand-name); }
+.host { font-family: var(--latin); font-weight: 500; font-size: 26px;
+        letter-spacing: .1em; color: var(--text-warm); line-height: 1.3; }
+.host::before { content: var(--brand-host); }
+.pageno { font-family: var(--fig); font-weight: 400; font-size: 26px;
+          color: var(--text-warm); letter-spacing: .1em; }
+
+/* ---------- 13. 裁切参考层（body[data-guides="on"] 才显示，导出前关掉） ---------- */
+.crop-guide { display: none; }
+body[data-guides="on"] .crop-guide {
+  display: block; position: absolute; inset: 0; z-index: 9; pointer-events: none;
+}
+body[data-guides="on"] .crop-guide::before {          /* 16:9 常读列表安全带 */
+  content: ""; position: absolute; left: 0; right: 0;
+  top: var(--band-top); height: var(--band-h);
+  outline: 3px dashed rgba(208,67,59,.85);
+  background: rgba(208,67,59,.05);
+}
+body[data-guides="on"] .crop-guide::after {           /* 2.35:1 三图缩略条上下切边 */
+  content: ""; position: absolute; left: 0; right: 0; top: 30px; bottom: 30px;
+  outline: 2px solid rgba(46,95,163,.55);
+}
+.guide-tag {
+  display: none; position: absolute; z-index: 10;
+  font-family: var(--fig); font-size: 22px; font-weight: 500;
+  background: var(--annotate); color: #fff; padding: 6px 12px; letter-spacing: .08em;
+}
+body[data-guides="on"] .guide-tag { display: block; }
+.guide-tag.band { left: 0; top: calc(var(--band-top) - 38px); }
+
+/* ---------- 14. 预览脚手架（不进导出） ---------- */
+.shell { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+.cap { font-family: var(--fig); font-size: 22px; letter-spacing: .1em;
+       color: var(--text-warm); text-transform: uppercase; }
+.cap b { color: var(--ink); font-weight: 700; }
+.strip-demo { display: flex; gap: 0; width: 1080px; overflow: hidden;
+              outline: 3px solid var(--edge-blue); }
+.strip-demo .cell { width: 360px; height: 460px; overflow: hidden; position: relative; }
+.strip-demo .cell > .board { transform: scale(.3333); transform-origin: top left;
+                             position: absolute; top: -10px; left: 0; }
+.band-demo { width: 1080px; height: 608px; overflow: hidden; position: relative;
+             outline: 3px solid var(--annotate); }
+.band-demo > .board { position: absolute; top: calc(-1 * var(--band-top)); left: 0; }
+.ph { font-family: var(--fig); font-size: 20px; color: #fff; background: var(--annotate);
+      padding: 4px 10px; letter-spacing: .06em; }
+</style>
+</head>
+<!-- 排版时把 data-guides 改成 "on" 看安全带；导出前必须改回 "off"，否则红蓝参考线会印进成品。 -->
+<body data-guides="off">
+
+<!-- ===================== G01 · cover-equation ===================== -->
+<div class="shell">
+  <div class="cap">G01 · <b>cover-equation</b> · 首图变体 A · 纯算式</div>
+  <div class="board" id="g01">
+    <div class="rules"></div>
+    <div class="airmail-edge top"></div>
+    <div class="airmail-edge bottom"></div>
+
+        <div class="zone-head">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+        <div class="wordmark"></div>
+        <div class="t-label">LAX &rarr; SHA</div>
+      </div>
+      <div class="waybill">
+        <div class="cellw"><span class="k">Service</span><span class="v">普货海运 · 集运</span></div>
+        <div class="cellw"><span class="k">Sheet</span><span class="v mono">MX-01/07</span></div>
+      </div>
+    </div>
+    <div class="zone-band">
+      <div class="lock-label"><div class="t-label-zh">一磅到手价 · 普货海运</div></div>
+      <div class="lock-fig">
+        <div style="display:flex;align-items:flex-end;gap:18px;">
+          <span class="fig fig-mega">12.80</span>
+          <span class="fig-unit" style="padding-bottom:24px;">元/磅</span>
+        </div>
+        <hr class="rule-total">
+        <table class="ledger" style="margin-top:2px;">
+          <tr><td class="lb">同行常见挂牌<span class="hint">　另计操作费</span></td>
+              <td class="lv"><span class="pen-strike">15.00</span></td></tr>
+        </table>
+        <div class="t-fine" style="margin-top:10px;">运费 10.20 ＋ 操作 1.60 ＋ 派送 1.00 ＝ 12.80　无隐藏附加费</div>
+      </div>
+    </div>
+    <div class="zone-foot">
+      <div class="t-fine">价格随航线与旺季浮动，小程序显示的是你这一票的实时价，不是广告价。</div>
+      <div class="stub">
+        <div>
+          <div class="t-body" style="font-weight:500;">输入重量体积，落地价当场算给你看</div>
+          <div class="host" style="margin-top:12px;display:block;"></div>
+        </div>
+        <div class="qr">小程序码<br>占位</div>
+      </div>
+    </div>
+    <div class="crop-guide"></div>
+    <div class="guide-tag band">16:9 SAFE BAND · y416–1024</div>
+  </div>
+</div>
+
+<!-- ===================== G02 · cover-headline ===================== -->
+<div class="shell">
+  <div class="cap">G02 · <b>cover-headline</b> · 首图变体 B · 算式 + 短标题（花体字换装位）</div>
+  <div class="board" id="g02">
+    <div class="rules"></div>
+    <div class="airmail-edge top"></div>
+    <div class="airmail-edge bottom"></div>
+
+        <div class="zone-head">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+        <div class="wordmark"></div>
+        <div class="t-label">LAX &rarr; SHA</div>
+      </div>
+      <div class="waybill">
+        <div class="cellw"><span class="k">Service</span><span class="v">普货海运 · 集运</span></div>
+        <div class="cellw"><span class="k">Sheet</span><span class="v mono">MX-01/07</span></div>
+      </div>
+    </div>
+    <div class="zone-band">
+      <div class="lock-label"><h1 class="t-head sm">一磅到手<br>多少钱</h1></div>
+      <div class="lock-fig">
+        <div style="display:flex;align-items:flex-end;gap:18px;">
+          <span class="fig fig-xl">12.80</span>
+          <span class="fig-unit" style="padding-bottom:14px;">元/磅</span>
+          <span class="pen-note" style="margin-left:14px;padding-bottom:18px;">全部费用都在这</span>
+        </div>
+        <hr class="rule-total">
+        <div class="t-fine">运费 10.20 ＋ 操作 1.60 ＋ 派送 1.00　无隐藏附加费</div>
+      </div>
+    </div>
+    <div class="zone-foot">
+      <div class="t-fine">这一行字是花体字换装位：改 --display-zh 一行，整套卡的中文 display 全换。</div>
+      <div class="stub">
+        <div>
+          <div class="t-body" style="font-weight:500;">输入重量体积，落地价当场算给你看</div>
+          <div class="host" style="margin-top:12px;display:block;"></div>
+        </div>
+        <div class="qr">小程序码<br>占位</div>
+      </div>
+    </div>
+    <div class="crop-guide"></div>
+    <div class="guide-tag band">16:9 SAFE BAND · y416–1024</div>
+  </div>
+</div>
+
+<!-- ===================== G03 · line-item ledger ===================== -->
+<div class="shell">
+  <div class="cap">G03 · <b>ledger</b> · 逐项拆账（体积重 / 关税 / 敏感货各一张）</div>
+  <div class="board" id="g03">
+    <div class="rules"></div>
+    <div class="airmail-edge top"></div>
+    <div class="airmail-edge bottom"></div>
+
+        <div class="zone-head">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+        <div class="wordmark"></div>
+        <div class="t-label">02 · 体积重</div>
+      </div>
+      <div class="waybill">
+        <div class="cellw"><span class="k">Service</span><span class="v">普货海运 · 计费重</span></div>
+        <div class="cellw"><span class="k">Sheet</span><span class="v mono">MX-02/07</span></div>
+      </div>
+    </div>
+    <div class="zone-band">
+      <div class="lock-label"><h2 class="t-head sm">按哪个重收你钱</h2></div>
+      <div class="lock-fig">
+        <table class="ledger">
+          <tr><td class="lb">实际重量<span class="hint">　秤上读数</span></td><td class="lv">8.20 lb</td></tr>
+          <tr><td class="lb">箱规<span class="hint">　40×30×25 cm</span></td><td class="lv">30000 cm³</td></tr>
+          <tr><td class="lb">体积重<span class="hint">　÷ 6000 × 2.205</span></td><td class="lv">11.02 lb</td></tr>
+        </table>
+        <hr class="rule-total">
+        <div class="total-row">
+          <span class="t-sub">取大者计费</span>
+          <span class="tv">11.02 lb</span>
+        </div>
+      </div>
+    </div>
+    <div class="zone-foot">
+      <div class="t-fine">体积重大于实重，按体积重算。这条规矩全行业一样，差别只在除数用不用 6000。</div>
+      <div class="stub">
+        <div>
+          <div class="t-body" style="font-weight:500;">箱子越空越吃亏，装箱前先量一遍</div>
+          <div class="host" style="margin-top:12px;display:block;"></div>
+        </div>
+        <div class="qr">小程序码<br>占位</div>
+      </div>
+    </div>
+    <div class="crop-guide"></div>
+    <div class="guide-tag band">16:9 SAFE BAND · y416–1024</div>
+  </div>
+</div>
+
+<!-- ===================== G04 · route receipt ===================== -->
+<div class="shell">
+  <div class="cap">G04 · <b>route-receipt</b> · 时效即回执</div>
+  <div class="board" id="g04">
+    <div class="rules"></div>
+    <div class="airmail-edge top"></div>
+    <div class="airmail-edge bottom"></div>
+
+        <div class="zone-head">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+        <div class="wordmark"></div>
+        <div class="t-label">03 · 全程时效</div>
+      </div>
+      <div class="waybill">
+        <div class="cellw"><span class="k">Service</span><span class="v">洛杉矶仓 → 上海派送</span></div>
+        <div class="cellw"><span class="k">Sheet</span><span class="v mono">MX-03/07</span></div>
+      </div>
+    </div>
+    <div class="zone-band">
+      <div class="lock-label"><div class="t-label-zh">洛杉矶仓收件 → 上海派送签收</div></div>
+      <div class="lock-fig">
+        <div style="display:flex;align-items:flex-end;gap:18px;">
+          <span class="fig fig-mega">8–12</span>
+          <span class="fig-unit" style="padding-bottom:24px;">天</span>
+        </div>
+        <hr class="rule-total">
+        <table class="ledger" style="margin-top:2px;">
+          <tr><td class="lb">入库上架</td><td class="lv">1–2 天</td></tr>
+          <tr><td class="lb">集包出库</td><td class="lv">1 天</td></tr>
+          <tr><td class="lb">干线运输</td><td class="lv">4–6 天</td></tr>
+          <tr><td class="lb">清关派送</td><td class="lv">2–3 天</td></tr>
+        </table>
+      </div>
+    </div>
+    <div class="zone-foot">
+      <div class="t-fine">每一段都在小程序里能查到时间戳，卡在哪一段一眼看得出来。</div>
+      <div class="stub">
+        <div>
+          <div class="t-body" style="font-weight:500;">查你这一票现在走到哪一段</div>
+          <div class="host" style="margin-top:12px;display:block;"></div>
+        </div>
+        <div class="qr">小程序码<br>占位</div>
+      </div>
+    </div>
+    <div class="crop-guide"></div>
+    <div class="guide-tag band">16:9 SAFE BAND · y416–1024</div>
+  </div>
+</div>
+
+<!-- ===================== G05 · claim / payout ===================== -->
+<div class="shell">
+  <div class="cap">G05 · <b>claim</b> · 丢件赔付（红笔在这张用掉唯一一次）</div>
+  <div class="board" id="g05">
+    <div class="rules"></div>
+    <div class="airmail-edge top"></div>
+    <div class="airmail-edge bottom"></div>
+
+        <div class="zone-head">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+        <div class="wordmark"></div>
+        <div class="t-label">04 · 丢件赔付</div>
+      </div>
+      <div class="waybill">
+        <div class="cellw"><span class="k">Service</span><span class="v">赔付口径 · 服务条款</span></div>
+        <div class="cellw"><span class="k">Sheet</span><span class="v mono">MX-04/07</span></div>
+      </div>
+    </div>
+    <div class="zone-band">
+      <div class="lock-label"><h2 class="t-head sm">按申报价全额赔</h2></div>
+      <div class="lock-fig">
+        <table class="ledger">
+          <tr><td class="lb">申报货值</td><td class="lv">USD 320.00</td></tr>
+          <tr><td class="lb">已付运费</td><td class="lv">USD 41.60</td></tr>
+          <tr><td class="lb">行业惯例赔付<span class="hint">　运费 3 倍封顶</span></td>
+              <td class="lv"><span class="pen-strike">124.80</span></td></tr>
+        </table>
+        <hr class="rule-total">
+        <div class="total-row">
+          <span class="t-sub">本线赔付</span>
+          <span class="tv">USD 361.60</span>
+        </div>
+      </div>
+    </div>
+    <div class="zone-foot">
+      <div class="t-fine">货值 ＋ 运费一起退。理赔口径写在服务条款里，不是客服口头承诺。</div>
+      <div class="stub">
+        <div>
+          <div class="t-body" style="font-weight:500;">服务条款第 7 条，自己点开看</div>
+          <div class="host" style="margin-top:12px;display:block;"></div>
+        </div>
+        <div class="qr">小程序码<br>占位</div>
+      </div>
+    </div>
+    <div class="crop-guide"></div>
+    <div class="guide-tag band">16:9 SAFE BAND · y416–1024</div>
+  </div>
+</div>
+
+<!-- ===================== 裁切验证 1：16:9 常读列表 ===================== -->
+<div class="shell">
+  <div class="cap">裁切验证 A · <b>常读列表 16:9</b> · 只剩 y416–1024 这条带，论点必须还完整</div>
+  <div class="band-demo">
+    <div class="board">
+      <div class="rules"></div>
+      <div class="zone-band">
+        <div class="lock-label"><div class="t-label-zh">一磅到手价 · 普货海运</div></div>
+        <div class="lock-fig">
+          <div style="display:flex;align-items:flex-end;gap:18px;">
+            <span class="fig fig-mega">12.80</span>
+            <span class="fig-unit" style="padding-bottom:24px;">元/磅</span>
+          </div>
+          <hr class="rule-total">
+          <table class="ledger" style="margin-top:2px;">
+            <tr><td class="lb">同行常见挂牌<span class="hint">　另计操作费</span></td>
+                <td class="lv"><span class="pen-strike">15.00</span></td></tr>
+          </table>
+          <div class="t-fine" style="margin-top:10px;">运费 10.20 ＋ 操作 1.60 ＋ 派送 1.00 ＝ 12.80　无隐藏附加费</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ===================== 裁切验证 2：2.35:1 三图横读 ===================== -->
+<div class="shell">
+  <div class="cap">裁切验证 B · <b>消息列表 2.35:1 三图条</b> · 前三张共享基线，横读成一条账</div>
+  <div class="strip-demo">
+    <div class="cell"><div class="board">
+      <div class="rules"></div>
+      <div class="zone-band"><div class="lock-label"><div class="t-label-zh">一磅到手价</div></div>
+      <div class="lock-fig"><div style="display:flex;align-items:flex-end;gap:16px;">
+        <span class="fig fig-mega">12.80</span><span class="fig-unit" style="padding-bottom:26px;">元/磅</span></div></div></div>
+    </div></div>
+    <div class="cell"><div class="board">
+      <div class="rules"></div>
+      <div class="zone-band"><div class="lock-label"><div class="t-label-zh">全程时效</div></div>
+      <div class="lock-fig"><div style="display:flex;align-items:flex-end;gap:16px;">
+        <span class="fig fig-mega">8–12</span><span class="fig-unit" style="padding-bottom:26px;">天</span></div></div></div>
+    </div></div>
+    <div class="cell"><div class="board">
+      <div class="rules"></div>
+      <div class="zone-band"><div class="lock-label"><div class="t-label-zh">丢件赔付</div></div>
+      <div class="lock-fig"><div style="display:flex;align-items:flex-end;gap:16px;">
+        <span class="fig fig-mega">100</span><span class="fig-unit" style="padding-bottom:26px;">%</span></div></div></div>
+    </div></div>
+  </div>
+</div>
+
+<!-- ===================== 租户换装验证 ===================== -->
+<div class="shell">
+  <div class="cap">换装验证 · <b>data-brand="bjd"</b> · 只换预设块，模板零改动</div>
+  <div class="board" data-brand="bjd" style="height:760px;">
+    <div class="rules"></div>
+    <div class="airmail-edge top"></div>
+    <div style="position:absolute;left:var(--gutter);right:var(--gutter);top:56px;display:flex;justify-content:space-between;"><div class="wordmark"></div><div class="t-label">SEA &rarr; SZX</div></div>
+    <div style="position:absolute;left:var(--gutter);right:var(--gutter);top:280px;">
+      <div class="t-label-zh" style="margin-bottom:24px;">一磅到手价 · 普货海运</div>
+      <div style="display:flex;align-items:flex-end;gap:20px;">
+        <span class="fig fig-xl">13.50</span>
+        <span class="fig-unit" style="padding-bottom:16px;">元/磅</span>
+      </div>
+      <hr class="rule-total">
+      <div class="t-fine">合计线与合计数跟着 --verify 走，红蓝边饰不跟着变</div>
+    </div>
+  </div>
+</div>
+
+<div class="cap" style="max-width:1080px;text-align:center;line-height:1.8;">
+  <span class="ph">示例数据</span>
+  卡面上所有价格、时效、赔付数字均为占位示例，上线前必须替换为真实报价口径。
+  本模板不生产商业承诺。
+</div>
+
+</body>
+</html>

@@ -2,6 +2,9 @@
 
 Use one theme for one image package. Do not mix palettes across pages unless the user explicitly asks for a deliberate multi-chapter system.
 
+> Greenbook（贴图号 / 小绿书）卡系统不使用本文件的任何调色板。它的色板是租户驱动的，
+> 见根目录 `DESIGN.md` 与 `brand-presets/`。不要把本文件的 accent 混进 Greenbook 模板。
+
 ## Editorial Magazine x E-ink Palettes
 
 These are adapted from the Guizang PPT electronic-magazine mode for static Rednote and WeChat images.

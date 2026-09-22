@@ -1,6 +1,6 @@
 ---
 name: guizang-social-card-skill
-description: Generate Guizang-style social card image sets, Live Photo motion cards, material-first Live Photo puzzle layouts, triple Live Photo collages, long-video-to-Live-Photo treatments, and WeChat official account cover pairs from articles, scripts, screenshots, product notes, subtitles, photos, or user-supplied videos. Use when the user asks for 小红书图文, Rednote/Xiaohongshu images, social cards, carousel images, 3:4 covers, Live Photo, 实况照片, 单视频实况拼图, 二宫格实况拼图, 三连实况拼图, 四宫格实况拼图, 微信公众号封面, WeChat 21:9 + 1:1 covers, Swiss Style, or magazine-style social images.
+description: Generate Guizang-style social card image sets, Live Photo motion cards, material-first Live Photo puzzle layouts, triple Live Photo collages, long-video-to-Live-Photo treatments, and WeChat official account cover pairs from articles, scripts, screenshots, product notes, subtitles, photos, or user-supplied videos. Use when the user asks for 小红书图文, Rednote/Xiaohongshu images, social cards, carousel images, 3:4 covers, Live Photo, 实况照片, 单视频实况拼图, 二宫格实况拼图, 三连实况拼图, 四宫格实况拼图, 微信公众号封面, WeChat 21:9 + 1:1 covers, Swiss Style, 公众号图片消息, 小绿书, 贴图号, WeChat image messages, or magazine-style social images.
 ---
 
 # Guizang Social Card Skill
@@ -21,6 +21,7 @@ Use this skill for:
 - Triple Live Photo collages when the user has three short videos, three results, three viewpoints, or a high-information comparison that should stay inside one image-card unit.
 - Long-video intake for Live Photo: diagnose whether to trim, speed up, split into a triple collage, or ask the user for a specific time range before rendering.
 - WeChat Official Account cover pairs: one `21:9` main cover plus one `1:1` square cover, composed together in the same HTML for visual checking.
+- WeChat Official Account image messages (公众号图片消息 / 小绿书 / 2026 年后官方称贴图号): 3:4 card sets whose first image must survive WeChat's own 16:9 and 2.35:1 feed crops. Use the Greenbook template, not Editorial or Swiss.
 - Screenshot-heavy product posts, article covers, tutorial carousels, outdoor/lifestyle notes, AI/product update explainers.
 - Social images that need Guizang-style Swiss or editorial magazine layouts.
 
@@ -82,6 +83,8 @@ Read these files as needed:
 - `references/map-component.md` when the content has spatial relationships (travel route, store locations, walking tour) — real routes default to Mapbox Static or OSM static tiles; schematic SVG is only for conceptual / illustrative maps. Pins are HTML overlays; never use live JS maps.
 - `references/title-shortener.md` when the task is a WeChat 21:9+1:1 cover pair, or any cross-platform reuse — derives the 1:1 short title from the long one (5-step extraction, 4 patterns, anti-patterns, sizing on `.poster.square`).
 - `references/category-cookbook.md` to route a user-named Rednote category (旅行 / 职场 / 游戏 / 影视 / 彩妆 / 美食 / 穿搭 / 家居 / 健身 / 情感 / 推荐) to applicable recipes and to confirm scope.
+- `references/greenbook-specs.md` when the target is a WeChat 公众号图片消息 / 小绿书 / 贴图号 card set — platform specs with evidence grading, the 16:9 / 2.35:1 crop math, recipes G01-G07, and the render/QA rules.
+- `DESIGN.md` (repo root) for the Greenbook card system: color tokens with measured contrast on the warm ground, the five typefaces and their licences, the `--display-zh` swap seam, the three vertical zones, and the do/don't list. Read it before touching `assets/template-greenbook-card.html`.
 - `references/qa-checklist.md` before delivering final images.
 
 ## Workflow

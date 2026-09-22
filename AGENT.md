@@ -56,3 +56,15 @@ local-tests/social-card-example/output/
 - 如果要把某个测试案例升级为正式示例，先明确它属于项目文档、参考资料还是发布资产，再移动到合适位置；不要默认留在根目录。
 
 `local-tests/` 已在 `.gitignore` 中忽略，适合承载这些本地测试和生成产物。保持这个边界，能避免 Skill 本体再次混入大量一次性文件。
+
+## Design System
+
+做任何视觉决策前，先读根目录 `DESIGN.md`。
+
+它是 Greenbook 卡系统（公众号图片消息 / 小绿书 / 贴图号）的设计真源：
+字体与授权、色板与实测对比度、三竖区制度、裁切安全带、以及本类目专属的反模式清单，
+全部定义在那里。`assets/template-greenbook-card.html` 的任何改动都必须与它一致。
+未经项目负责人明确同意，不要偏离；在 QA 模式下，发现与 `DESIGN.md` 不符的实现要主动标出。
+
+Editorial 与 Swiss 两个既有模式不受 `DESIGN.md` 约束，它们仍走 `references/style-system.md`
+与 `references/components.md`。三套系统互不混用调色板与字体栈。
