@@ -85,6 +85,7 @@ Read these files as needed:
 - `references/category-cookbook.md` to route a user-named Rednote category (旅行 / 职场 / 游戏 / 影视 / 彩妆 / 美食 / 穿搭 / 家居 / 健身 / 情感 / 推荐) to applicable recipes and to confirm scope.
 - `references/greenbook-specs.md` when the target is a WeChat 公众号图片消息 / 小绿书 / 贴图号 card set — platform specs with evidence grading, the 16:9 / 2.35:1 crop math, recipes G01-G07, and the render/QA rules.
 - `DESIGN.md` (repo root) for the Greenbook card system: color tokens with measured contrast on the warm ground, the five typefaces and their licences, the `--display-zh` swap seam, the three vertical zones, and the do/don't list. Read it before touching `assets/template-greenbook-card.html`.
+- `references/font-library.md` when the cover title should be a 花体字 / 毛笔字 / 书法感面（"像剪映花体字那样"）— 53 款免费商用中文花体字的注册表、分组、授权等级、`data-title-font` 用法、Swiss 封面例外边界，以及取用/缺字检查脚本。授权核验记录见 `references/font-license-audit.md`。
 - `references/qa-checklist.md` before delivering final images.
 
 ## Workflow

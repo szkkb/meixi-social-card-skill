@@ -107,7 +107,7 @@ A poster compiles cleanly long before its style identity is right. Run this test
 A poster is Swiss only if **all four** hold:
 
 1. Every large display title (>=72px on 1080x1440) uses a typed class from `components.md` (`.h-hero` / `.h-statement` / `.h-xl` / `.num-mega`). Its computed `font-weight` is `<=300`.
-2. No serif family is loaded in the document head. No element uses `font-family: serif` or `Noto Serif SC` / `Playfair Display`.
+2. No serif family is loaded in the document head. No element uses `font-family: serif` or `Noto Serif SC` / `Playfair Display`. **One sanctioned exception:** the cover-title 花体字 carve-out (`<html data-title-font="…">` plus the uncommented `FONT_LIBRARY_SWISS_CARVE_OUT` block). It may appear **only** on the first poster's `.h-hero` / `.h-statement`; anything else — content pages, `.h-xl`, body, lead, label, meta — still fails. `validate-social-deck.mjs` R10 enforces the boundary. See `font-library.md` §9.
 3. Section separators are hairline rules (1-2px) or grid gutters, not card borders + drop shadows.
 4. Exactly one accent palette is in use. No mixed accents across pages.
 

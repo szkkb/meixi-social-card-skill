@@ -17,6 +17,8 @@
  *   R7  figure margin drift    browser-default <figure> margin offsets media alignment
  *   R8  visual bounds          measured top/bottom blank space and visual overflow
  *   R9  title gap              display title touches the next content block
+ *   R10 花体字作用域/族名      data-title-font 生效时花体字只许出现在封面级显示标题上，
+ *                              且 font-family 必须写 CSS 族名而不是中文字体名
  */
 import { chromium } from "playwright";
 import { fileURLToPath } from "node:url";
@@ -92,6 +94,17 @@ const HXL_CAPS = {
 };
 
 const DISPLAY_CLASSES = ["h-xl", "h-hero", "h-statement", "h-display", "num-mega", "num-xl"];
+
+// R10 需要知道花体字库的族名。注册表缺失时 R10 自动降级为"只查作用域"。
+const SKILL_ROOT = path.dirname(fileURLToPath(import.meta.url));
+let FONT_LIB = null;
+try {
+  FONT_LIB = JSON.parse(fs.readFileSync(path.join(SKILL_ROOT, "assets", "font-library.json"), "utf8"));
+} catch { /* 花体字库未安装 —— R10 仍会检查 data-title-font 的作用域 */ }
+const LIB_FAMILIES = FONT_LIB ? FONT_LIB.fonts.map(f => f.family) : [];
+const LIB_BY_ZH = FONT_LIB ? new Map(FONT_LIB.fonts.map(f => [f.zh, f])) : new Map();
+// 封面级显示标题：花体字唯一被允许出现的位置
+const CARVE_OUT_ALLOWED = new Set(["h-display", "h-hero", "h-statement", "f-alt"]);
 
 function overflowFix(px) {
   const n = Math.round(px);
@@ -498,6 +511,99 @@ for (const s of sections) {
   report.push({ meta, fails, warns });
 }
 
+// R10 花体字作用域 + 族名误用（整份文档只跑一次）
+{
+  const r10 = await page.evaluate(({ allowed, families }) => {
+    const out = { enabled: false, scoped: [], mismatch: [], greenbook: false };
+    const root = document.documentElement;
+    out.greenbook = document.querySelectorAll('[class~="board"]').length > 0;
+
+    // 取「这一页实际生效的花体字」：Editorial/Swiss 走 --display-alt，Greenbook 走 --display-zh。
+    // 两个变量都读，谁命中字库就用谁，避免为模板写死分支。
+    const libFams = new Set(families.map(f => f.family.toLowerCase()));
+    const readVar = n => getComputedStyle(root).getPropertyValue(n).trim();
+    const pick = raw => {
+      for (const part of raw.split(",")) {
+        const f = part.replace(/["']/g, "").trim();
+        if (f && libFams.has(f.toLowerCase())) return f;
+      }
+      return null;
+    };
+    const alt = pick(readVar("--display-alt")) || pick(readVar("--display-zh")) || "";
+    if (root.hasAttribute("data-title-font") && alt) out.enabled = true;
+
+    const posters = [...document.querySelectorAll('[class~="poster"]')];
+    const allowedSet = new Set(allowed);
+    if (out.enabled) {
+      const altL = alt.toLowerCase();
+      for (const n of document.querySelectorAll('[class~="poster"] *, [class~="board"] *')) {
+        const fam = getComputedStyle(n).fontFamily.toLowerCase();
+        if (!fam.includes(altL)) continue;
+        const pFam = n.parentElement ? getComputedStyle(n.parentElement).fontFamily.toLowerCase() : "";
+        if (pFam.includes(altL)) continue;   // 继承来的，不是这一层引入的
+        const text = n.textContent.trim();
+        if (!text) continue;
+        const size = Math.round(parseFloat(getComputedStyle(n).fontSize));
+        out.scoped.push({
+          // 允许的节点必须同时满足：类名在允许集里，且字号达到显示标题级（>=72px）。
+          // 只查类名会让 <p class="body f-alt"> 这种"给正文挂 .f-alt"溜过去。
+          ok: [...n.classList].some(c => allowedSet.has(c)) && size >= 72,
+          size,
+          posterIdx: posters.findIndex(p => p.contains(n)),
+          where: [...n.classList].join(".") || n.tagName.toLowerCase(),
+          text: text.slice(0, 18),
+        });
+      }
+    }
+
+    // 族名误用：font-family 写了中文字体名，webfont 其实没被用上
+    const zhSet = new Set(families.map(f => f.zh));
+    for (const n of document.querySelectorAll('[class~="poster"] *, [class~="board"] *')) {
+      const first = getComputedStyle(n).fontFamily.split(",")[0].replace(/["']/g, "").trim();
+      if (zhSet.has(first) && !families.some(f => f.family.toLowerCase() === first.toLowerCase())) {
+        out.mismatch.push({ where: [...n.classList].join(".") || n.tagName.toLowerCase(), name: first, text: n.textContent.trim().slice(0, 18) });
+      }
+    }
+    return out;
+  }, { allowed: [...CARVE_OUT_ALLOWED], families: FONT_LIB ? FONT_LIB.fonts : [] });
+
+  const r10Fails = [];
+  const seenMismatch = new Set();
+  for (const m of r10.mismatch) {
+    const k = m.where + "|" + m.name + "|" + m.text;
+    if (seenMismatch.has(k)) continue;
+    seenMismatch.add(k);
+    const f = LIB_BY_ZH.get(m.name);
+    r10Fails.push({
+      rule: "R10",
+      msg: m.where + ' "' + m.text + '" 的 font-family 写成了中文名「' + m.name + '」，webfont 实际族名是 "' + (f ? f.family : "?") + '"',
+      fix: '改成 "' + (f ? f.family : "<css-family>") + '", "Noto Serif SC", serif —— 写中文名不会加载到字体，浏览器会静默回退',
+    });
+  }
+  // Greenbook 的换装缝是全局 --display-zh（DESIGN.md 明确设计为整套卡统一换面），
+  // 因此对它只查族名误用，不套用"仅限第一张封面"的 Editorial/Swiss 边界。
+  if (!r10.greenbook) {
+    for (const v of r10.scoped) {
+      if (!v.ok) {
+        r10Fails.push({
+          rule: "R10",
+          msg: v.where + ' "' + v.text + '" (' + v.size + 'px) 用了花体字，但它既不是 .h-display / .h-hero / .h-statement / .f-alt，也没到 72px 显示标题级',
+          fix: "花体字只允许出现在封面级显示标题上，正文/lead/label/meta 一律回退到系统字体（references/font-library.md 第 0 节）",
+        });
+      } else if (style === "swiss" && v.posterIdx > 0) {
+        r10Fails.push({
+          rule: "R10",
+          msg: v.where + ' "' + v.text + '" 用了花体字，但它在第 ' + (v.posterIdx + 1) + " 张 poster 上 —— Swiss 封面例外只覆盖第一张",
+          fix: "把 data-title-font 收回到封面那一页，或在内容页改用 .h-xl + Inter（references/font-library.md 第 9 节）",
+        });
+      }
+    }
+  }
+  if (r10Fails.length) {
+    report.push({ meta: { id: "R10", dataId: "花体字", board: "document", doc: true }, fails: r10Fails, warns: [] });
+  }
+}
+
 await browser.close();
 
 let totalFail = 0, totalWarn = 0;
@@ -507,13 +613,14 @@ for (const { fails, warns } of report) {
   totalWarn += warns.length;
   for (const v of [...fails, ...warns]) ruleCounts.set(v.rule, (ruleCounts.get(v.rule) || 0) + 1);
 }
-const cleanCount = report.filter(r => r.fails.length === 0 && r.warns.length === 0).length;
+const posterEntries = report.filter(r => !r.meta.doc);
+const cleanCount = posterEntries.filter(r => r.fails.length === 0 && r.warns.length === 0).length;
 
 const lines = [];
 lines.push(`==== validate-social-deck ====`);
 lines.push(`target:   ${path.relative(process.cwd(), htmlPath)}`);
 lines.push(`style:    ${style}`);
-lines.push(`sections: ${report.length}  ·  ${cleanCount} clean  ·  ${totalFail} fails  ·  ${totalWarn} warns`);
+lines.push(`sections: ${posterEntries.length}  ·  ${cleanCount} clean  ·  ${totalFail} fails  ·  ${totalWarn} warns`);
 if (ruleCounts.size > 0) {
   const ruleSummary = [...ruleCounts.entries()].sort().map(([r, c]) => `${r}=${c}`).join("  ");
   lines.push(`rules:    ${ruleSummary}`);
@@ -539,7 +646,7 @@ for (const { meta, fails, warns } of report) {
 }
 
 lines.push("");
-lines.push(`Legend: R1 overflow · R2 footer collision · R3 swiss bold display · R4 min font · R5 4-band density · R6 h-xl cap · R7 figure margin drift · R8 visual bounds · R9 title gap`);
+lines.push(`Legend: R1 overflow · R2 footer collision · R3 swiss bold display · R4 min font · R5 4-band density · R6 h-xl cap · R7 figure margin drift · R8 visual bounds · R9 title gap · R10 花体字作用域/族名`);
 lines.push(`Exit code 1 only on FAIL. Warnings are advisory.`);
 
 console.log(lines.join("\n"));

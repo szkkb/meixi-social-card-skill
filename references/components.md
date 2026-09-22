@@ -22,6 +22,20 @@ Swiss International (`template-swiss-card.html`):
 
 Never load a serif font in the Swiss template. Never let the Editorial template lose its serif display family.
 
+### 花体字封面标题（Editorial + Swiss 封面例外）
+
+封面主标题可以换成花体字，**正文/lead/label/meta 永不**。53 款免费商用中文花体字的注册表、授权核验与选字规则在 `font-library.md`；取用与检查工具：
+
+```sh
+node scripts/build-font-links.mjs list                 # 看全库
+node scripts/build-font-links.mjs links sign           # 生成要粘的 <link>
+node scripts/check-font-coverage.mjs local-test/<slug> # 缺字检查（必做）
+```
+
+- **Editorial**：`<html data-title-font="brush|running|kai|sign|hand">`，只改 `.h-display`，`.h-xl` 及以下保持衬线。
+- **Swiss**：同名的封面例外，默认关闭，只作用于第一张封面的 `.h-hero` / `.h-statement`；边界由 `validate-social-deck.mjs` 的 R10 强制。
+- 花体字后面**必须**带 fallback（`--f-*` 令牌已带）；把中文字体名当 CSS 族名写不会加载到字体，R10 会拦下。
+
 ## Type Scale + Weight Mapping
 
 Both templates follow the rule **"the larger, the lighter."** Small text always uses heavier weight than large text. On 1080x1440 boards, the minimum readable size is 22-28px after factoring in mobile downsample.

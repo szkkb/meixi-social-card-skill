@@ -7,6 +7,26 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;700;900&family=Noto+Sans+SC:wght@300;400;500;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+  <!-- ===== FONT LIBRARY · 花体字（免费商用，53 款）=====================
+       封面主标题专用，正文/lead/label 一律不用。规则见 references/font-library.md。
+       这里内置了 14 款常用款。要用其余 39 款：
+         node scripts/build-font-links.mjs links <id|brush|running|kai|sign|hand|all>
+       把输出粘到下面的 FONT_LIBRARY_EXTRA 标记处。 -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&display=swap">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@chinese-fonts/cezkzdbs@3.0.0/dist/仓耳周珂正大榜书/result.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Liu+Jian+Mao+Cao&display=swap">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@chinese-fonts/zqzmxs@3.0.0/dist/钟齐志莽行书/result.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@chinese-fonts/sft@3.0.0/dist/随峰体/result.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@chinese-fonts/jxzk@3.0.0/dist/江西拙楷/result.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@chinese-fonts/moon-stars-kai@2.0.0/dist/MoonStarsKai-Regular/result.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@chinese-fonts/xuandongkaishu@3.0.0/dist/XuandongKaishu/result.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@chinese-fonts/hldqjt@3.0.0/dist/qiji-fallback/result.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@chinese-fonts/tjl@3.0.0/dist/Tiejili_Regular/result.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@chinese-fonts/scjssh@3.0.0/dist/素材集市社会体/result.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@chinese-fonts/qtbfsxt@3.0.0/dist/千图笔锋手写体/result.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&display=swap">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@chinese-fonts/yozai@3.0.0/dist/Yozai-Regular/result.css">
+  <!-- FONT_LIBRARY_EXTRA -->
   <style>
     /* =========================================================
        Editorial Magazine × E-ink — Social Card Seed Template
@@ -19,6 +39,10 @@
 
        Theme switching via <html data-theme="…">:
          ink-classic | indigo-porcelain | forest-ink | kraft-paper | dune | midnight-ink
+
+       Cover-title font (optional) via <html data-title-font="…">:
+         brush | running | kai | sign | hand   → 封面主标题改用花体字
+         （清单位于模型上方 FONT LIBRARY 区块，规则见 references/font-library.md）
 
        Fill posters where marked <!-- POSTERS_HERE -->.
        Each poster carries one Layout Recipe (M01-M15) from
@@ -110,6 +134,16 @@
       --sans-zh: "Noto Sans SC", -apple-system, "PingFang SC", "Microsoft YaHei UI", sans-serif;
       --sans-en: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
       --mono:    "IBM Plex Mono", ui-monospace, "SF Mono", Consolas, monospace;
+
+      /* 花体字令牌 —— 只给封面主标题用，正文永远不碰。
+         fallback 必须保留：花体字多为 GB2312 级字表（约 6763 字），
+         缺字时靠它接住，否则会出现"同一行两种字形"。 */
+      --f-brush:   "Ma Shan Zheng", "Noto Serif SC", serif;
+      --f-running: "Zhi Mang Xing", "Noto Serif SC", serif;
+      --f-kai:     "jiangxizhuokai", "Noto Serif SC", serif;
+      --f-sign:    "SuCaiJiShi-SheHuiTi", "Noto Serif SC", serif;
+      --f-hand:    "qiantubifengshouxieti", "Noto Serif SC", serif;
+      --display-alt: var(--serif-zh);   /* 由 <html data-title-font="…"> 覆写 */
     }
 
     /* ---------- 3. Reset & sheet ---------- */
@@ -212,6 +246,32 @@
       letter-spacing: .04em;
       margin: 0 0 24px;
       color: var(--ink);
+    }
+
+    /* ---------- 5b. 花体字封面例外 ----------
+       <html data-title-font="brush|running|kai|sign|hand"> 时，封面主标题改用
+       对应花体字。没有这个属性时下面全部是死代码，不加载任何书法字体。
+       花体字多为单字重且自带字距，所以 weight 归一到 400、tracking 归零。
+       清单、授权与边界：references/font-library.md */
+    html[data-title-font="brush"]   { --display-alt: var(--f-brush); }
+    html[data-title-font="running"] { --display-alt: var(--f-running); }
+    html[data-title-font="kai"]     { --display-alt: var(--f-kai); }
+    html[data-title-font="sign"]    { --display-alt: var(--f-sign); }
+    html[data-title-font="hand"]    { --display-alt: var(--f-hand); }
+    /* 工具类带 html 前缀提高特异性：模板里 .body / .lead 等角色类定义在本块之后，
+       同特异性的单类选择器会按源序覆盖，导致 .f-alt 挂在正文节点上不起作用。 */
+    html .f-alt { font-family: var(--display-alt); font-weight: 400; letter-spacing: 0; }
+    html .f-brush   { font-family: var(--f-brush); }
+    html .f-running { font-family: var(--f-running); }
+    html .f-kai     { font-family: var(--f-kai); }
+    html .f-sign    { font-family: var(--f-sign); }
+    html .f-hand    { font-family: var(--f-hand); }
+
+    /* Editorial 下花体字只替换封面那一页的 .h-display，其他页的 .h-xl 保持衬线。 */
+    html[data-title-font] .h-display {
+      font-family: var(--display-alt);
+      font-weight: 400;
+      letter-spacing: 0;
     }
     .h-xl {
       font-family: var(--serif-zh);

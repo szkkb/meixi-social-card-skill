@@ -17,6 +17,8 @@ Run this before final delivery.
 - Cover title is readable on a phone at thumbnail size.
 - Body text is not smaller than it needs to be.
 - Chinese line breaks are intentional.
+- **花体字封面标题没有缺字。** 跑 `node scripts/check-font-coverage.mjs <task-dir>`；标题里出现"某个字长得和旁边不一样"就是缺字回退。花体字多为 GB2312 级字表，这一条不能靠肉眼在缩略图上判断。
+- **花体字只出现在封面级标题上。** `validate-social-deck.mjs` 的 R10 会拦：正文/lead/label/meta 用花体、`.f-alt` 挂在 72px 以下的节点、Swiss 里花体跑到第二张之后的 poster，都会 FAIL。
 - Important product names, English terms, and code snippets are spelled correctly.
 - Captions match the source text; no invented facts.
 

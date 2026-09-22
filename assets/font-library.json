@@ -1,0 +1,1189 @@
+{
+  "version": 1,
+  "counts": {
+    "total": 52,
+    "byGroup": {
+      "brush": 6,
+      "running": 5,
+      "kai": 6,
+      "sign": 13,
+      "hand": 22
+    },
+    "byLicense": {
+      "yes": 45,
+      "conditional": 3,
+      "unverified": 4
+    }
+  },
+  "removed": {
+    "yidianyan": "版权存疑：作者归属被误标为「一点字坊」（实为刻石录/內木一郎），底字王漢宗顏體 GPL2.0+ 与文鼎存在未决版权争议，猫啃网标注「不建议商用」。为避免把风险带进字体库，已整款移出。"
+  },
+  "audit": "references/font-license-audit.md",
+  "featured": [
+    "ma-shan-zheng",
+    "chill-bangshu",
+    "liu-jian-mao-cao",
+    "zhi-mang-xing",
+    "suifeng",
+    "jiangxi-zhuokai",
+    "moon-stars-kai",
+    "xuandong-kai",
+    "qiji",
+    "tiejili",
+    "sucaijishi-shehui",
+    "qiantu-bifeng",
+    "zcool-kuaile",
+    "yozai"
+  ],
+  "groupDefaults": {
+    "brush": "ma-shan-zheng",
+    "running": "zhi-mang-xing",
+    "kai": "jiangxi-zhuokai",
+    "sign": "sucaijishi-shehui",
+    "hand": "qiantu-bifeng"
+  },
+  "sources": [
+    {
+      "name": "中文网字计划 chinese-free-web-font-storage (v6)",
+      "url": "https://github.com/KonghaYao/chinese-free-web-font-storage",
+      "note": "只收录免费商用中文字体，用 cn-font-split 切成按需加载的 woff2 分片，可直接引 result.css。"
+    },
+    {
+      "name": "Google Fonts",
+      "url": "https://fonts.google.com/",
+      "note": "OFL 开源字体，Google 官方托管并做 unicode-range 分片，稳定性最好。"
+    },
+    {
+      "name": "wc-ex/cn-fontsource",
+      "url": "https://github.com/wc-ex/cn-fontsource",
+      "note": "同一批免费商用字体的另一套网页化索引，附带 fontClass 分类与字数统计。"
+    },
+    {
+      "name": "猫啃网 maoken.com",
+      "url": "https://www.maoken.com/",
+      "note": "中文免费商用字体的授权聚合站；本表用它作为作者声明的二手出处，非官方授权文件。"
+    }
+  ],
+  "groups": {
+    "brush": {
+      "title": "毛笔 / 榜书 / 大字",
+      "desc": "Brush display — 封面主标题冲击力最强的一档"
+    },
+    "running": {
+      "title": "行书 / 行草",
+      "desc": "Running script — 有笔势，比楷书快，适合标题与引言"
+    },
+    "kai": {
+      "title": "楷书 / 拙楷",
+      "desc": "Kai — 端庄可读，长标题也不吃力"
+    },
+    "sign": {
+      "title": "招牌 / 古风装饰",
+      "desc": "Sign & decorative — 字形本身即设计，最接近剪映「花体字」"
+    },
+    "hand": {
+      "title": "手写 / 可爱 / 马克笔",
+      "desc": "Handwriting — 亲和、日常、生活流"
+    }
+  },
+  "coverageLegend": {
+    "subset": "不足 6000 字 — 只够日常短句，长标题务必先跑 check-font-coverage.mjs",
+    "gb2312": "约 6000-10000 字（GB2312 级）— 日常文案够用，生僻字/异体字会回退到 fallback",
+    "extended": "约 1 万-2 万字 — 生僻字风险低",
+    "gbk": "约 2 万字级（GBK）— 基本不必担心缺字"
+  },
+  "fonts": [
+    {
+      "id": "chill-bangshu",
+      "zh": "仓耳周珂正大榜书",
+      "source": "仓耳字库",
+      "group": "brush",
+      "family": "TsangerZhoukeZhengdabangshu",
+      "css": "https://cdn.jsdelivr.net/npm/@chinese-fonts/cezkzdbs@3.0.0/dist/仓耳周珂正大榜书/result.css",
+      "license": {
+        "name": "免费商用（仓耳字库免费字库声明）",
+        "commercial": "yes",
+        "attribution": false,
+        "url": "https://www.tsanger.cn/107.html",
+        "commercialLabel": "免费商用",
+        "grade": "官方",
+        "note": "字体文件（含修改版及独立构件）不得单独销售"
+      },
+      "coverage": "gb2312",
+      "use": "4-6 字封面主标题，力度最强；适合国风、节气、文化、旅行大字",
+      "avoid": "正文、长标题",
+      "cjkCount": 6763
+    },
+    {
+      "id": "ma-shan-zheng",
+      "zh": "马善政毛笔楷书",
+      "source": "Google Fonts / 马善政",
+      "group": "brush",
+      "family": "Ma Shan Zheng",
+      "css": "https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&display=swap",
+      "license": {
+        "name": "SIL Open Font License 1.1",
+        "commercial": "yes",
+        "attribution": false,
+        "url": "https://raw.githubusercontent.com/google/fonts/main/ofl/mashanzheng/OFL.txt",
+        "commercialLabel": "免费商用",
+        "grade": "OFL",
+        "note": "OFL 1.1；不得单独出售字体文件"
+      },
+      "coverage": "extended",
+      "use": "毛笔楷书，最通用的一款；文化、书单、节气、国风封面",
+      "avoid": "需要极细笔画时（笔画偏粗）",
+      "cjkCount": 12258
+    },
+    {
+      "id": "alimama-dongfang-dakai",
+      "zh": "阿里妈妈东方大楷",
+      "source": "阿里巴巴",
+      "group": "brush",
+      "family": "Alimama DongFangDaKai",
+      "css": "https://cdn.jsdelivr.net/npm/cn-fontsource-alimama-dong-fang-da-kai-regular/font.css",
+      "license": {
+        "name": "阿里巴巴免费商用字体授权",
+        "commercial": "yes",
+        "attribution": false,
+        "url": "https://www.iconfont.cn/fonts/detail?cnid=IhcTcFymWeyf",
+        "commercialLabel": "免费商用",
+        "grade": "官方",
+        "note": "未经阿里授权不得上传/发布/转载字体文件；不得用于商标注册；不得二次创作"
+      },
+      "coverage": "gb2312",
+      "use": "颜真卿多宝塔碑算法生成，正大气象；品牌、年度总结、大事件封面",
+      "avoid": "俏皮/生活流内容",
+      "cjkCount": 9121
+    },
+    {
+      "id": "liu-jian-mao-cao",
+      "zh": "刘建毛草",
+      "source": "Google Fonts / 刘建",
+      "group": "brush",
+      "family": "Liu Jian Mao Cao",
+      "css": "https://fonts.googleapis.com/css2?family=Liu+Jian+Mao+Cao&display=swap",
+      "license": {
+        "name": "SIL Open Font License 1.1",
+        "commercial": "yes",
+        "attribution": false,
+        "url": "https://raw.githubusercontent.com/google/fonts/main/ofl/liujianmaocao/OFL.txt",
+        "commercialLabel": "免费商用",
+        "grade": "OFL",
+        "note": "OFL 1.1；不得单独出售字体文件"
+      },
+      "coverage": "extended",
+      "use": "狂草，辨识度低但气势足；适合 2-4 字极短封面钩子",
+      "avoid": "超过 6 字（几乎读不出来）、任何正文",
+      "cjkCount": 12258
+    },
+    {
+      "id": "long-cang",
+      "zh": "有字库龙藏体",
+      "source": "有字库",
+      "group": "brush",
+      "family": "Long Cang",
+      "css": "https://cdn.jsdelivr.net/npm/@chinese-fonts/yzklct@3.0.0/dist/有字库龙藏体/result.css",
+      "license": {
+        "name": "免费商用（有字库声明）",
+        "commercial": "yes",
+        "attribution": false,
+        "url": "https://raw.githubusercontent.com/google/fonts/main/ofl/longcang/OFL.txt",
+        "commercialLabel": "免费商用",
+        "grade": "OFL",
+        "note": "以 Google 分发版为准（OFL）；有字库原始中文条款未取得。Google 版非全字符集"
+      },
+      "coverage": "gb2312",
+      "use": "清瘦行草，文人气；书评、影评、夜读、茶事",
+      "avoid": "需要粗重力量感的标题",
+      "cjkCount": 6763
+    },
+    {
+      "id": "yishanbei-zhuan",
+      "zh": "峄山碑篆体",
+      "source": "峄山碑（秦小篆）",
+      "group": "brush",
+      "family": "峄山碑篆体",
+      "css": "https://cdn.jsdelivr.net/npm/@chinese-fonts/ysbzt@3.0.0/dist/峄山碑篆体/result.css",
+      "license": {
+        "name": "免费商用（中文网字计划收录）",
+        "commercial": "unverified",
+        "attribution": false,
+        "url": "https://www.maoken.com/freefonts/21952.html",
+        "commercialLabel": "未核实",
+        "grade": "二手",
+        "note": "无一手声明；商标/嵌入/出版三条边界三源冲突"
+      },
+      "coverage": "subset",
+      "use": "小篆，图形感极强；2-4 字短标题、章节题、印章式点缀",
+      "avoid": "长标题、正文",
+      "cjkCount": 3754
+    },
+    {
+      "id": "honglei-xingshu",
+      "zh": "鸿雷行书简体",
+      "source": "鸿雷",
+      "group": "running",
+      "family": "hongleixingshu",
+      "css": "https://cdn.jsdelivr.net/npm/@chinese-fonts/hlxsjt@3.0.0/dist/鸿雷行书简体/result.css",
+      "license": {
+        "name": "免费商用（作者/字库声明）",
+        "url": "https://www.maoken.com/freefonts/16904.html",
+        "commercial": "yes",
+        "commercialLabel": "免费商用",
+        "grade": "作者声明",
+        "note": "作者原文仅「已登记版权，全渠道免费商用」；「不得修改/出售」系猫啃整理",
+        "attribution": false
+      },
+      "coverage": "gb2312",
+      "use": "笔势连贯的行书；标题、引言、金句，比草书好读",
+      "avoid": "极小字号（笔画会糊）",
+      "cjkCount": 6799
+    },
+    {
+      "id": "zhi-mang-xing",
+      "zh": "钟齐志莽行书",
+      "source": "钟齐 / Google Fonts",
+      "group": "running",
+      "family": "Zhi Mang Xing",
+      "css": "https://cdn.jsdelivr.net/npm/@chinese-fonts/zqzmxs@3.0.0/dist/钟齐志莽行书/result.css",
+      "license": {
+        "name": "免费商用（钟齐声明，另有 Google Fonts 镜像）",
+        "commercial": "yes",
+        "attribution": false,
+        "url": "https://raw.githubusercontent.com/google/fonts/main/ofl/zhimangxing/OFL.txt",
+        "commercialLabel": "免费商用",
+        "grade": "OFL",
+        "note": "OFL 1.1；不得单独出售字体文件"
+      },
+      "coverage": "gb2312",
+      "use": "行草，节奏感强；情绪化标题、歌词、诗句",
+      "avoid": "数据类、工具类内容",
+      "cjkCount": 6763
+    },
+    {
+      "id": "suifeng",
+      "zh": "随峰体",
+      "source": "隨峰體",
+      "group": "running",
+      "family": "The Peak Font 隨峰體 Beta",
+      "css": "https://cdn.jsdelivr.net/npm/@chinese-fonts/sft@3.0.0/dist/随峰体/result.css",
+      "license": {
+        "name": "免费商用（原作者声明）",
+        "commercial": "yes",
+        "attribution": false,
+        "url": "https://cjkfonts.io/blog/ThePeakFont",
+        "commercialLabel": "免费商用",
+        "grade": "官方",
+        "note": "OFL 1.1（作者明示）；仓库无随附 OFL.txt"
+      },
+      "coverage": "subset",
+      "use": "瘦硬行书，骨感明显；户外、徒步、极简封面",
+      "avoid": "可爱/甜美向内容",
+      "cjkCount": 5879
+    },
+    {
+      "id": "ruimeijia-yingbi",
+      "zh": "瑞美加张清平硬笔行书",
+      "source": "瑞美加",
+      "group": "running",
+      "family": "瑞美加张清平硬笔行书",
+      "css": "https://cdn.jsdelivr.net/npm/@chinese-fonts/rmjzqpybxs@3.0.0/dist/瑞美加张清平硬笔行书/result.css",
+      "license": {
+        "name": "免费商用（作者声明）",
+        "commercial": "yes",
+        "attribution": false,
+        "url": "https://www.100font.com/thread-232.htm",
+        "commercialLabel": "免费商用",
+        "grade": "二手",
+        "note": "不可修改/衍生；不可用于商标、转售品、嵌入式用途"
+      },
+      "coverage": "gb2312",
+      "use": "硬笔行书，细而清晰；长标题也能用，文艺但不高调",
+      "avoid": "需要强烈视觉冲击的封面",
+      "cjkCount": 6763
+    },
+    {
+      "id": "runzhijia-zouzhang",
+      "zh": "润植家如印奏章楷",
+      "source": "润植家",
+      "group": "running",
+      "family": "nzgrRuYinZouZhangKai",
+      "css": "https://cdn.jsdelivr.net/npm/@chinese-fonts/rzjryzzk@3.0.0/dist/nzgrRuYinZouZhangKai/result.css",
+      "license": {
+        "name": "免费商用（润植家声明）",
+        "commercial": "conditional",
+        "attribution": false,
+        "url": "https://www.maoken.com/freefonts/19573.html",
+        "commercialLabel": "有条件商用",
+        "grade": "二手",
+        "note": "商用前提：关注「润植家艺术工作室」公众号；且只对最新版本承诺"
+      },
+      "coverage": "gb2312",
+      "use": "奏章楷，端正里带书写感；历史、档案、公文梗、考据向",
+      "avoid": "活泼内容",
+      "cjkCount": 6334
+    },
+    {
+      "id": "jiangxi-zhuokai",
+      "zh": "江西拙楷",
+      "source": "江西拙楷",
+      "group": "kai",
+      "family": "jiangxizhuokai",
+      "css": "https://cdn.jsdelivr.net/npm/@chinese-fonts/jxzk@3.0.0/dist/江西拙楷/result.css",
+      "license": {
+        "name": "免费商用（作者声明）",
+        "commercial": "yes",
+        "attribution": false,
+        "url": "https://www.maoken.com/freefonts/1438.html",
+        "commercialLabel": "免费商用",
+        "grade": "二手",
+        "note": "作者＝黄煜臣；原文仅「免费提供…任何传播渠道」"
+      },
+      "coverage": "gb2312",
+      "use": "拙朴手写楷，全场最百搭的一款；长标题、清单、正文标题都行",
+      "avoid": "需要精致感的高端品牌稿",
+      "cjkCount": 6055
+    },
+    {
+      "id": "chengrong-guangke",
+      "zh": "程荣光刻楷",
+      "source": "程荣光",
+      "group": "kai",
+      "family": "chengrongguangke",
+      "css": "https://cdn.jsdelivr.net/npm/@chinese-fonts/crgkk@2.0.0/dist/程荣光刻楷/result.css",
+      "license": {
+        "name": "免费商用（作者声明）",
+        "commercial": "yes",
+        "attribution": false,
+        "url": "https://www.wenlanming.com/Resources/367.html",
+        "commercialLabel": "免费商用",
+        "grade": "官方",
+        "note": "不可用于商标、转售品、嵌入式用途；转载字体文件须标注出处"
+      },
+      "coverage": "gb2312",
+      "use": "带刻版味的楷书，厚重稳定；历史、匠人、手作、器物",
+      "avoid": "轻快生活流",
+      "cjkCount": 6769
+    },
+    {
+      "id": "xuandong-kai",
+      "zh": "玄冬楷书",
+      "source": "玄冬",
+      "group": "kai",
+      "family": "XuandongKaishu",
+      "css": "https://cdn.jsdelivr.net/npm/@chinese-fonts/xuandongkaishu@3.0.0/dist/XuandongKaishu/result.css",
+      "license": {
+        "name": "免费商用（作者声明）",
+        "commercial": "yes",
+        "attribution": false,
+        "url": "https://raw.githubusercontent.com/Skr-ZERO/Xuandong-Kaishu/main/README.md",
+        "commercialLabel": "免费商用",
+        "grade": "官方",
+        "note": "OFL 1.1 + 不得变相收费；衍生名不得用「玄冬/Xuandong」；仓库无 LICENSE 文件"
+      },
+      "coverage": "gb2312",
+      "use": "清秀楷书，笔画干净；书摘、课程、知识卡片",
+      "avoid": "需要毛笔飞白的场景",
+      "cjkCount": 6775
+    },
+    {
+      "id": "yanshi-youran",
+      "zh": "演示悠然小楷",
+      "source": "演示字体",
+      "group": "kai",
+      "family": "slideyouran",
+      "css": "https://cdn.jsdelivr.net/npm/@chinese-fonts/ysyrxk@3.0.0/dist/slideyouran-Regular2_0/result.css",
+      "license": {
+        "name": "免费商用（作者/字库声明）",
+        "url": "https://www.maoken.com/freefonts/3521.html",
+        "commercial": "yes",
+        "commercialLabel": "免费商用",
+        "grade": "二手",
+        "note": "不可修改/衍生；不可用于商标、转售品、嵌入式用途",
+        "attribution": false
+      },
+      "coverage": "gb2312",
+      "use": "小楷，安静克制；长文标题、诗笺、日签",
+      "avoid": "极短强钩子（气势不够）",
+      "cjkCount": 6766
+    },
+    {
+      "id": "yanshi-qiuhong",
+      "zh": "演示秋鸿楷",
+      "source": "演示字体",
+      "group": "kai",
+      "family": "Slideqiuhong",
+      "css": "https://cdn.jsdelivr.net/npm/cn-fontsource-slideqiuhong-regular/font.css",
+      "license": {
+        "name": "免费商用（演示字体声明）",
+        "commercial": "yes",
+        "attribution": false,
+        "url": "https://www.maoken.com/wp-json/wp/v2/posts/6094",
+        "commercialLabel": "免费商用",
+        "grade": "二手",
+        "note": "同演示字体授权文本；全媒体免费可商用"
+      },
+      "coverage": "gb2312",
+      "use": "半手工楷，介于楷与宋之间；教程、笔记、科普",
+      "avoid": "潮流/年轻化内容",
+      "cjkCount": 9119
+    },
+    {
+      "id": "moon-stars-kai",
+      "zh": "月星楷",
+      "source": "月星楷",
+      "group": "kai",
+      "family": "Moon Stars Kai",
+      "css": "https://cdn.jsdelivr.net/npm/@chinese-fonts/moon-stars-kai@2.0.0/dist/MoonStarsKai-Regular/result.css",
+      "license": {
+        "name": "免费商用（作者声明）",
+        "commercial": "yes",
+        "attribution": false,
+        "url": "https://raw.githubusercontent.com/GuiWonder/MoonStarsKai/main/README-SC.md",
+        "commercialLabel": "免费商用",
+        "grade": "OFL",
+        "note": "OFL 1.1；不得单独出售"
+      },
+      "coverage": "extended",
+      "use": "带毛笔味的楷书，比拙楷更规整；正式但不僵",
+      "avoid": "超长标题（笔画较粗）",
+      "cjkCount": 15518
+    },
+    {
+      "id": "huangyinqi-zhaopai",
+      "zh": "黄引齐招牌体",
+      "source": "黄引齐",
+      "group": "sign",
+      "family": "huangyinqi zhaopai",
+      "css": "https://cdn.jsdelivr.net/npm/@chinese-fonts/hyqzp@3.0.0/dist/黄引齐招牌体/result.css",
+      "license": {
+        "name": "免费商用（作者声明）",
+        "commercial": "conditional",
+        "attribution": false,
+        "url": "https://www.maoken.com/wp-json/wp/v2/posts/915",
+        "commercialLabel": "有条件商用",
+        "grade": "二手",
+        "note": "官网只承诺「个人免费商用」，企业授权仅有截图；官网 2013 年后不可达"
+      },
+      "coverage": "gb2312",
+      "use": "老招牌字，最接近剪映「花体字」气质；餐饮、小店、探店、年货",
+      "avoid": "科技/理性内容",
+      "cjkCount": 6763
+    },
+    {
+      "id": "qiji",
+      "zh": "黄令东齐伋体",
+      "source": "黄令东",
+      "group": "sign",
+      "family": "QIJIFALLBACK",
+      "css": "https://cdn.jsdelivr.net/npm/@chinese-fonts/hldqjt@3.0.0/dist/qiji-fallback/result.css",
+      "license": {
+        "name": "免费商用（作者声明）",
+        "commercial": "yes",
+        "attribution": false,
+        "url": "https://raw.githubusercontent.com/LingDong-/qiji-font/master/LICENSE",
+        "commercialLabel": "免费商用",
+        "grade": "OFL",
+        "note": "OFL 1.1，Reserved Font Name = QIJI（修改版禁用该名）"
+      },
+      "coverage": "gbk",
+      "use": "康熙字典木刻风，古书气极强；古籍、中医、茶道、国风封面",
+      "avoid": "现代商务内容",
+      "cjkCount": 20970
+    },
+    {
+      "id": "pingfang-langya",
+      "zh": "平方赖江湖琅琊体",
+      "source": "平方字库",
+      "group": "sign",
+      "family": "平方赖江湖琅琊体",
+      "css": "https://cdn.jsdelivr.net/npm/@chinese-fonts/pfljhlyt@3.0.0/dist/平方赖江湖琅琊体/result.css",
+      "license": {
+        "name": "免费商用（平方字库声明）",
+        "commercial": "yes",
+        "attribution": false,
+        "url": "https://www.maoken.com/wp-json/wp/v2/posts/21830",
+        "commercialLabel": "免费商用",
+        "grade": "二手",
+        "note": "不允许修改/衍生；禁止出售字库；商标/嵌入两源冲突"
+      },
+      "coverage": "gb2312",
+      "use": "江湖气花体，笔画外扩；武侠、游戏、江湖叙事、热血管",
+      "avoid": "安静/高级感内容",
+      "cjkCount": 6763
+    },
+    {
+      "id": "pingfang-feiyang",
+      "zh": "平方赖江湖飞扬体",
+      "source": "平方字库",
+      "group": "sign",
+      "family": "平方赖江湖飞扬体",
+      "css": "https://cdn.jsdelivr.net/npm/@chinese-fonts/pfljhfyt@3.0.0/dist/PingFangLaiJiangHuFeiYangTi-2/result.css",
+      "license": {
+        "name": "免费商用（平方字库声明）",
+        "commercial": "yes",
+        "attribution": false,
+        "url": "https://www.maoken.com/wp-json/wp/v2/posts/21710",
+        "commercialLabel": "免费商用",
+        "grade": "二手",
+        "note": "同平方赖江湖系条款"
+      },
+      "coverage": "gb2312",
+      "use": "飞扬体，比琅琊体更飘逸；国潮、节庆、新品发布",
+      "avoid": "数据密度高的页面",
+      "cjkCount": 6763
+    },
+    {
+      "id": "runzhijia-kangxi",
+      "zh": "润植家康熙字典美化体",
+      "source": "润植家",
+      "group": "sign",
+      "family": "nzgrKangxi",
+      "css": "https://cdn.jsdelivr.net/npm/@chinese-fonts/rzjkxzdmh@3.0.0/dist/nzgrKangxi/result.css",
+      "license": {
+        "name": "免费商用（润植家声明）",
+        "commercial": "conditional",
+        "attribution": false,
+        "url": "https://www.maoken.com/freefonts/13203.html",
+        "commercialLabel": "有条件商用",
+        "grade": "二手",
+        "note": "商用前提：关注公众号；仅最新版（Ver 1.36）在承诺内"
+      },
+      "coverage": "gb2312",
+      "use": "康熙字典字形，笔画瘦挺；文博、典籍、书法教学",
+      "avoid": "现代/年轻内容",
+      "cjkCount": 6931
+    },
+    {
+      "id": "feihua-song",
+      "zh": "飞花宋体",
+      "source": "飞花宋体",
+      "group": "sign",
+      "family": "FlyFlowerSong",
+      "css": "https://cdn.jsdelivr.net/npm/@chinese-fonts/fhst@3.0.0/dist/飞花宋体/result.css",
+      "license": {
+        "name": "免费商用（作者声明）",
+        "commercial": "yes",
+        "attribution": false,
+        "url": "https://raw.githubusercontent.com/Skr-ZERO/FlyFlowerSong/main/README.md",
+        "commercialLabel": "免费商用",
+        "grade": "官方",
+        "note": "非 OFL 自定义条款；禁变相收费；衍生名不得含「飞花/FlyFlower」；仓库无 LICENSE"
+      },
+      "coverage": "extended",
+      "use": "带装饰笔锋的宋体；文艺标题、影评、乐评、散文",
+      "avoid": "强冲击封面（气质偏柔）",
+      "cjkCount": 10211
+    },
+    {
+      "id": "zihun-biantaoti",
+      "zh": "字魂扁桃体",
+      "source": "字魂",
+      "group": "sign",
+      "family": "zihunbiantaoti",
+      "css": "https://cdn.jsdelivr.net/npm/@chinese-fonts/zhbtt@3.0.0/dist/字魂扁桃体/result.css",
+      "license": {
+        "name": "免费商用（字魂免费商用字库声明）",
+        "commercial": "yes",
+        "attribution": false,
+        "url": "https://izihun.com/shangyongziti/7495.html",
+        "commercialLabel": "免费商用",
+        "grade": "OFL",
+        "note": "得意黑二创，官方称开源免费商用；官网通用弹窗仍写「禁止商用」"
+      },
+      "coverage": "gb2312",
+      "use": "圆胖粗标题，亲和又有力；美食、萌宠、生活方式",
+      "avoid": "严肃/专业内容",
+      "cjkCount": 6766
+    },
+    {
+      "id": "kuaikan-shijie",
+      "zh": "快看世界体",
+      "source": "快看漫画",
+      "group": "sign",
+      "family": "快看世界体",
+      "css": "https://cdn.jsdelivr.net/npm/@chinese-fonts/kksjt@3.0.0/dist/kuaikanshijieti20231213/result.css",
+      "license": {
+        "name": "免费商用（快看漫画声明）",
+        "commercial": "yes",
+        "attribution": false,
+        "url": "https://www.kuaikanmanhua.com/webs/fontPromotion",
+        "commercialLabel": "免费商用",
+        "grade": "官方",
+        "note": "不可转让；不得上传转载字库文件；不得单独出售/出租/转授权"
+      },
+      "coverage": "gb2312",
+      "use": "漫画感粗标题；二次元、游戏、追番、年轻向",
+      "avoid": "商务、政务、金融",
+      "cjkCount": 6765
+    },
+    {
+      "id": "tiejili",
+      "zh": "铁蒺藜体",
+      "source": "铁蒺藜",
+      "group": "sign",
+      "family": "Tiejili",
+      "css": "https://cdn.jsdelivr.net/npm/@chinese-fonts/tjl@3.0.0/dist/Tiejili_Regular/result.css",
+      "license": {
+        "name": "免费商用（作者声明）",
+        "commercial": "yes",
+        "attribution": false,
+        "url": "https://raw.githubusercontent.com/Buernia/Tiejili/main/LICENSE",
+        "commercialLabel": "免费商用",
+        "grade": "OFL",
+        "note": "OFL 1.1；不得单独出售"
+      },
+      "coverage": "extended",
+      "use": "瘦长带刺的装饰体；先锋、设计、潮流、艺术展",
+      "avoid": "温和生活流",
+      "cjkCount": 11200
+    },
+    {
+      "id": "sucaijishi-shehui",
+      "zh": "素材集市社会体",
+      "source": "素材集市",
+      "group": "sign",
+      "family": "SuCaiJiShi-SheHuiTi",
+      "css": "https://cdn.jsdelivr.net/npm/@chinese-fonts/scjssh@3.0.0/dist/素材集市社会体/result.css",
+      "license": {
+        "name": "免费商用（素材集市声明）",
+        "commercial": "yes",
+        "attribution": false,
+        "url": "https://www.sucaijishi.com/font-37-1646-1.html",
+        "commercialLabel": "免费商用",
+        "grade": "OFL",
+        "note": "OFL 1.1（思源黑体衍生），个人企业均可自由商用"
+      },
+      "coverage": "gb2312",
+      "use": "复古标语体；怀旧、年代感、老广告、市井叙事",
+      "avoid": "清新/极简内容",
+      "cjkCount": 6763
+    },
+    {
+      "id": "zhulang-mengya",
+      "zh": "逐浪萌芽字",
+      "source": "逐浪字库",
+      "group": "sign",
+      "family": "ZoomlaMengyas-A080",
+      "css": "https://cdn.jsdelivr.net/npm/@chinese-fonts/zlmyz@3.0.0/dist/逐浪萌芽字/result.css",
+      "license": {
+        "name": "免费商用（逐浪字库声明）",
+        "commercial": "yes",
+        "attribution": false,
+        "url": "https://raw.githubusercontent.com/z01font/ZoomlaMengyas/main/README.md",
+        "commercialLabel": "免费商用",
+        "grade": "OFL",
+        "note": "OFL 1.1（逐浪官方仓库明示）"
+      },
+      "coverage": "gb2312",
+      "use": "方头卡通体；母婴、手作、萌系、日常分享",
+      "avoid": "严肃商业内容",
+      "cjkCount": 7171
+    },
+    {
+      "id": "jingnan-junjun",
+      "zh": "荆南俊俊体",
+      "source": "荆南",
+      "group": "sign",
+      "family": "荆南俊俊体",
+      "css": "https://cdn.jsdelivr.net/npm/@chinese-fonts/jnjj@3.0.0/dist/JUNJUN/result.css",
+      "license": {
+        "name": "免费商用（作者声明）",
+        "commercial": "unverified",
+        "attribution": false,
+        "url": "https://www.maoken.com/freefonts/17414.html",
+        "commercialLabel": "未核实",
+        "grade": "二手",
+        "note": "无任何正式许可证文本；仅猫啃「作者声明」标签"
+      },
+      "coverage": "gb2312",
+      "use": "粗犷有力，笔画方正；国潮、运动、街头、话题封面",
+      "avoid": "细腻文艺内容",
+      "cjkCount": 6865
+    },
+    {
+      "id": "douyu-zhuiguang",
+      "zh": "斗鱼追光体",
+      "source": "斗鱼",
+      "group": "sign",
+      "family": "DOUYU Font",
+      "css": "https://cdn.jsdelivr.net/npm/@chinese-fonts/dyzgt@3.0.0/dist/斗鱼追光体/result.css",
+      "license": {
+        "name": "免费商用（斗鱼声明）",
+        "commercial": "yes",
+        "attribution": false,
+        "url": "https://www.douyu.com/topic/douyuZGT",
+        "commercialLabel": "免费商用",
+        "grade": "官方",
+        "note": "允许个人企业免费商用；禁止用于商标注册"
+      },
+      "coverage": "gb2312",
+      "use": "重黑带斜切，比赛/直播感；电竞、直播、赛事、活动",
+      "avoid": "安静阅读类内容",
+      "cjkCount": 6883
+    },
+    {
+      "id": "qiantu-bifeng",
+      "zh": "千图笔锋手写体",
+      "source": "千图网",
+      "group": "hand",
+      "family": "qiantubifengshouxieti",
+      "css": "https://cdn.jsdelivr.net/npm/@chinese-fonts/qtbfsxt@3.0.0/dist/千图笔锋手写体/result.css",
+      "license": {
+        "name": "免费商用（千图网声明）",
+        "commercial": "yes",
+        "attribution": false,
+        "url": "https://www.58pic.com/index.php?m=qtwFontPage&a=index",
+        "commercialLabel": "免费商用",
+        "grade": "官方",
+        "note": "千图公益字体，全渠道商用；不得出售使用权或改字牟利"
+      },
+      "coverage": "gb2312",
+      "use": "硬笔带笔锋，日常手写感最强；Vlog、日常、随手记、日记",
+      "avoid": "需要庄重感的场合",
+      "cjkCount": 6763
+    },
+    {
+      "id": "bailu-bangbang",
+      "zh": "白路棒棒手写体",
+      "source": "白路",
+      "group": "hand",
+      "family": "bailubangbangshouxieti",
+      "css": "https://cdn.jsdelivr.net/npm/@chinese-fonts/blbbsxt@2.0.0/dist/白路棒棒手写体/result.css",
+      "license": {
+        "name": "免费商用（作者声明）",
+        "commercial": "yes",
+        "attribution": false,
+        "url": "https://www.zcool.com.cn/assets/7285916543542652451.html",
+        "commercialLabel": "免费商用",
+        "grade": "作者声明",
+        "note": "站酷「新媒体授权」不得用于商品包装/外观标识"
+      },
+      "coverage": "gb2312",
+      "use": "圆头马克笔手写；学生、手账、贴纸感、可爱日常",
+      "avoid": "正式场合",
+      "cjkCount": 6770
+    },
+    {
+      "id": "honglei-zhuoshu",
+      "zh": "鸿雷拙书",
+      "source": "鸿雷",
+      "group": "hand",
+      "family": "HongLeiZhuoShu",
+      "css": "https://cdn.jsdelivr.net/npm/cn-fontsource-hong-lei-zhuo-shu-regular/font.css",
+      "license": {
+        "name": "免费商用（作者/字库声明）",
+        "url": "https://www.maoken.com/freefonts/17746.html",
+        "commercial": "yes",
+        "commercialLabel": "免费商用",
+        "grade": "二手",
+        "note": "作者原文：「任何途径免费商用，禁止第三方转售或盈利」",
+        "attribution": false
+      },
+      "coverage": "gb2312",
+      "use": "拙趣手写，笔画粗细自然；随笔、读后感、慢生活",
+      "avoid": "数据/图表页面",
+      "cjkCount": 9588
+    },
+    {
+      "id": "yanshi-foxi",
+      "zh": "演示佛系体",
+      "source": "演示字体",
+      "group": "hand",
+      "family": "Slidefu",
+      "css": "https://cdn.jsdelivr.net/npm/cn-fontsource-slidefu-regular/font.css",
+      "license": {
+        "name": "免费商用（作者/字库声明）",
+        "url": "https://www.maoken.com/wp-json/wp/v2/posts/3398",
+        "commercial": "yes",
+        "commercialLabel": "免费商用",
+        "grade": "二手",
+        "note": "商标/嵌入式两源冲突（100font 称不可，猫啃称可）",
+        "attribution": false
+      },
+      "coverage": "gb2312",
+      "use": "极细单线手写，安静；治愈、冥想、深夜、情绪文案",
+      "avoid": "小字号（太细会消失）",
+      "cjkCount": 9116
+    },
+    {
+      "id": "zizhiqu-smile",
+      "zh": "字制区喜脉喜欢体",
+      "source": "字制区",
+      "group": "hand",
+      "family": "FontQu Smile 常规",
+      "css": "https://cdn.jsdelivr.net/npm/@chinese-fonts/zzqxmxht@3.0.0/dist/字制区喜脉喜欢体/result.css",
+      "license": {
+        "name": "免费商用（字制区声明）",
+        "commercial": "yes",
+        "attribution": false,
+        "url": "https://www.100font.com/thread-654.htm",
+        "commercialLabel": "免费商用",
+        "grade": "二手",
+        "note": "不可修改/衍生；不可用于商标、转售品、嵌入式用途"
+      },
+      "coverage": "gb2312",
+      "use": "轻盈手写体；情绪文案、恋爱、日常碎碎念",
+      "avoid": "商业/专业内容",
+      "cjkCount": 7374
+    },
+    {
+      "id": "zcool-kuaile",
+      "zh": "站酷快乐体",
+      "source": "站酷 / Google Fonts",
+      "group": "hand",
+      "family": "ZCOOL KuaiLe",
+      "css": "https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&display=swap",
+      "license": {
+        "name": "免费商用（站酷声明，Google Fonts 托管）",
+        "commercial": "yes",
+        "attribution": false,
+        "url": "https://raw.githubusercontent.com/google/fonts/main/ofl/zcoolkuaile/OFL.txt",
+        "commercialLabel": "免费商用",
+        "grade": "OFL",
+        "note": "须用 Google OFL 版；站酷原版声明不得改名/转售牟利"
+      },
+      "coverage": "extended",
+      "use": "经典可爱粗体；美食、探店、育儿、萌系",
+      "avoid": "高端/极简",
+      "cjkCount": 12258
+    },
+    {
+      "id": "zcool-qingke",
+      "zh": "站酷庆科黄油体",
+      "source": "站酷 / Google Fonts",
+      "group": "hand",
+      "family": "ZCOOL QingKe HuangYou",
+      "css": "https://fonts.googleapis.com/css2?family=ZCOOL+QingKe+HuangYou&display=swap",
+      "license": {
+        "name": "免费商用（站酷声明，Google Fonts 托管）",
+        "commercial": "yes",
+        "attribution": false,
+        "url": "https://raw.githubusercontent.com/google/fonts/main/ofl/zcoolqingkehuangyou/OFL.txt",
+        "commercialLabel": "免费商用",
+        "grade": "OFL",
+        "note": "须用 Google OFL 版；站酷原版不得改名/转售牟利"
+      },
+      "coverage": "extended",
+      "use": "圆润黄油感，粗而软；美食、奶茶、甜点、促销",
+      "avoid": "严肃内容",
+      "cjkCount": 12258
+    },
+    {
+      "id": "zcool-xiaowei",
+      "zh": "站酷小薇体",
+      "source": "站酷 / Google Fonts",
+      "group": "hand",
+      "family": "ZCOOL XiaoWei",
+      "css": "https://fonts.googleapis.com/css2?family=ZCOOL+XiaoWei&display=swap",
+      "license": {
+        "name": "免费商用（站酷声明，Google Fonts 托管）",
+        "commercial": "yes",
+        "attribution": false,
+        "url": "https://raw.githubusercontent.com/google/fonts/main/ofl/zcoolxiaowei/OFL.txt",
+        "commercialLabel": "免费商用",
+        "grade": "OFL",
+        "note": "须用 Google OFL 版；站酷侧无该字体独立页"
+      },
+      "coverage": "extended",
+      "use": "纤细优雅的手写宋；女性、时尚、美妆、生活方式",
+      "avoid": "力量感标题",
+      "cjkCount": 12258
+    },
+    {
+      "id": "zcool-xiaowei-logo",
+      "zh": "站酷小薇 LOGO 体",
+      "source": "站酷",
+      "group": "hand",
+      "family": "xiaowei",
+      "css": "https://cdn.jsdelivr.net/npm/@chinese-fonts/zkxw@3.0.0/dist/站酷小薇LOGO体_猫啃网/result.css",
+      "license": {
+        "name": "免费商用（站酷声明）",
+        "commercial": "yes",
+        "attribution": false,
+        "url": "https://www.zcool.com.cn/assets/7285916537935119172.html",
+        "commercialLabel": "免费商用",
+        "grade": "官方",
+        "note": "站酷免费授权全社会使用（含商用）；不得改名；不得转售牟利"
+      },
+      "coverage": "gb2312",
+      "use": "小薇体的 LOGO 变体，字面更紧；品牌名、栏目名、小标题",
+      "avoid": "长句正文",
+      "cjkCount": 6763
+    },
+    {
+      "id": "maoken-zhuyuan",
+      "zh": "猫啃珠圆体",
+      "source": "猫啃网",
+      "group": "hand",
+      "family": "MaokenZhuyuanTi",
+      "css": "https://cdn.jsdelivr.net/npm/@chinese-fonts/mkzyt@3.0.0/dist/猫啃珠圆体/result.css",
+      "license": {
+        "name": "免费商用（猫啃网声明）",
+        "commercial": "yes",
+        "attribution": false,
+        "url": "https://www.maoken.com/freefonts/17948.html",
+        "commercialLabel": "免费商用",
+        "grade": "OFL",
+        "note": "OFL 1.1（标小智龙珠体衍生）；未声明 Reserved Font Name"
+      },
+      "coverage": "extended",
+      "use": "珠圆玉润的圆体；可爱、萌宠、甜品、儿童",
+      "avoid": "商务/科技",
+      "cjkCount": 10600
+    },
+    {
+      "id": "rii-tegaki-fude",
+      "zh": "理衣手写体",
+      "source": "Rii Font（日系）",
+      "group": "hand",
+      "family": "RiiTegakiFude",
+      "css": "https://cdn.jsdelivr.net/npm/cn-fontsource-rii-tegaki-fude-regular/font.css",
+      "license": {
+        "name": "免费商用（作者/字库声明）",
+        "url": "http://aoirii.babyblue.jp/font/kiyaku.htm",
+        "commercial": "yes",
+        "commercialLabel": "免费商用",
+        "grade": "官方",
+        "note": "禁转载/再分发/销售/改変字体文件；不可用于商标・意匠登录",
+        "attribution": false
+      },
+      "coverage": "extended",
+      "use": "复古钢笔手写，日系杂货感；手作、文具、咖啡、旅行",
+      "avoid": "强势标题",
+      "cjkCount": 10992
+    },
+    {
+      "id": "rii-popkaku",
+      "zh": "梨沙 POP 体",
+      "source": "Rii Font（日系）",
+      "group": "hand",
+      "family": "RiiPopkaku-R",
+      "css": "https://cdn.jsdelivr.net/npm/cn-fontsource-rii-popkaku-r-regular/font.css",
+      "license": {
+        "name": "免费商用（作者/字库声明）",
+        "url": "http://aoirii.babyblue.jp/font/kiyaku.htm",
+        "commercial": "yes",
+        "commercialLabel": "免费商用",
+        "grade": "官方",
+        "note": "同作者同一规约；禁转载/再分发/销售/改変字体文件",
+        "attribution": false
+      },
+      "coverage": "extended",
+      "use": "日系 POP 手写；杂货、市集、小店铺、活动海报",
+      "avoid": "企业/金融",
+      "cjkCount": 10992
+    },
+    {
+      "id": "hanazome",
+      "zh": "花中字体",
+      "source": "Hanazome（日系）",
+      "group": "hand",
+      "family": "HanazomeFont",
+      "css": "https://cdn.jsdelivr.net/npm/cn-fontsource-hanazome-font-regular/font.css",
+      "license": {
+        "name": "免费商用（作者/字库声明）",
+        "url": "https://www.asterism-m.com/font/hanazomefont/",
+        "commercial": "yes",
+        "commercialLabel": "免费商用",
+        "grade": "官方",
+        "note": "禁改変字体数据；禁 LINE 絵文字；禁「以文字为主体的制作物」的配布・販売",
+        "attribution": false
+      },
+      "coverage": "extended",
+      "use": "圆润可爱手写，字面饱满；美食、萌系、节日、亲子",
+      "avoid": "严肃内容",
+      "cjkCount": 15791
+    },
+    {
+      "id": "mdmd-wufeng",
+      "zh": "明达无锋体",
+      "source": "明达",
+      "group": "hand",
+      "family": "MDMD-WuFengTi",
+      "css": "https://cdn.jsdelivr.net/npm/cn-fontsource-mdmd-wu-feng-ti-regular/font.css",
+      "license": {
+        "name": "免费商用（作者/字库声明）",
+        "url": "https://mingdawoo.com/fonts/wu_feng_ti/license.html",
+        "commercial": "yes",
+        "commercialLabel": "免费商用",
+        "grade": "OFL",
+        "note": "官方明示 SIL OFL 1.1，可直接用于个人和商业用途",
+        "attribution": false
+      },
+      "coverage": "gb2312",
+      "use": "无锋钝笔手写，毛边感；文艺、散文、生活记录",
+      "avoid": "数据/工具类",
+      "cjkCount": 9119
+    },
+    {
+      "id": "yozai",
+      "zh": "悠哉字体",
+      "source": "Yozai",
+      "group": "hand",
+      "family": "Yozai",
+      "css": "https://cdn.jsdelivr.net/npm/@chinese-fonts/yozai@3.0.0/dist/Yozai-Regular/result.css",
+      "license": {
+        "name": "SIL Open Font License 1.1",
+        "commercial": "yes",
+        "attribution": false,
+        "url": "https://raw.githubusercontent.com/lxgw/yozai-font/master/OFL.txt",
+        "commercialLabel": "免费商用",
+        "grade": "OFL",
+        "note": "OFL 1.1，Reserved Font Name = Y.Oz / YOz"
+      },
+      "coverage": "extended",
+      "use": "基于 Y.OzFont 的手写体，字形齐全（20905 字）；长文标题也安全",
+      "avoid": "需要锋利笔锋时",
+      "cjkCount": 17629
+    },
+    {
+      "id": "xiaolai",
+      "zh": "小赖体",
+      "source": "小赖字体",
+      "group": "hand",
+      "family": "Xiaolai SC",
+      "css": "https://cdn.jsdelivr.net/npm/@chinese-fonts/xiaolai@3.0.0/dist/Xiaolai/result.css",
+      "license": {
+        "name": "SIL Open Font License 1.1",
+        "commercial": "yes",
+        "attribution": false,
+        "url": "https://raw.githubusercontent.com/lxgw/kose-font/master/OFL.txt",
+        "commercialLabel": "免费商用",
+        "grade": "OFL",
+        "note": "OFL 1.1；上游瀬户字体亦为 OFL-1.1，无继承冲突"
+      },
+      "coverage": "gbk",
+      "use": "濑户字体简体化，圆润手写，字数最全（44246）；生僻字安全牌",
+      "avoid": "需要强烈个性时",
+      "cjkCount": 20949
+    },
+    {
+      "id": "write-right",
+      "zh": "就是不错字",
+      "source": "就是不错字",
+      "group": "hand",
+      "family": "The Write Right Font",
+      "css": "https://cdn.jsdelivr.net/npm/@chinese-fonts/the-write-right-font@2.0.0/dist/the-write-right-font-2023_0401/result.css",
+      "license": {
+        "name": "免费商用（作者声明）",
+        "commercial": "yes",
+        "attribution": false,
+        "url": "https://raw.githubusercontent.com/justfont/The-Write-Right-Font/master/OFL.txt",
+        "commercialLabel": "免费商用",
+        "grade": "OFL",
+        "note": "OFL 1.1（justfont 官方）；不可将字体作为产品贩卖"
+      },
+      "coverage": "gb2312",
+      "use": "随手写字迹，真实感强；个人化、聊天记录、手写批注",
+      "avoid": "品牌正式稿",
+      "cjkCount": 9494
+    },
+    {
+      "id": "yefont-xiaoshitou",
+      "zh": "也字工厂小石头",
+      "source": "也字工厂",
+      "group": "hand",
+      "family": "YEFONTXiaoShiTou",
+      "css": "https://cdn.jsdelivr.net/npm/@chinese-fonts/yzgcxst@3.0.0/dist/也字工厂小石头/result.css",
+      "license": {
+        "name": "免费商用（也字工厂声明）",
+        "commercial": "yes",
+        "attribution": false,
+        "url": "https://www.100font.com/thread-639.htm",
+        "commercialLabel": "免费商用",
+        "grade": "二手",
+        "note": "不可修改/衍生；不可用于商标、转售品、嵌入式用途"
+      },
+      "coverage": "gb2312",
+      "use": "圆胖可爱；儿童、萌宠、萌系插画配字",
+      "avoid": "商务内容",
+      "cjkCount": 9169
+    },
+    {
+      "id": "baiwuchang-keke",
+      "zh": "白无常可可体",
+      "source": "白无常",
+      "group": "hand",
+      "family": "BWCKKT",
+      "css": "https://cdn.jsdelivr.net/npm/@chinese-fonts/bwckkt@3.0.0/dist/白无常可可体-Regular/result.css",
+      "license": {
+        "name": "免费商用（作者声明）",
+        "commercial": "unverified",
+        "attribution": false,
+        "url": "https://www.zitijia.com/i/364710867549310009.html",
+        "commercialLabel": "未核实",
+        "grade": "二手",
+        "note": "官方原文不可读；「商用后向支付宝公益捐 1 元」是否强制不明；另有冲突声明称仅限个人学习"
+      },
+      "coverage": "gb2312",
+      "use": "圆润俏皮，三字重可选（Light/Regular/Bold）；可爱但不幼稚",
+      "avoid": "严肃/专业",
+      "cjkCount": 6763
+    },
+    {
+      "id": "youqu",
+      "zh": "游趣体",
+      "source": "游趣体",
+      "group": "hand",
+      "family": "Child Fun Sans Demo",
+      "css": "https://cdn.jsdelivr.net/npm/@chinese-fonts/yqt@2.0.0/dist/ChildFunSans-Demo/result.css",
+      "license": {
+        "name": "免费商用（作者声明）",
+        "commercial": "yes",
+        "attribution": false,
+        "url": "https://raw.githubusercontent.com/Des-Magmeta/ChildFunSans/main/OFL.txt",
+        "commercialLabel": "免费商用",
+        "grade": "OFL",
+        "note": "OFL 1.1，Reserved Font Name = 游趣体 / 遊趣體 / Child Fun Sans"
+      },
+      "coverage": "gb2312",
+      "use": "手写趣味体；游戏、休闲、轻科普、轻松话题",
+      "avoid": "正式汇报",
+      "cjkCount": 8209
+    },
+    {
+      "id": "pingfang-mengmengda",
+      "zh": "平方萌萌哒",
+      "source": "平方字库",
+      "group": "hand",
+      "family": "PING FANG MENG MNEG DA",
+      "css": "https://cdn.jsdelivr.net/npm/@chinese-fonts/pfmmd@3.0.0/dist/平方萌萌哒/result.css",
+      "license": {
+        "name": "免费商用（平方字库声明）",
+        "commercial": "yes",
+        "attribution": false,
+        "url": "https://www.maoken.com/wp-json/wp/v2/posts/21985",
+        "commercialLabel": "免费商用",
+        "grade": "二手",
+        "note": "同平方系条款；官方站不可访问"
+      },
+      "coverage": "gb2312",
+      "use": "萌系圆体；母婴、宠物、甜品、少女向",
+      "avoid": "男性/硬核向",
+      "cjkCount": 6766
+    },
+    {
+      "id": "pingfang-gongzi",
+      "zh": "平方公子体",
+      "source": "平方字库",
+      "group": "hand",
+      "family": "PING FANG GONG ZI TI",
+      "css": "https://cdn.jsdelivr.net/npm/@chinese-fonts/pfgzt@3.0.0/dist/平方公子体/result.css",
+      "license": {
+        "name": "免费商用（平方字库声明）",
+        "commercial": "unverified",
+        "attribution": false,
+        "url": "https://www.maoken.com/wp-json/wp/v2/posts/21869",
+        "commercialLabel": "未核实",
+        "grade": "二手",
+        "note": "猫啃该页「授权出处」只写猫啃网自身，无可核官方链接"
+      },
+      "coverage": "gb2312",
+      "use": "文艺手写带设计感；旅行、咖啡、书单、生活方式",
+      "avoid": "数据密度高的页面",
+      "cjkCount": 6765
+    }
+  ]
+}

@@ -7,6 +7,32 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600;700&family=Noto+Sans+SC:wght@200;300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+  <!-- ===== FONT LIBRARY · 花体字（Swiss 封面例外，默认关闭）=============
+       Swiss 默认不加载任何衬线/书法字体（style-system.md Identity Test #2）。
+       只有用户明确要求「花体字 / 毛笔字 / 书法感标题」时才启用这个例外：
+         1. 取消下面 FONT_LIBRARY_SWISS_CARVE_OUT 区块的注释；
+         2. 在 <html> 上加 data-title-font="brush|running|kai|sign|hand"；
+         3. 花体字只允许出现在第一张封面 poster 的 .h-hero / .h-statement 上，
+            不得进入任何内容页、.h-xl 及以下、正文/lead/label/meta。
+       边界由 validate-social-deck.mjs 的 R10 强制。
+       完整清单与授权：references/font-library.md 第 9 节。 -->
+  <!-- FONT_LIBRARY_SWISS_CARVE_OUT
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&display=swap">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@chinese-fonts/cezkzdbs@3.0.0/dist/仓耳周珂正大榜书/result.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Liu+Jian+Mao+Cao&display=swap">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@chinese-fonts/zqzmxs@3.0.0/dist/钟齐志莽行书/result.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@chinese-fonts/sft@3.0.0/dist/随峰体/result.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@chinese-fonts/jxzk@3.0.0/dist/江西拙楷/result.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@chinese-fonts/moon-stars-kai@2.0.0/dist/MoonStarsKai-Regular/result.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@chinese-fonts/xuandongkaishu@3.0.0/dist/XuandongKaishu/result.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@chinese-fonts/hldqjt@3.0.0/dist/qiji-fallback/result.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@chinese-fonts/tjl@3.0.0/dist/Tiejili_Regular/result.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@chinese-fonts/scjssh@3.0.0/dist/素材集市社会体/result.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@chinese-fonts/qtbfsxt@3.0.0/dist/千图笔锋手写体/result.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&display=swap">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@chinese-fonts/yozai@3.0.0/dist/Yozai-Regular/result.css">
+  -->
+
   <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
   <style>
     /* =========================================================
@@ -20,6 +46,10 @@
 
        Accent switching via <html data-accent="…">:
          ikb (Klein Blue) | lemon-yellow | lemon-green | safety-orange
+
+       Cover-title carve-out (optional, OFF by default) via
+       <html data-title-font="…"> + uncommenting FONT_LIBRARY_SWISS_CARVE_OUT:
+         brush | running | kai | sign | hand   → 仅封面主标题改用花体字
 
        Fill posters where marked <!-- POSTERS_HERE -->.
        Each poster carries one Layout Recipe (S01-S12) from
@@ -72,6 +102,15 @@
       --sans-zh: "Noto Sans SC", -apple-system, "PingFang SC",
                  "Microsoft YaHei UI", "Inter", sans-serif;
       --mono:    "IBM Plex Mono", ui-monospace, "SF Mono", Consolas, monospace;
+
+      /* 花体字令牌 —— 仅在 FONT_LIBRARY_SWISS_CARVE_OUT 启用后才有效。
+         fallback 走 Noto Sans SC，保持 Swiss 的 sans 底色不断裂。 */
+      --f-brush:   "Ma Shan Zheng", "Noto Sans SC", sans-serif;
+      --f-running: "Zhi Mang Xing", "Noto Sans SC", sans-serif;
+      --f-kai:     "jiangxizhuokai", "Noto Sans SC", sans-serif;
+      --f-sign:    "SuCaiJiShi-SheHuiTi", "Noto Sans SC", sans-serif;
+      --f-hand:    "qiantubifengshouxieti", "Noto Sans SC", sans-serif;
+      --display-alt: var(--sans);   /* 由 <html data-title-font="…"> 覆写 */
     }
 
     /* ---------- 3. Spacing tokens (8/12/16/24/32/40/48/64/80/96/160) ---------- */
@@ -158,6 +197,33 @@
        Hard rule: "the larger, the lighter"
        ≥ 200px → weight 200 (ExtraLight)
        Smaller text gets heavier weight (≥ 500). */
+    /* ---------- 5b. 花体字封面例外 ----------
+       <html data-title-font="brush|running|kai|sign|hand"> 时，封面主标题改用
+       对应花体字。没有这个属性时下面全部是死代码，不加载任何书法字体。
+       花体字多为单字重且自带字距，所以 weight 归一到 400、tracking 归零。
+       清单、授权与边界：references/font-library.md */
+    html[data-title-font="brush"]   { --display-alt: var(--f-brush); }
+    html[data-title-font="running"] { --display-alt: var(--f-running); }
+    html[data-title-font="kai"]     { --display-alt: var(--f-kai); }
+    html[data-title-font="sign"]    { --display-alt: var(--f-sign); }
+    html[data-title-font="hand"]    { --display-alt: var(--f-hand); }
+    /* 工具类带 html 前缀提高特异性：模板里 .body / .lead 等角色类定义在本块之后，
+       同特异性的单类选择器会按源序覆盖，导致 .f-alt 挂在正文节点上不起作用。 */
+    html .f-alt { font-family: var(--display-alt); font-weight: 400; letter-spacing: 0; }
+    html .f-brush   { font-family: var(--f-brush); }
+    html .f-running { font-family: var(--f-running); }
+    html .f-kai     { font-family: var(--f-kai); }
+    html .f-sign    { font-family: var(--f-sign); }
+    html .f-hand    { font-family: var(--f-hand); }
+
+    /* Swiss 例外：只作用在封面级的 .h-hero / .h-statement，绝不下放到 .h-xl。 */
+    html[data-title-font] .h-hero,
+    html[data-title-font] .h-statement {
+      font-family: var(--display-alt);
+      font-weight: 400;
+      letter-spacing: 0;
+    }
+
     .h-hero {
       font-family: var(--sans);
       font-weight: 200;

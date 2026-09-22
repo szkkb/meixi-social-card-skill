@@ -191,6 +191,22 @@ Width 轴让长数字在安全带内还能再放大一档，不必换字号。
 （很多花体字只覆盖常用 3500 字，缺字会静默回退到下一个面，肉眼很难发现）；
 在 88–118px 下笔画不粘连。
 
+**这三件事已经有现成答案：`references/font-library.md`。** 53 款免费商用中文花体字，
+每款都带实测汉字覆盖数（`assets/font-library.json` 的 `cjkCount`）与逐款授权核验记录
+（`font-license-audit.md`）。把它接到这条缝上不需要改结构：
+
+```sh
+node scripts/build-font-links.mjs links sign       # 生成 <link> 粘进 <head>
+node scripts/check-font-coverage.mjs <task-dir>    # 验收第 2 条：缺字检查
+```
+
+`assets/template-greenbook-card.html` 里已经预置了 `FONT_LIBRARY_GREENBOOK_CARVE_OUT`
+区块与 `data-title-font` 开关：删掉注释标记并在 `<html>` 上加 `data-title-font="sign"`，
+`--display-zh` 就会接到对应令牌上，其余四个面与全部结构不动。
+注意字库走 CDN（Chromium 渲染时拉 woff2 分片），**不随包分发字体文件**，
+所以 "允许随包分发" 这一条在默认路径下不触发；一旦改用
+`build-font-links.mjs fetch` 把字体下载进交付目录，就要按 OFL 随附授权文件。
+
 ## Layout
 
 **唯一板型 1080×1440（3:4）。** 平台只吃这一个比例，不为它准备第二种板。

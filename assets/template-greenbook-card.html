@@ -8,6 +8,35 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Martian+Mono:wght@300;400;500;700;800&family=Noto+Sans+SC:wght@400;500;700&display=swap">
 <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@400,500,700,800&display=swap">
+<!-- ===== FONT LIBRARY · 花体字（Greenbook 换装缝，默认关闭）===========
+     DESIGN.md「换装缝」一节要求：换 --display-zh 之前必须验三件事。
+     本区块直接把已核验过的字库接到那条缝上：
+       授权 —— references/font-license-audit.md 逐款核过
+       缺字 —— node scripts/check-font-coverage.mjs <task-dir>
+       粘连 —— 88-118px 下渲染后肉眼确认
+     启用步骤（两步都要做）：
+       1. 删掉下面 FONT_LIBRARY_GREENBOOK_CARVE_OUT 区块的两行注释标记
+          （<!-- FONT_LIBRARY_GREENBOOK_CARVE_OUT 那一行，和它后面独立成行的 -->）；
+       2. 在 <html> 上加 data-title-font="brush|running|kai|sign|hand"。
+     换别的款：node scripts/build-font-links.mjs links <id|分组> 追加 <link>。
+     完整清单：references/font-library.md -->
+<!-- FONT_LIBRARY_GREENBOOK_CARVE_OUT
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&display=swap">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@chinese-fonts/cezkzdbs@3.0.0/dist/仓耳周珂正大榜书/result.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Liu+Jian+Mao+Cao&display=swap">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@chinese-fonts/zqzmxs@3.0.0/dist/钟齐志莽行书/result.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@chinese-fonts/sft@3.0.0/dist/随峰体/result.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@chinese-fonts/jxzk@3.0.0/dist/江西拙楷/result.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@chinese-fonts/moon-stars-kai@2.0.0/dist/MoonStarsKai-Regular/result.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@chinese-fonts/xuandongkaishu@3.0.0/dist/XuandongKaishu/result.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@chinese-fonts/hldqjt@3.0.0/dist/qiji-fallback/result.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@chinese-fonts/tjl@3.0.0/dist/Tiejili_Regular/result.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@chinese-fonts/scjssh@3.0.0/dist/素材集市社会体/result.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@chinese-fonts/qtbfsxt@3.0.0/dist/千图笔锋手写体/result.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&display=swap">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@chinese-fonts/yozai@3.0.0/dist/Yozai-Regular/result.css">
+-->
+
 <style>
 @import url("https://fontsapi.zeoseven.com/92/main/result.css");   /* 得意黑 Smiley Sans 2.0.1 */
 @import url("https://fontsapi.zeoseven.com/292/main/result.css");  /* LXGW WenKai · 仅红笔批改 */
@@ -63,6 +92,21 @@
 /* ---------- 3. 字体角色（换花体只改 --display-zh 一行） ---------- */
 :root {
   --display-zh: "Smiley Sans Oblique", "Noto Sans SC", "PingFang SC", sans-serif;
+
+  /* 花体字令牌 —— 仅在 FONT_LIBRARY_GREENBOOK_CARVE_OUT 启用后才有效。
+     出自 references/font-library.md；fallback 走得意黑，保持版面气质不断裂。 */
+  --f-brush: "Ma Shan Zheng", "Noto Sans SC", sans-serif;
+  --f-running: "Zhi Mang Xing", "Noto Sans SC", sans-serif;
+  --f-kai: "jiangxizhuokai", "Noto Sans SC", sans-serif;
+  --f-sign: "SuCaiJiShi-SheHuiTi", "Noto Sans SC", sans-serif;
+  --f-hand: "qiantubifengshouxieti", "Noto Sans SC", sans-serif;
+  /* <html data-title-font="…"> 直接把 --display-zh 接到对应令牌上。
+     这是 DESIGN.md 承诺的「只改一行」：模板结构与其余四个面全不动。 */
+  --tfont-brush:   var(--f-brush);
+  --tfont-running: var(--f-running);
+  --tfont-kai:     var(--f-kai);
+  --tfont-sign:    var(--f-sign);
+  --tfont-hand:    var(--f-hand);
   --fig:        "Martian Mono", ui-monospace, "SF Mono", monospace;
   --body-zh:    "Noto Sans SC", "PingFang SC", "Microsoft YaHei UI", sans-serif;
   --latin:      "Cabinet Grotesk", "Noto Sans SC", sans-serif;
@@ -136,6 +180,13 @@ body {
   font-family: var(--body-zh); font-weight: 500; font-size: 28px;
   letter-spacing: .12em; color: var(--text-warm);
 }
+/* 花体字封面例外：只重接 --display-zh，不改任何结构或字号。 */
+html[data-title-font="brush"]   { --display-zh: var(--tfont-brush); }
+html[data-title-font="running"] { --display-zh: var(--tfont-running); }
+html[data-title-font="kai"]     { --display-zh: var(--tfont-kai); }
+html[data-title-font="sign"]    { --display-zh: var(--tfont-sign); }
+html[data-title-font="hand"]    { --display-zh: var(--tfont-hand); }
+
 .t-head {                        /* 中文 display · 永不低于 500 */
   font-family: var(--display-zh); font-weight: 500;
   font-size: 118px; line-height: 1.06; letter-spacing: .01em;
