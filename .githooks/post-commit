@@ -1,0 +1,65 @@
+#!/bin/sh
+# post-commit — 提醒把 hermes 安装包登记表的 ref 推进到本次提交。
+#
+# 为什么需要它：本仓是 external-skills.json 按固定 SHA 登记的真源。
+# 只要这里有了新提交而登记表没跟上，别人跑 setup_external_skills.sh --update-refs
+# 就会把本仓 checkout 回旧 SHA，六个宿主的工作区同时丢掉新内容。
+#
+# 本 hook 只提醒，永不阻断提交。
+# 通过 core.hooksPath=.githooks 生效（.git/hooks 不随 clone 传播）。
+
+set -u
+HEAD_SHA=$(git rev-parse HEAD 2>/dev/null) || exit 0
+SHORT=$(printf '%s' "$HEAD_SHA" | cut -c1-7)
+
+# 找 hermes 安装包的登记表（找不到也照样提醒）
+REG=""
+for c in \
+  "$HOME/hermes_codex_install_pack_optimized/external-skills.json" \
+  "$HOME/hermes_codex_install_pack/external-skills.json" \
+  "${GSTACK_HERMES_PACK:-}/external-skills.json"
+do
+  [ -n "$c" ] && [ -f "$c" ] && { REG="$c"; break; }
+done
+
+NAME=$(awk -F': ' '/^name:/{print $2; exit}' SKILL.md 2>/dev/null)
+[ -n "$NAME" ] || NAME=$(basename "$(git rev-parse --show-toplevel)")
+
+STALE=1
+if [ -n "$REG" ]; then
+  REG_REF=$(python3 - "$REG" "$NAME" <<'PYEOF' 2>/dev/null
+import json,sys,io
+try:
+    d=json.load(io.open(sys.argv[1],encoding="utf-8"))
+    for e in d.get("skills",[]):
+        if e.get("name")==sys.argv[2]:
+            print(e.get("ref","")); break
+except Exception:
+    pass
+PYEOF
+)
+  [ "$REG_REF" = "$HEAD_SHA" ] && STALE=0
+fi
+
+[ "$STALE" = "0" ] && exit 0
+
+printf '\n'
+printf '  ┌──────────────────────────────────────────────────────────────┐\n'
+printf '  │ 真源已提交 %s —— hermes 登记表还指着旧 ref             │\n' "$SHORT"
+printf '  └──────────────────────────────────────────────────────────────┘\n'
+printf '  不推进登记表的后果：别人跑 --update-refs 会把本仓回退到旧 SHA，\n'
+printf '  .claude/.kiro/.hermes/.grok/.qwen/.agents 六个宿主同时丢掉新内容。\n'
+printf '\n'
+printf '  两步收尾：\n'
+printf '    1) git push\n'
+if [ -n "$REG" ]; then
+  PACK=$(dirname "$REG")
+  printf '    2) cd %s \\\n' "$PACK"
+  printf '       && ./scripts/setup_external_skills.sh --bump-ref=%s \\\n' "$NAME"
+  printf '       && git add external-skills.json && git commit -m "chore: bump %s ref" && git push\n' "$NAME"
+else
+  printf '    2) 在 hermes 安装包里跑：./scripts/setup_external_skills.sh --bump-ref=%s\n' "$NAME"
+  printf '       然后提交并推送 external-skills.json\n'
+fi
+printf '\n'
+exit 0

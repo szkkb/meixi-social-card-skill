@@ -68,3 +68,9 @@ local-tests/social-card-example/output/
 
 Editorial 与 Swiss 两个既有模式不受 `DESIGN.md` 约束，它们仍走 `references/style-system.md`
 与 `references/components.md`。三套系统互不混用调色板与字体栈。
+
+## 本仓协作规则的真源是 CLAUDE.md
+
+改本仓之前读根目录 `CLAUDE.md`：分发拓扑、提交后必须推进 hermes 登记表 ref、
+游离头指针风险、视觉改动的 DESIGN.md 约束，都在那里。
+本文件只保留目录约定与历史记录，不重复维护同一套规则。
