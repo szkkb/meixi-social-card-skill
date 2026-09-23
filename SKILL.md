@@ -22,6 +22,7 @@ Use this skill for:
 - Long-video intake for Live Photo: diagnose whether to trim, speed up, split into a triple collage, or ask the user for a specific time range before rendering.
 - WeChat Official Account cover pairs: one `21:9` main cover plus one `1:1` square cover, composed together in the same HTML for visual checking.
 - WeChat Official Account image messages (公众号图片消息 / 小绿书 / 2026 年后官方称贴图号): 3:4 card sets whose first image must survive WeChat's own 16:9 and 2.35:1 feed crops. Use the Greenbook template, not Editorial or Swiss.
+- 杨美西转运 Xiaohongshu account notes (the 「杨美西转运」 Rednote account, or any 美西转运 / MeixiPro 小红书图文): 3:4 card sets built from a real person cut-out, real warehouse packing photos, and a topic title on brand-blue packing tape. Use the 封箱 (Taped Shut) template, not Editorial or Swiss.
 - Screenshot-heavy product posts, article covers, tutorial carousels, outdoor/lifestyle notes, AI/product update explainers.
 - Social images that need Guizang-style Swiss or editorial magazine layouts.
 
@@ -85,6 +86,7 @@ Read these files as needed:
 - `references/category-cookbook.md` to route a user-named Rednote category (旅行 / 职场 / 游戏 / 影视 / 彩妆 / 美食 / 穿搭 / 家居 / 健身 / 情感 / 推荐) to applicable recipes and to confirm scope.
 - `references/greenbook-specs.md` when the target is a WeChat 公众号图片消息 / 小绿书 / 贴图号 card set — platform specs with evidence grading, the 16:9 / 2.35:1 crop math, recipes G01-G07, and the render/QA rules.
 - `DESIGN.md` (repo root) for the Greenbook card system: color tokens with measured contrast on the warm ground, the five typefaces and their licences, the `--display-zh` swap seam, the three vertical zones, and the do/don't list. Read it before touching `assets/template-greenbook-card.html`.
+- `DESIGN-xhs.md` (repo root) for the 封箱 Taped Shut system used by the 杨美西转运 Xiaohongshu account: tape / sticker / waybill / marker components, the 「正」 tally for error-point posts, recipes X01-X03, measured contrast, the two fixed fonts, and the empty states for missing photos, person cut-out, or unconfirmed numbers. Read it before touching `assets/template-xhs-card.html`. A white-background portrait becomes a transparent `person.png` with `swift scripts/lift-subject.swift <in> person.png`.
 - `references/font-library.md` when the cover title should be a 花体字 / 毛笔字 / 书法感面（"像剪映花体字那样"）— 53 款免费商用中文花体字的注册表、分组、授权等级、`data-title-font` 用法、Swiss 封面例外边界，以及取用/缺字检查脚本。授权核验记录见 `references/font-license-audit.md`。
 - `references/qa-checklist.md` before delivering final images.
 
@@ -193,6 +195,7 @@ Do not write HTML from scratch. Pick one seed template based on the style mode c
 
 - Editorial Magazine × E-ink → copy `assets/template-editorial-card.html` into the task folder as `index.html`.
 - Swiss International → copy `assets/template-swiss-card.html` into the task folder as `index.html`.
+- 杨美西转运 Xiaohongshu account → copy `assets/template-xhs-card.html` into the task folder as `index.html`. This is a brand system with its own fixed fonts and recipes (X01 cover, X02 error point, X03 checklist); it ignores `data-theme` / `data-title-font`. Put `person.png` and `photo-*.jpg` next to `index.html`; never substitute AI-generated people or warehouses.
 
 The seed already wires up: font loading, theme tokens, all three poster sizes (`.poster.xhs` / `.poster.square` / `.poster.wide`), the pair-preview frame, grain/background layers, and all class definitions referenced by the layout recipes.
 

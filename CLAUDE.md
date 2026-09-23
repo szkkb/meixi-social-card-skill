@@ -56,6 +56,10 @@ git symbolic-ref -q HEAD || echo "⚠ detached HEAD，先 git checkout -B main"
 `assets/template-greenbook-card.html` 的任何改动都必须与它一致。
 Editorial 与 Swiss 两个既有模式不受它约束，走 `references/style-system.md`。
 
+杨美西转运**小红书号**的卡走另一份真源 `DESIGN-xhs.md`（「封箱」：胶带、贴纸、面单、红笔「正」字计数），
+`assets/template-xhs-card.html` 的任何改动都必须与它一致。两套系统共享品牌层，版式不共用，不混排。
+出镜人与仓库照片只用真实素材，不用 AI 生成顶替。
+
 字体只用 `references/font-license-audit.md` 里核验过的；换 display 面走
 `--display-zh` 换装缝，换之前必须验授权、汉字覆盖、88–118px 下不粘连三项。
 
