@@ -1,8 +1,10 @@
 # meixi-social-card-skill — 改这个仓之前必读
 
-本仓是 `op7418/guizang-social-card-skill`（AGPL-3.0）的私有衍生，
-远端 `szkkb/meixi-social-card-skill`。仅内部改造自用，不嵌入对外产品、
-不作网络服务分发。上游署名（LICENSE / README / AGENT.md）一律保留，不得删改。
+本仓是 `op7418/guizang-social-card-skill`（AGPL-3.0）的衍生，远端
+`szkkb/meixi-social-card-skill`。**2026-10-12 起是公开仓库**，按 AGPL-3.0 分发：
+拿到本仓的人都可以在同样以 AGPL-3.0 开源的前提下使用、改造、再分发；想要非 AGPL
+条款的走上游 `COMMERCIAL_LICENSING.md`。上游署名（LICENSE / README / AGENT.md）
+一律保留，不得删改。
 
 ## 这个仓被六个宿主共用
 
