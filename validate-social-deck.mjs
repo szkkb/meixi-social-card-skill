@@ -22,6 +22,9 @@
  *                              且 font-family 必须写 CSS 族名而不是中文字体名
  *   R11 花体字伪粗体防糊      单字重花体字（如仓耳周珂正大榜书/千图笔锋手写体）computedWeight >= 600 会触发伪粗体糊字
  *   R12 小红书封箱专属守卫    拦截已否决的「上图+下满宽贴边死白底列表」封面，并对可选组件 .tally（「正」字）给出启用核对提醒
+ *   R13 封面右上角 UI 禁区    拦截落入小红书发现页右上角 230×210px 播放标/多图角标区的封面文字与标注（视频封面 FAIL / 图文 WARN）
+ *   R14 封面反剧透/反硬广/过载 拦截封面左上企业硬广标 (.brand-pill)、3 栏剧透回执 (.floating-slip .slip-grid) 及字数过载
+ *   R15 封面/外显标题双轨校验  检查封面主钩子与 data-feed-title 的文字重合率，避免双列卡片浪费一半点击面积
  */
 import { chromium } from "playwright";
 import { fileURLToPath } from "node:url";
@@ -138,7 +141,7 @@ function overflowFix(px) {
 }
 
 for (const s of sections) {
-  const meta = await s.evaluate(el => {
+  const meta = await s.evaluate((el, isFirst) => {
     const w = el.clientWidth, h = el.clientHeight;
     let board = el.classList.contains("xhs") ? "xhs"
               : el.classList.contains("square") ? "square"
@@ -150,8 +153,31 @@ for (const s of sections) {
       else if (Math.abs(ratio - 7 / 3) < 0.05) board = "wide"; // 21:9
       else board = "unknown";
     }
-    return { id: el.id || "(no-id)", dataId: el.dataset.id || "", board, clientH: h, scrollH: el.scrollHeight, clientW: w };
-  });
+    const recipe = (el.dataset.recipe || "").toUpperCase();
+    const role = (el.dataset.role || "").toLowerCase();
+    const surface = (el.dataset.surface || "photo").toLowerCase();
+    const feedTitle = (el.dataset.feedTitle || "").trim();
+    const ctrMode = el.dataset.ctrMode === "true" || document.documentElement.dataset.ctrMode === "true";
+    const isCover =
+      role === "cover" ||
+      /^C0[1-9]$/.test(recipe) ||
+      recipe === "X01" ||
+      el.id === "xhs-01" ||
+      (isFirst && board === "xhs" && !/^X0[2-9]$/.test(recipe));
+    return {
+      id: el.id || "(no-id)",
+      dataId: el.dataset.id || "",
+      board,
+      recipe,
+      surface,
+      feedTitle,
+      ctrMode,
+      isCover,
+      clientH: h,
+      scrollH: el.scrollHeight,
+      clientW: w,
+    };
+  }, report.length === 0);
   const fails = [];
   const warns = [];
 
@@ -313,8 +339,8 @@ for (const s of sections) {
     });
   }
 
-  // R3 swiss bold display
-  if (style === "swiss") {
+  // R3 swiss bold display (exempt on high-CTR covers when data-ctr-mode="true")
+  if (style === "swiss" && !(meta.isCover && meta.ctrMode)) {
     const bolds = await s.evaluate((el, cls) => {
       const out = [];
       for (const c of cls) {
@@ -391,8 +417,8 @@ for (const s of sections) {
     warns.push({ rule: "R7", msg: `${f.cls} has horizontal figure margin ${f.ml}px / ${f.mr}px${f.text ? ` near "${f.text}"` : ""}`, fix: "reset figure margins in the seed or task CSS: .poster figure { margin: 0; }" });
   }
 
-  // R5 4-band density (3:4 only)
-  if (meta.board === "xhs") {
+  // R5 4-band density (3:4 inner pages only; covers are exempt to protect 3-Element Rule & single visual focus)
+  if (meta.board === "xhs" && !meta.isCover) {
     const bands = await s.evaluate(el => {
       const er = el.getBoundingClientRect();
       const H = el.clientHeight;
@@ -541,19 +567,19 @@ for (const s of sections) {
 
   // R12 小红书「封箱」专属守卫（可选组件 .tally 提醒 + 否决的满宽平切白底封面拦截）
   if (style === "xhs") {
-    const xhsCheck = await s.evaluate((el, isFirst) => {
+    const xhsCheck = await s.evaluate((el, isCoverFlag) => {
       const er = el.getBoundingClientRect();
       const tallies = [...el.querySelectorAll(".tally")].filter(t => {
         const r = t.getBoundingClientRect();
         return r.width > 0 && r.height > 0 && getComputedStyle(t).display !== "none" && getComputedStyle(t).visibility !== "hidden";
       });
       let vetoedFlatCover = false;
-      const isCover = isFirst || el.id === "xhs-01" || el.dataset.recipe === "X01";
+      const isCover = isCoverFlag;
       const isManifest = el.classList.contains("manifest") || el.dataset.recipe === "X03";
       const hasSeamTape = Boolean(el.querySelector(".seam-tape, .seam-tape-wrap")) || el.dataset.recipe === "X02";
       if (isCover && !isManifest && !hasSeamTape) {
         for (const n of el.children) {
-          if (n.matches(".photo-well, .bg-vignette, .airmail, .airmail-edge, .cover-shell, .hero-tape, .tape, .sticker, svg")) continue;
+          if (n.matches(".photo-well, .bg-vignette, .cover-scrim, .compare-stage, .vs-chip, .callout-flag, .airmail, .airmail-edge, .cover-shell, .c03-shell, .c05-shell, .hero-tape, .tape, .sticker, svg")) continue;
           const cs = getComputedStyle(n);
           const bg = cs.backgroundColor;
           const isOpaqueLight = bg && !/rgba?\(\s*0\s*,\s*0\s*,\s*0\s*,\s*0?\s*\)|transparent/.test(bg);
@@ -566,7 +592,7 @@ for (const s of sections) {
         }
       }
       return { hasTally: tallies.length > 0, vetoedFlatCover };
-    }, report.length === 0);
+    }, meta.isCover);
 
     if (xhsCheck.hasTally) {
       warns.push({
@@ -579,8 +605,189 @@ for (const s of sections) {
       fails.push({
         rule: "R12",
         msg: `封面出现「上图 + 下满宽贴边平切白底块」（已否决的 SaaS/PPT 割裂列表风）`,
-        fix: "封面请改用 X01 真仓大片配方：100% 满版仓库实拍铺底 + 四周留有 52px 安全边距的悬浮回执卡 (.floating-slip)",
+        fix: "封面请改用 X01 / C02 / C03 / C04 / C05 高 CTR 封面原型（见 DESIGN-xhs.md 与 references/xhs-cover-ctr.md）",
       });
+    }
+  }
+
+  // R13–R15 小红书 3:4 封面首页 CTR 专项守卫（右上角 UI 禁区 / 反剧透反硬广字数过载 / 外显标题双轨不重复）
+  if (meta.board === "xhs" && meta.isCover) {
+    const ctr = await s.evaluate((el, recipe) => {
+      const er = el.getBoundingClientRect();
+      const DEAD_LEFT = 850; // 右上角 230×210px 播放标 / 多图角标禁区 (1080 - 230 = 850)
+      const DEAD_BOTTOM = 210;
+      const isVisible = n => {
+        const cs = getComputedStyle(n);
+        if (cs.display === "none" || cs.visibility === "hidden" || parseFloat(cs.opacity) <= 0.05) return false;
+        const r = n.getBoundingClientRect();
+        return r.width > 4 && r.height > 4;
+      };
+      const hasOwnText = n => {
+        for (const c of n.childNodes) {
+          if (c.nodeType === 3 && c.textContent.trim().length > 0) return true;
+        }
+        return false;
+      };
+      const stripPunct = s => s.replace(/[^\u4e00-\u9fffA-Za-z0-9]/g, "");
+
+      // R13: 检查右上角 UI 禁区碰撞（对文字节点使用 Range 精确测真实字形外框，避免左对齐宽 <p> 误报）
+      const deadZoneHits = [];
+      const checkBox = (rect, sel, text) => {
+        const left = rect.left - er.left;
+        const right = rect.right - er.left;
+        const top = rect.top - er.top;
+        const bottom = rect.bottom - er.top;
+        const ox = Math.min(right, er.width) - Math.max(left, DEAD_LEFT);
+        const oy = Math.min(bottom, DEAD_BOTTOM) - Math.max(top, 0);
+        if (ox >= 12 && oy >= 12) {
+          deadZoneHits.push({ sel, text: text.slice(0, 20), x: Math.round(right), y: Math.round(top) });
+        }
+      };
+      for (const n of el.querySelectorAll("*")) {
+        if (n.closest(".well-note, .tape-print, .seam-note")) continue;
+        if (!isVisible(n)) continue;
+        const sel = n.className ? "." + String(n.className).split(" ").filter(Boolean).join(".") : n.tagName.toLowerCase();
+        if (n.matches(".ring, .callout-flag, .tally, .target-pill, .compare-badge")) {
+          checkBox(n.getBoundingClientRect(), sel, n.textContent.trim().replace(/\s+/g, " "));
+          continue;
+        }
+        if (hasOwnText(n)) {
+          for (const c of n.childNodes) {
+            if (c.nodeType !== 3 || !c.textContent.trim()) continue;
+            const range = document.createRange();
+            range.selectNodeContents(c);
+            for (const r of range.getClientRects()) {
+              if (r.width > 4 && r.height > 4) checkBox(r, sel, c.textContent.trim().replace(/\s+/g, " "));
+            }
+          }
+        }
+      }
+
+      // R14: 封面反硬广标 / 反 3 栏剧透 / 字数过载
+      const hasBrandPill = [...el.querySelectorAll(".brand-pill")].some(isVisible);
+      const hasSpoilerGrid = [...el.querySelectorAll(".floating-slip .slip-grid")].some(isVisible);
+
+      let totalChars = 0;
+      for (const n of el.querySelectorAll("*")) {
+        if (n.closest(".well-note, .tape-print, .seam-note, .peek-row.tease, .peek-row.tease-deep")) continue;
+        if (!isVisible(n) || !hasOwnText(n)) continue;
+        for (const c of n.childNodes) {
+          if (c.nodeType === 3) totalChars += stripPunct(c.textContent).length;
+        }
+      }
+
+      const mainHeadNodes = [...el.querySelectorAll("h1, .tape-title, .ctr-title, .h-display, .h-hero")].filter(isVisible);
+      const headlineRaw = mainHeadNodes.map(n => n.textContent.trim()).join(" ");
+      const headlineChars = stripPunct(headlineRaw).length;
+
+      const hookParts = [...el.querySelectorAll("h1, .tape-title, .ctr-title, .x01-setup, .ctr-kicker, .h-display, .h-hero")]
+        .filter(isVisible)
+        .map(n => n.textContent.trim())
+        .join(" ");
+
+      return {
+        deadZoneHits: deadZoneHits.slice(0, 3),
+        hasBrandPill,
+        hasSpoilerGrid,
+        totalChars,
+        headlineRaw: headlineRaw.replace(/\s+/g, " ").slice(0, 32),
+        headlineChars,
+        hookParts,
+        recipe,
+      };
+    }, meta.recipe);
+
+    // R13 verdict
+    for (const hit of ctr.deadZoneHits) {
+      const item = {
+        rule: "R13",
+        msg: `${hit.sel}${hit.text ? ` "${hit.text}"` : ""} 闯入小红书右上角 UI 禁区（x≥850, y≤210；发现页播放标/多图角标遮挡位）`,
+        fix: "将标题、角标或红圈左移至 x<850 或下移至 y>210 安全带（见 references/xhs-cover-ctr.md）",
+      };
+      if (meta.surface === "video") fails.push(item);
+      else warns.push(item);
+    }
+
+    // R14 verdict
+    if (ctr.hasBrandPill) {
+      fails.push({
+        rule: "R14",
+        msg: `封面出现企业名硬广签 (.brand-pill) —— 蓝V硬标放封面左上角会在 0.3 秒触发广告防御，拉低首页点击率`,
+        fix: "封面左上改用 .target-pill 纯用户靶子签（≤6字），品牌名留在图 2–N 内页与尾页",
+      });
+    }
+    if (ctr.hasSpoilerGrid) {
+      fails.push({
+        rule: "R14",
+        msg: `封面出现 3 栏答案剧透回执 (.floating-slip .slip-grid) —— 提前闭环答案会杀死好奇心缺口`,
+        fix: "删除封面 3 栏答案，改用单行悬念条 (.hook-bar)，把 3 步答案放到图 2 (X02)",
+      });
+    }
+    const strictCtrCover = style === "xhs" || meta.ctrMode || meta.surface === "video";
+    if (ctr.headlineChars > 18) {
+      const targetList = strictCtrCover ? fails : warns;
+      targetList.push({
+        rule: "R14",
+        msg: `封面主标题 "${ctr.headlineRaw}" 达 ${ctr.headlineChars} 字（硬上限 18 字），180pt 双列缩略图无法 0.5 秒扫读`,
+        fix: "压缩主钩子至 6–10 字，把场景补充挪到外显标题 data-feed-title",
+      });
+    } else if (ctr.headlineChars > 12) {
+      warns.push({
+        rule: "R14",
+        msg: `封面主标题 "${ctr.headlineRaw}" 有 ${ctr.headlineChars} 字（建议 6–10 字以内以最大化 180pt 冲击力）`,
+        fix: "精简修饰词，只留核心冲突 + 2–4 字撞色爆点",
+      });
+    }
+    const maxWarn = meta.recipe === "C05" ? 78 : meta.recipe === "C02" ? 48 : 38;
+    const maxFail = meta.recipe === "C05" ? 110 : meta.recipe === "C02" ? 68 : 56;
+    if (ctr.totalChars > maxFail) {
+      const targetList = strictCtrCover ? fails : warns;
+      targetList.push({
+        rule: "R14",
+        msg: `封面可见总字数达 ${ctr.totalChars} 字（${meta.recipe || "COVER"} 上限 ${maxFail} 字），信息过载易拉低双列点击率`,
+        fix: "遵循 3-Element Rule：只保留 1 主体 + 1 句核心大字 + 最多 1 条短悬念签，其余放进内页",
+      });
+    } else if (ctr.totalChars > maxWarn) {
+      warns.push({
+        rule: "R14",
+        msg: `封面可见总字数 ${ctr.totalChars} 字（建议 ≤${maxWarn} 字），双列缩略图易显拥挤`,
+        fix: "删减次要解释字句，让主体和爆点大字呼吸",
+      });
+    }
+
+    // R15 verdict: 封面钩子 vs 外显标题双轨不重复检查
+    if (!meta.feedTitle) {
+      if (style === "xhs") {
+        warns.push({
+          rule: "R15",
+          msg: `封面未声明配套外显标题 (data-feed-title) —— 易导致发布时直接照抄封面字，浪费一半点击面积`,
+          fix: `在封面 <section> 添加互补的 data-feed-title="..."（封面抛冲突/反差，标题补搜索词/具体利益）`,
+        });
+      }
+    } else {
+      const norm = s => s.replace(/[^\u4e00-\u9fffA-Za-z0-9]/g, "").toLowerCase();
+      const a = norm(ctr.hookParts);
+      const b = norm(meta.feedTitle);
+      const aUniq = [...new Set(a)];
+      const bSet = new Set(b);
+      const charOverlap = aUniq.length ? aUniq.filter(ch => bSet.has(ch)).length / aUniq.length : 0;
+      const bigrams = s => {
+        const set = new Set();
+        for (let i = 0; i < s.length - 1; i++) set.add(s.slice(i, i + 2));
+        return set;
+      };
+      const bgA = bigrams(a);
+      const bgB = bigrams(b);
+      let bgHit = 0;
+      for (const g of bgA) if (bgB.has(g)) bgHit += 1;
+      const bgOverlap = bgA.size ? bgHit / bgA.size : 0;
+      if (charOverlap >= 0.55 || bgOverlap >= 0.40) {
+        warns.push({
+          rule: "R15",
+          msg: `封面主字与外显标题重合过高（单字 ${Math.round(charOverlap * 100)}% / 词组 ${Math.round(bgOverlap * 100)}%）："${ctr.headlineRaw}" vs "${meta.feedTitle.slice(0, 26)}"`,
+          fix: "改写为双轨互补：封面负责冲突/痛点/数字反差，外显标题负责场景关键词与方法承诺（目标重合 <35%）",
+        });
+      }
     }
   }
 
@@ -754,7 +961,7 @@ for (const { meta, fails, warns } of report) {
 }
 
 lines.push("");
-lines.push(`Legend: R1 overflow · R2 footer collision · R3 swiss bold display · R4 min font · R5 4-band density · R6 h-xl cap · R7 figure margin drift · R8 visual bounds · R9 title gap · R10 花体字作用域/族名 · R11 花体字防伪粗体糊字 · R12 小红书封箱守卫`);
+lines.push(`Legend: R1 overflow · R2 footer collision · R3 swiss bold display · R4 min font · R5 4-band density · R6 h-xl cap · R7 figure margin drift · R8 visual bounds · R9 title gap · R10 花体字作用域/族名 · R11 花体字防伪粗体糊字 · R12 小红书封箱守卫 · R13 封面右上角UI禁区 · R14 封面反剧透/反硬广/过载 · R15 封面与外显标题双轨校验`);
 lines.push(`Exit code 1 only on FAIL. Warnings are advisory.`);
 
 console.log(lines.join("\n"));

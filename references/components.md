@@ -24,12 +24,12 @@ Never load a serif font in the Swiss template. Never let the Editorial template 
 
 ### 花体字封面标题（Editorial + Swiss 封面例外）
 
-封面主标题可以换成花体字，**正文/lead/label/meta 永不**。53 款免费商用中文花体字的注册表、授权核验与选字规则在 `font-library.md`；取用与检查工具：
+封面主标题可以换成花体字，**正文/lead/label/meta 永不**。52 款免费商用中文花体字的注册表、授权核验与选字规则在 `font-library.md`；取用与检查工具：
 
 ```sh
-node scripts/build-font-links.mjs list                 # 看全库
-node scripts/build-font-links.mjs links sign           # 生成要粘的 <link>
-node scripts/check-font-coverage.mjs local-test/<slug> # 缺字检查（必做）
+node scripts/build-font-links.mjs list                  # 看全库
+node scripts/build-font-links.mjs links sign            # 生成要粘的 <link>
+node scripts/check-font-coverage.mjs local-tests/<slug> # 缺字检查（必做）
 ```
 
 - **Editorial**：`<html data-title-font="brush|running|kai|sign|hand">`，只改 `.h-display`，`.h-xl` 及以下保持衬线。

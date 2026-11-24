@@ -1,6 +1,6 @@
-# Handoff — guizang-social-card-skill
+# Handoff — meixi-social-card-skill
 
-最后更新：2026-07-01 · 版本：v0.15（Live Photo 生产规则：3s/5s 平台限制、拼图版式、长视频处理、发布提醒、可见文案与不自造规则）
+最后更新：2026-11-25 · 版本：v0.16（小红书首页 CTR 优先重构：图文/视频封面解耦、5 套高 CTR 封面原型 X01+C02–C05、180px 真双列信息流验图台、R13–R15 封面 CTR 校验护栏）
 
 这份文档只记录**事实**：当前 skill 由哪些文件组成、每个文件管什么、本轮更新改了什么、怎么验证它还能跑。想读"为什么这样做"或"未来要怎么走"，去看 `PRODUCT.md`。
 
@@ -84,7 +84,21 @@ v0.13 起：git 仓库。`local-tests/` 整目录在 `.gitignore` 中，commit �
 
 仅记录"什么时候新增/变更了哪些可见资产"，不记录文风调整。
 
-### v0.15 · 2026-07-01（本轮）
+### v0.16 · 2026-11-25（本轮）
+
+主题：**小红书首页点击率（CTR）全面重构 — 图文封面与视频封面彻底转向 0.5 秒双列转化**。
+
+**新增**
+- `references/xhs-cover-ctr.md`：小红书图文封面 & 视频封面 CTR 实战专规（封面与内页彻底解耦、180pt 0.5s 扫视法则、3-Element Rule、反剧透好奇心缺口、封面与外显标题双轨不重复机制、6 大钩子模型、9:16→3:4 视频封面选帧/抠图工作流、右上角 `230×210px` 播放标禁区 + 1:1 个人主页安全框、默认 2–3 版一题多封 A/B PK、通用 Editorial/Swiss 封面 `data-ctr-mode="true"` 例外条款）。
+- `scripts/build-feed-preview.mjs`（`npm run feed:preview`）：180px 真双列信息流模拟台与 A/B 封面 PK 台，将候选封面与模拟邻卡混排，支持一键切换「视频播放标/多图角标」、安全区 X 光透视（右上禁区 + 1:1 框 + 底部缓冲）、0.6 秒闪看测试（Glance Test）及 `--screenshot` 导出 `output/feed-preview-180px.png`。
+- `assets/template-xhs-card.html` 新增 4 套高 CTR 封面原型：**`C02` 双图强对比（Before/After）**、**`C03` 真人情绪口播（视频封面主力）**、**`C04` 物证红圈悬念**、**`C05` 半露清单诱饵**；并将默认封面 **`X01` 真仓大片**升级为反剧透、去企业硬广标、避右上角播放标、带 `#FFE14D` 亮黄爆点词的悬念封面。
+
+**修改**
+- `DESIGN-xhs.md`：升级至 v3 CTR 优先版，新增 `--punch` (`#FFE14D`) / `--punch-ink` (`#11141C`) / `--alert` (`#E53935`) / `--scrim-dark` (`#0B1220`) 封面爆点色层，把品牌名与完整 3 步答案清晰下沉到 `X02–X05` 内页。
+- `validate-social-deck.mjs`：区分封面与内页；封面豁免 R5（4 横带密度 ≥75%）与 `data-ctr-mode="true"` 的 R3（Swiss 极细大字）；新增 **R13**（右上角 `230×210px` UI 禁区检测，视频封面 FAIL）、**R14**（拦截封面 `.brand-pill` 硬广标、`.floating-slip .slip-grid` 3 栏剧透及字数过载）、**R15**（封面主字与 `data-feed-title` 双轨重合率检验）。
+- `SKILL.md`、`references/content-planning.md`、`references/platform-specs.md`、`references/image-overlay.md`、`references/qa-checklist.md`、`references/style-system.md`、`references/components.md`、`scripts/check-skill-docs.mjs`：全面同步 CTR 专规、180px 缩略图验收口径、视频封面抽帧与 `lift-subject.swift` 抠图流程，并修复了文档中的花体字计数（53→52）、`local-tests` 路径拼写及 Step 4.5 种子清单漏项。
+
+### v0.15 · 2026-07-01
 
 主题：**Live Photo 从一次测试能力收口成 Skill 规则**。本轮把两天聊天里关于平台限制、拼图版式、长视频处理、品类判断、发布路径和执行失误的结论写回文档，并补上文档测试。
 

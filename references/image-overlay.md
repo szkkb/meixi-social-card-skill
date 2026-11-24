@@ -51,8 +51,9 @@ Only when Step 2 fails the contrast check. Three rules:
 
 Whether or not you applied a tint:
 
-- Render the PNG, downscale to 360 px wide in Preview / a browser tab, and look.
+- Render the PNG, downscale to **`180 px` wide** (Xiaohongshu's real double-column phone width — or run `node scripts/build-feed-preview.mjs <task-dir> --screenshot`) and run a 0.5-second Glance Test. (`360 px` is full phone screen width and hides small-thumbnail blur.)
 - Title strokes must be legible without zoom.
+- Note: For high-CTR Xiaohongshu covers (`data-role="cover" data-ctr-mode="true"` or 封箱 `X01`/`C02–C05`), prioritize `180px` punch contrast (localized dark bottom scrim `#0B1220` + bold `900` or crisp calligraphy + bright yellow `#FFE14D` keyword highlights) per `references/xhs-cover-ctr.md`.
 - If title looks like it's "fighting" the photo → swap photo or shift title to a different quiet zone, **not** strengthen the mask.
 - If photo looks dead grey under uniform dark → mask is way too heavy or covers wrong area; restart from Step 1.
 
@@ -146,7 +147,7 @@ Run this for every poster that has text touching an image:
 - [ ] No display title (≥ 72 px) overlaps a face / hand / key product feature / subject silhouette.
 - [ ] Title occupies ≤40% of canvas. Asymmetric placement preferred over centered.
 - [ ] `object-position` chosen from the table above, not left at default `center top` for face shots.
-- [ ] Thumbnail test passed (downscale to 360 px wide; title still legible without strain).
+- [ ] Thumbnail test passed (downscale to `180 px` wide / `build-feed-preview.mjs`; title still legible in 0.5s without strain).
 - [ ] No flat black/white text plate behind the title.
 
 If any item fails, fix it before exporting the final PNG. Do not deliver and "we can adjust later" — the QA window for social cards is the moment of upload.

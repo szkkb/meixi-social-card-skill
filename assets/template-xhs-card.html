@@ -2,12 +2,12 @@
 <html lang="zh-CN" data-brand="meixipro">
 <head>
 <meta charset="utf-8">
-<title>[必填] 替换为笔记短标题 · 杨美西转运小红书卡组</title>
+<title>[必填] 替换为笔记短标题 · 杨美西转运小红书图文与视频封面卡组</title>
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Martian+Mono:wght@400;500;700&family=Noto+Sans+SC:wght@400;500;700;900&display=swap">
-<!-- 花体字库 · 仓耳周珂正大榜书（胶带标题，固定）/ 千图笔锋手写体（仅纸面局部签注）
+<!-- 花体字库 · 仓耳周珂正大榜书（胶带标题）/ 千图笔锋手写体（纸面签注）
      授权：references/font-license-audit.md #1 / #33，官方免费商用，成品无需署名。
      缺字检查：node scripts/check-font-coverage.mjs <task-dir>
      离线沙箱兜底：node scripts/build-font-links.mjs fetch <task-dir>/fonts chill-bangshu qiantu-bifeng -->
@@ -15,23 +15,29 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@chinese-fonts/qtbfsxt@3.0.0/dist/千图笔锋手写体/result.css">
 <style>
 /* =========================================================
-   小红书 — 「封箱」Taped Shut 种子模板（v2 防呆流式多配方版）
+   小红书 — 「封箱」Taped Shut 种子模板（v3 首页 CTR 优先版）
    ---------------------------------------------------------
    板型：.card 1080×1440（3:4），唯一板型
-   设计真源：DESIGN-xhs.md（改这里之前先读它）
+   设计真源：DESIGN-xhs.md + references/xhs-cover-ctr.md
 
-   五大标准配方（按题型组合选用，默认全部无「正」字）：
-     X01 真仓大片（默认封面） · 满版实拍 + 蓝胶带 + 底部留边悬浮回执卡
-     X02 骑缝封箱（零遮挡页） · 上半实拍无遮挡 + 中腰骑缝胶带 + 条件→行动对照
-     X03 国际提单（参数看板） · 提单抬头 + 实拍窗 + Martian Mono 硬指标 + 三栏横评
-     X04 实物批注（细节圈认） · 上实拍红圈指认 + 下齿孔面单（看哪里 / 怎么做）
-     X05 核对清单（末页收藏） · 胶带标题 + 齿孔面单勾选清单 + 收藏引导签
+   一、五大高 CTR 封面原型（图文首图 & 视频封面通用，支持一题多封 PK）：
+     X01 真仓悬念大片（默认图文封面） · 满版实拍 + 去广告标靶子签 + 避右上角蓝胶带撞色大字 + 单行反剧透悬念条
+     C02 双图强对比（Before/After）   · 左右双实拍分屏 + 红/蓝状态角标 + VS 锚点 + 超粗反差爆点大字
+     C03 真人情绪口播（视频封面主力） · 近景真人情绪帧 + 暗色柔梯 + 116px 超粗黑体亮黄反白块（100% 避右上角播放标）
+     C04 物证红圈悬念（现场硬证型）   · 高清物证特写 + 白底红圈精准圈注 + 圈旁警示短标 + 避让区痛点大字
+     C05 半露清单诱饵（收藏向封面）   · 下沉避让蓝胶带 + 齿孔面单仅露前 2–3 条 + 纸面渐隐「图 2 看全表」钩子
 
-   严禁反模式：
-     1. 禁止把封面做成「上半照片 + 下半满宽贴边死白底列表块」（SaaS/PPT 割裂感）。
-     2. 禁止默认渲染「正」字（.tally 仅在用户明确点名写“数坑帖”时从文末注释块启用）。
-     3. 禁止让 .tape-title / .hand 继承 700 粗体（伪粗体会导致花体字笔画糊成白团）。
-     4. 推荐以 Playwright deviceScaleFactor: 2 渲染（必要时 sips -z 1440 1080 超采样回缩）。
+   二、四大内页主力配方（图 2–N：承接干货、品牌信任与收藏转化）：
+     X02 骑缝封箱（结论对照页） · 上实拍无遮挡 + 品牌抬头 + 骑缝胶带 + 3 行条件→行动（承接原封面删掉的 3 步答案）
+     X03 国际提单（参数看板页） · 提单抬头 + 实拍窗 + Martian Mono 硬指标 + 三栏横评
+     X04 实物批注（细节圈认页） · 上实拍红圈指认 + 下齿孔面单（看哪里 / 怎么做）
+     X05 核对清单（末页收藏页） · 胶带标题 + 齿孔面单 4–5 条清单 + 收藏与品牌收口签
+
+   红线守卫（validate-social-deck.mjs R11–R15）：
+     1. 封面严禁放「杨美西转运」左上大块企业广告标、严禁放 3 栏答案回执剧透结论（R14）。
+     2. 封面核心文字、数字、人眼严禁进入右上角 230×210px 播放标禁区（R13）。
+     3. 每张封面必须标注 data-role="cover"、data-surface="photo|video" 与互补外显标题 data-feed-title="..."（R15）。
+     4. 严禁 .tape-title / .hand 继承 700 伪粗体（R11）；推荐 deviceScaleFactor: 2 超采样渲染。
    ========================================================= */
 
 /* ---------- 1. 租户品牌预设 ---------- */
@@ -41,9 +47,13 @@
   --brand-name: "杨美西转运";
 }
 
-/* ---------- 2. 跨租户恒定层 ---------- */
+/* ---------- 2. 跨租户恒定与封面 CTR 爆点色层 ---------- */
 :root {
   --tape-ink: #FFFFFF;             /* 5.98:1 on --tape */
+  --punch: #FFE14D;                /* 封面核心 2–4 字爆点黄（15.1:1 on scrim, 4.68:1 大字 on tape） */
+  --punch-ink: #11141C;            /* 黄底黑字 14.9:1 */
+  --alert: #E53935;                /* 封面警示红块 / 踩坑标 */
+  --scrim-dark: #0B1220;           /* 封面冷深蓝黑柔梯底 */
   --marker: #D0433B;               /* 4.44:1 on paper：仅 ≥24px 圈注 / 勾号 / 大字 */
   --paper: #FFFAF1;
   --paper-soft: #F4ECDE;
@@ -120,27 +130,38 @@ body {
 .well-note {
   position: absolute;
   z-index: 2;
-  left: 64px;
-  top: 52%;
-  max-width: 660px;
+  left: 56px;
+  right: 240px;
+  top: 42%;
   font-family: var(--f-mono);
   font-size: 20px;
-  letter-spacing: .06em;
+  letter-spacing: .04em;
   line-height: 1.55;
   color: rgba(255,250,241,.92);
 }
 .photo-well:has(.photo) .well-note { display: none; }
-.bg-vignette {
+
+/* 封面底部深色柔梯：让上半实拍 100% 透亮，只稳托底部高冲击大字 */
+.cover-scrim {
   position: absolute;
   inset: 0;
   z-index: 1;
   pointer-events: none;
   background: linear-gradient(
-    to bottom,
-    rgba(16, 24, 36, 0.14) 0%,
-    rgba(16, 24, 36, 0) 24%,
-    rgba(16, 24, 36, 0) 62%,
-    rgba(16, 24, 36, 0.44) 100%
+    to top,
+    rgba(11, 18, 32, 0.90) 0%,
+    rgba(11, 18, 32, 0.64) 26%,
+    rgba(11, 18, 32, 0.16) 52%,
+    rgba(11, 18, 32, 0.00) 72%
+  );
+}
+.cover-scrim.tall {
+  background: linear-gradient(
+    to top,
+    rgba(11, 18, 32, 0.94) 0%,
+    rgba(11, 18, 32, 0.72) 34%,
+    rgba(11, 18, 32, 0.18) 58%,
+    rgba(11, 18, 32, 0.00) 76%
   );
 }
 
@@ -149,7 +170,7 @@ body {
   position: relative;
   z-index: 4;
   color: var(--tape-ink);
-  filter: drop-shadow(0 12px 22px rgba(0,0,0,.25));
+  filter: drop-shadow(0 12px 24px rgba(0,0,0,.32));
   backface-visibility: hidden;
 }
 .tape::before {
@@ -178,24 +199,24 @@ body {
   right: 36px;
   font-family: var(--f-mono);
   font-weight: 500;
-  font-size: 17px;
-  letter-spacing: .2em;
+  font-size: 16px;
+  letter-spacing: .18em;
   white-space: nowrap;
   overflow: hidden;
-  opacity: .68;
+  opacity: .56;
 }
-.tape-print.t { top: 14px; }
-.tape-print.b { bottom: 14px; }
+.tape-print.t { top: 12px; }
+.tape-print.b { bottom: 12px; }
 .tape-title {
   font-family: var(--f-tape);
   font-weight: 400 !important;
   font-synthesis: none;
   -webkit-font-smoothing: antialiased;
   text-rendering: geometricPrecision;
-  line-height: 1.08;
+  line-height: 1.06;
   letter-spacing: .02em;
 }
-.tape-title[data-len="long"] { font-size: 86px !important; }
+.tape-title[data-len="long"] { font-size: 88px !important; }
 .tape-no {
   font-family: var(--f-mono);
   font-weight: 700;
@@ -204,35 +225,120 @@ body {
   opacity: .92;
 }
 
-/* ---------- 5. 品牌抬头签与悬浮回执卡（X01 默认封面核心组件） ---------- */
-.brand-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 14px;
-  background: var(--paper);
-  padding: 14px 24px;
-  box-shadow: 0 8px 20px rgba(0,0,0,.22);
+/* ---------- 5. 封面 CTR 核心排版原子（撞色爆点 / 靶子签 / 反剧透悬念条） ---------- */
+.punch { color: var(--punch); }
+.punch-block {
+  display: inline-block;
+  background: var(--punch);
+  color: var(--punch-ink);
+  padding: 2px 18px 8px;
+  margin: 0 6px;
+  line-height: 1.04;
 }
-.brand-pill .dot {
-  width: 12px;
-  height: 12px;
+.alert-block {
+  display: inline-block;
+  background: var(--alert);
+  color: #FFFFFF;
+  padding: 2px 18px 8px;
+  margin: 0 6px;
+  line-height: 1.04;
+}
+.blue-block {
+  display: inline-block;
   background: var(--tape);
-  flex: none;
-}
-.brand-pill .name {
-  font-size: 27px;
-  font-weight: 900;
-  letter-spacing: .06em;
-  color: var(--ink);
-}
-.brand-pill .route {
-  font-family: var(--f-mono);
-  font-size: 20px;
-  font-weight: 500;
-  color: var(--warm);
-  letter-spacing: .08em;
+  color: #FFFFFF;
+  padding: 2px 18px 8px;
+  margin: 0 6px;
+  line-height: 1.04;
 }
 
+/* 去硬广标后的纯用户视角人群靶子签（严格居左，远离右上角 230×210 播放标禁区） */
+.target-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  align-self: flex-start;
+  max-width: 680px;
+  background: rgba(11, 18, 32, 0.84);
+  color: #FFFFFF;
+  border-left: 10px solid var(--punch);
+  padding: 16px 28px;
+  box-shadow: 0 10px 24px rgba(0,0,0,.28);
+  font-size: 32px;
+  font-weight: 900;
+  letter-spacing: .04em;
+  line-height: 1.2;
+}
+.target-pill.light {
+  background: var(--paper);
+  color: var(--ink);
+  border-left-color: var(--tape);
+}
+.target-pill .tag-dot {
+  width: 12px;
+  height: 12px;
+  background: var(--alert);
+  flex: none;
+}
+
+/* 单行反剧透悬念条（取代旧版 3 栏答案回执） */
+.hook-bar {
+  display: inline-flex;
+  align-items: center;
+  gap: 16px;
+  align-self: flex-start;
+  max-width: 100%;
+  background: var(--paper);
+  color: var(--ink);
+  border-left: 12px solid var(--tape);
+  padding: 20px 30px;
+  box-shadow: 0 14px 32px rgba(0,0,0,.32);
+  font-size: 34px;
+  font-weight: 900;
+  line-height: 1.28;
+}
+.hook-bar .arrow {
+  color: var(--tape);
+  font-family: var(--f-mono);
+  font-weight: 700;
+}
+
+/* 超粗高 CTR 封面双层大字（C02 / C03 / C04 通用） */
+.ctr-stack {
+  position: relative;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
+}
+.ctr-kicker {
+  font-size: 48px;
+  font-weight: 900;
+  color: #FFFFFF;
+  line-height: 1.15;
+  letter-spacing: .02em;
+  text-shadow: 0 4px 18px rgba(0,0,0,.65);
+}
+.ctr-title {
+  font-family: var(--f-body);
+  font-size: 118px;
+  font-weight: 900;
+  color: #FFFFFF;
+  line-height: 1.08;
+  letter-spacing: -.01em;
+  text-shadow: 0 6px 26px rgba(0,0,0,.62);
+}
+.ctr-title.compact { font-size: 104px; }
+.ctr-whisper {
+  font-size: 34px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.92);
+  line-height: 1.3;
+  text-shadow: 0 3px 14px rgba(0,0,0,.68);
+}
+
+/* ---------- 6. 封面原型 X01：真仓悬念大片（默认图文封面） ---------- */
 .cover-shell {
   position: relative;
   z-index: 4;
@@ -240,92 +346,201 @@ body {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding: 52px 52px 56px;
+  padding: 56px 56px 144px;
 }
-.hero-tape {
-  position: absolute;
-  z-index: 4;
-  left: 28px;
-  top: 158px;
-  width: 1090px;
-  padding: 46px 88px 46px 80px;
-  transform: rotate(-5.2deg);
+.x01-lower {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 24px;
+}
+.x01-setup {
+  font-size: 52px;
+  font-weight: 900;
+  color: #FFFFFF;
+  line-height: 1.12;
+  text-shadow: 0 4px 20px rgba(0,0,0,.72);
+  padding-left: 8px;
+}
+/* 胶带置于中下安全带（y ≈ 840–1160px）：100% 避开右上角播放标，且落入 1:1 主页安全框 */
+.x01-tape {
+  width: 988px;
+  margin-left: -14px;
+  padding: 36px 64px 38px 60px;
+  transform: rotate(-2.2deg);
   transform-origin: 0 50%;
 }
-.hero-tape .tape-title {
-  font-size: 102px;
+.x01-tape .tape-title {
+  font-size: 114px;
+  line-height: 1.06;
 }
 
-.floating-slip {
+/* ---------- 7. 封面原型 C02：双图强对比（Before / After） ---------- */
+.compare-stage {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  background: #11141C;
+}
+.compare-pane {
+  position: relative;
+  overflow: hidden;
+}
+.compare-badge {
+  position: absolute;
+  z-index: 5;
+  top: 236px; /* 严格低于 y=210px 右上角播放标禁区 */
+  left: 28px;
+  padding: 14px 24px;
+  font-size: 34px;
+  font-weight: 900;
+  color: #FFFFFF;
+  letter-spacing: .02em;
+  box-shadow: 0 10px 24px rgba(0,0,0,.35);
+}
+.compare-badge.bad { background: var(--alert); }
+.compare-badge.good { background: var(--tape); }
+.compare-badge.good .em { color: var(--punch); }
+.vs-chip {
+  position: absolute;
+  z-index: 6;
+  left: 50%;
+  top: 47%;
+  transform: translate(-50%, -50%) rotate(-6deg);
+  background: var(--punch);
+  color: var(--punch-ink);
+  border: 6px solid #11141C;
+  padding: 10px 26px;
+  font-family: var(--f-mono);
+  font-size: 52px;
+  font-weight: 700;
+  letter-spacing: .04em;
+  box-shadow: 0 14px 32px rgba(0,0,0,.42);
+}
+
+/* ---------- 8. 封面原型 C03：真人情绪口播（视频封面主力） ---------- */
+.c03-shell {
   position: relative;
   z-index: 5;
-  background: var(--paper);
-  border-left: 12px solid var(--tape);
-  padding: 34px 40px 32px;
-  box-shadow: 0 16px 36px rgba(0,0,0,.30);
+  flex: 1 1 auto;
   display: flex;
   flex-direction: column;
-  gap: 22px;
-}
-/* 若封面右侧放 person.png 模切贴纸，给 .floating-slip 加 .with-person 即可自动让位 */
-.floating-slip.with-person {
-  max-width: 650px;
-}
-.slip-head {
-  display: flex;
-  align-items: baseline;
   justify-content: space-between;
-  gap: 16px;
+  padding: 56px 60px 148px;
 }
-.slip-title {
-  font-size: 36px;
-  font-weight: 900;
-  line-height: 1.34;
-  color: var(--ink);
-}
-.slip-tag {
-  flex: none;
-  font-family: var(--f-mono);
-  font-size: 20px;
-  font-weight: 700;
-  color: var(--tape);
-  letter-spacing: .08em;
-}
-.slip-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
-  padding-top: 20px;
-  border-top: 2px solid var(--paper-rule);
-}
-.floating-slip.with-person .slip-grid {
-  grid-template-columns: 1fr;
-  gap: 14px;
-}
-.slip-item {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-.slip-item .idx {
-  font-family: var(--f-mono);
-  font-size: 20px;
-  font-weight: 700;
-  color: var(--warm);
-}
-.slip-item .main {
-  font-size: 30px;
-  font-weight: 900;
-  color: var(--ink);
-}
-.slip-item .sub {
-  font-size: 24px;
-  font-weight: 500;
-  color: var(--warm);
-  line-height: 1.35;
+.c03-shell .ctr-stack {
+  max-width: 960px;
 }
 
-/* ---------- 6. X02 骑缝封箱（照片零遮挡 + 条件→行动双列对照） ---------- */
+/* ---------- 9. 封面原型 C04：物证红圈悬念 ---------- */
+.callout-flag {
+  position: absolute;
+  z-index: 6;
+  background: var(--alert);
+  color: #FFFFFF;
+  padding: 14px 24px;
+  font-size: 38px;
+  font-weight: 900;
+  letter-spacing: .02em;
+  box-shadow: 0 12px 26px rgba(0,0,0,.38);
+  transform: rotate(-3deg);
+}
+.callout-flag.yellow {
+  background: var(--punch);
+  color: var(--punch-ink);
+}
+
+/* ---------- 10. 封面原型 C05：干货清单半露诱饵 ---------- */
+.c05-shell {
+  position: relative;
+  z-index: 4;
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  padding: 56px 56px 136px;
+  gap: 28px;
+}
+/* 宽度收在 780px 且居左，84px 单行绝不孤字换行，且右上角 230×210 禁区 100% 干净 */
+.c05-tape {
+  width: 780px;
+  align-self: flex-start;
+  padding: 32px 48px 34px 48px;
+  transform: rotate(-1.6deg);
+}
+.c05-tape .tape-title {
+  font-size: 84px;
+  white-space: nowrap;
+}
+.peek-sheet {
+  position: relative;
+  flex: 1 1 auto;
+  background: var(--paper);
+  padding: 58px 54px 40px;
+  transform: rotate(-0.6deg);
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  overflow: hidden;
+  box-shadow: 0 18px 40px rgba(0,0,0,.28);
+}
+.peek-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 34px;
+}
+.peek-row {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  padding-bottom: 30px;
+  border-bottom: 2px solid var(--paper-rule);
+}
+.peek-tag {
+  flex: none;
+  padding: 10px 20px;
+  font-size: 28px;
+  font-weight: 900;
+  color: #FFFFFF;
+  background: var(--tape);
+}
+.peek-tag.no { background: var(--alert); }
+.peek-text {
+  font-size: 40px;
+  font-weight: 900;
+  color: var(--ink);
+  line-height: 1.25;
+}
+.peek-row.tease { opacity: 0.42; filter: blur(1.8px); }
+.peek-row.tease-deep { opacity: 0.22; filter: blur(3.5px); border-bottom: none; }
+.peek-fade {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 290px;
+  background: linear-gradient(to bottom, rgba(255,250,241,0) 0%, rgba(255,250,241,0.88) 46%, #FFFAF1 86%, #FFFAF1 100%);
+  display: flex;
+  align-items: flex-end;
+  padding: 0 54px 38px;
+}
+.peek-cta {
+  width: 100%;
+  background: var(--tape);
+  color: #FFFFFF;
+  padding: 20px 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 34px;
+  font-weight: 900;
+}
+.peek-cta .em { color: var(--punch); }
+
+/* ---------- 11. 内页 X02：骑缝封箱（照片零遮挡 + 条件→行动对照） ---------- */
 .seam-photo-stage {
   height: 676px;
   flex: none;
@@ -413,7 +628,7 @@ body {
   padding-top: 10px;
 }
 
-/* ---------- 7. X03 国际提单看板（计费公式 / 时效 / 参数横评） ---------- */
+/* ---------- 12. 内页 X03：国际提单看板 ---------- */
 .card.manifest {
   padding: 56px 64px;
   gap: 30px;
@@ -501,7 +716,7 @@ body {
 .route-col .way { font-size: 30px; font-weight: 900; color: var(--manifest-ink); }
 .route-col .tip { font-size: 24px; font-weight: 500; color: var(--ink); line-height: 1.35; }
 
-/* ---------- 8. 面单纸、贴纸、红圈、勾选框、待补位 ---------- */
+/* ---------- 13. 面单纸、贴纸、红圈、勾选框、待补位 ---------- */
 .label {
   background: var(--paper);
   color: var(--ink);
@@ -526,7 +741,7 @@ body {
 .sticker {
   position: absolute;
   z-index: 6;
-  filter: url(#die-cut) drop-shadow(0 14px 22px rgba(0,0,0,.26));
+  filter: url(#die-cut) drop-shadow(0 14px 22px rgba(0,0,0,.28));
 }
 .sticker img { display: block; width: 100%; height: auto; }
 
@@ -538,10 +753,10 @@ body {
   color: var(--marker);
   line-height: 1.15;
 }
-.ring { position: absolute; z-index: 4; overflow: visible; pointer-events: none; }
+.ring { position: absolute; z-index: 5; overflow: visible; pointer-events: none; }
 .ring path { fill: none; stroke-linecap: round; }
-.ring .under { stroke: #fff; stroke-width: 16; opacity: .92; }
-.ring .over  { stroke: var(--marker); stroke-width: 8; }
+.ring .under { stroke: #fff; stroke-width: 18; opacity: .95; }
+.ring .over  { stroke: var(--alert); stroke-width: 9; }
 
 .box {
   flex: none;
@@ -570,7 +785,7 @@ body {
 .checklist li { display: flex; gap: 22px; }
 .checklist .pending { margin-top: 10px; }
 
-/* 可选组件样式：仅当用户明确点名写“数坑帖”时配合末尾注释 HTML 启用 */
+/* 可选组件样式：仅当用户明确点名写“数坑帖”时配合文末注释 HTML 启用（严禁放封面右上角禁区） */
 .tally { display: block; overflow: visible; }
 .tally g { transform: rotate(-3deg); transform-origin: 50% 50%; }
 .tally path { fill: none; stroke: var(--pencil); stroke-width: 17; stroke-linecap: round; stroke-linejoin: round; }
@@ -599,7 +814,7 @@ body {
 </style>
 </head>
 <body>
-<!-- 模切白边滤镜（供可选出镜人 person.png 使用） -->
+<!-- 模切白边滤镜（供可选出镜人 person.png 使用，由 scripts/lift-subject.swift 一键抠图） -->
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <filter id="die-cut" x="-10%" y="-10%" width="120%" height="120%">
     <feMorphology in="SourceAlpha" operator="dilate" radius="16" result="grow"/>
@@ -612,60 +827,195 @@ body {
 <main class="deck">
 <!-- POSTERS_HERE -->
 
-<!-- ===================== X01 · 默认封面（真仓大片 + 底部留边悬浮回执） ===================== -->
-<section class="card kraft" id="xhs-01" data-recipe="X01">
-  <div class="photo-well full-bleed">
-    <!-- <img class="photo" src="photo-cover.jpg" alt="" style="object-position:center 45%"> -->
-    <div class="well-note">[仓库实拍位 · 满版 3:4 · 放置 photo-cover.jpg 后自动隐藏本提示]</div>
-  </div>
-  <div class="bg-vignette"></div>
+<!-- =========================================================================
+     五大高 CTR 封面原型（图 1 / 视频封面通用，按选题选 2–3 套做 180px PK）
+     ========================================================================= -->
 
-  <div class="hero-tape tape">
-    <div class="tape-print t">杨美西转运 · 亲手打包 · LOS ANGELES · OCEAN FREIGHT</div>
-    <h1 class="tape-title">大件运洛杉矶<br>怎么最省钱</h1>
-    <div class="tape-print b">杨美西转运 · 亲手打包 · LOS ANGELES · OCEAN FREIGHT</div>
+<!-- ===================== X01 · 真仓悬念大片（默认图文封面 · 反剧透 / 去广告标 / 避右上角） ===================== -->
+<section class="card kraft" id="xhs-01" data-recipe="X01" data-role="cover" data-surface="photo"
+         data-feed-title="洛杉矶海运家具家电实操：3种拿货顺序搞懂，立省末端派送费">
+  <div class="photo-well full-bleed">
+    <!-- <img class="photo" src="photo-cover.jpg" alt="" style="object-position:center 35%"> -->
+    <div class="well-note">[仓库动作/真人搬箱实拍 · 满版 3:4 · 上半留给干净现场，避开箱面大字抢戏]</div>
   </div>
+  <div class="cover-scrim"></div>
 
   <div class="cover-shell">
-    <div>
-      <div class="brand-pill">
-        <span class="dot"></span>
-        <span class="name">杨美西转运</span>
-        <span class="route">国内仓 → 洛杉矶</span>
-      </div>
+    <!-- 左上仅放纯用户视角人群靶子签（≤6字），严禁放企业名广告框 -->
+    <div class="target-pill">
+      <span class="tag-dot"></span>
+      <span>洛杉矶大件海运</span>
     </div>
 
-    <div class="floating-slip">
-      <div class="slip-head">
-        <p class="slip-title">先看「最后怎么拿货」，再选渠道：</p>
-        <span class="slip-tag">3 STEPS</span>
+    <!-- 中下安全带（y ≈ 780–1260px）：100% 避开右上角播放标，落入 1:1 个人主页安全框 -->
+    <div class="x01-lower">
+      <div class="x01-setup">运大件去 LA</div>
+      <div class="x01-tape tape both">
+        <h1 class="tape-title">别先问<span class="punch">单价！</span></h1>
       </div>
-      <div class="slip-grid">
-        <div class="slip-item">
-          <span class="idx">01 · 最省钱</span>
-          <span class="main">海外仓自提</span>
-          <span class="sub">省掉末端派送费</span>
-        </div>
-        <div class="slip-item">
-          <span class="idx">02 · 满 100kg</span>
-          <span class="main">卡车派送</span>
-          <span class="sub">大件均摊送到门</span>
-        </div>
-        <div class="slip-item">
-          <span class="idx">03 · 小批大件</span>
-          <span class="main">海运拼邮</span>
-          <span class="sub">不便自提更省心</span>
-        </div>
+      <!-- 单行反剧透悬念条：只抛冲突不剧透答案，3 步答案留给图 2 (X02) -->
+      <div class="hook-bar">
+        <span>选错拿货方式，多付一半冤枉钱</span>
+        <span class="arrow">→</span>
       </div>
     </div>
   </div>
 
-  <!-- 若有出镜人透明抠图 person.png：给上方 .floating-slip 加 class="floating-slip with-person"，并取消下行注释 -->
-  <!-- <div class="sticker" style="right:36px;bottom:12px;width:360px;transform:rotate(-2deg)"><img src="person.png" alt=""></div> -->
+  <!-- 若有真人抠图 person.png：取消下行注释放在右中安全区，与左侧钩子形成呼吸 -->
+  <!-- <div class="sticker" style="right:28px;top:240px;width:360px;transform:rotate(-2deg)"><img src="person.png" alt=""></div> -->
   <div class="airmail"></div>
 </section>
 
-<!-- ===================== X02 · 骑缝拆解页（上半照片零遮挡 + 条件→行动双列对照） ===================== -->
+<!-- ===================== C02 · 双图强对比封面（Before / After · 图文/视频通用） ===================== -->
+<section class="card kraft" id="xhs-c02" data-recipe="C02" data-role="cover" data-surface="photo"
+         data-feed-title="国内集运到美国避坑：拆盒减重实测，别再傻傻按原箱付泡重">
+  <div class="compare-stage">
+    <div class="compare-pane photo-well">
+      <!-- <img class="photo" src="photo-before.jpg" alt="" style="object-position:center 45%"> -->
+      <div class="well-note" style="left:28px;right:28px;top:46%">[左图：原箱泡重 / 杂乱堆箱 / 踩坑前]</div>
+      <div class="compare-badge bad">✕ 原箱直接寄</div>
+    </div>
+    <div class="compare-pane photo-well">
+      <!-- <img class="photo" src="photo-after.jpg" alt="" style="object-position:center 45%"> -->
+      <div class="well-note" style="left:28px;right:28px;top:46%">[右图：拆盒合箱 / 木架加固 / 省钱后]</div>
+      <div class="compare-badge good">✓ 拆盒<span class="em">减重后</span></div>
+    </div>
+  </div>
+
+  <div class="vs-chip">VS</div>
+  <div class="cover-scrim"></div>
+
+  <div class="cover-shell" style="padding-bottom:144px">
+    <div class="target-pill">
+      <span class="tag-dot"></span>
+      <span>北美集运实测</span>
+    </div>
+
+    <div class="ctr-stack">
+      <div class="ctr-kicker">同样 100kg 运美国</div>
+      <h1 class="ctr-title compact">运费差<span class="punch-block">一半？</span></h1>
+      <div class="ctr-whisper">体积泡重怎么算才不挨宰 →</div>
+    </div>
+  </div>
+
+  <div class="airmail"></div>
+</section>
+
+<!-- ===================== C03 · 真人情绪口播封面（视频封面主力 · 100% 避右上角播放标） ===================== -->
+<section class="card kraft" id="xhs-c03" data-recipe="C03" data-role="cover" data-surface="video"
+         data-feed-title="美国海运大件怎么寄最省心？听完这3条再下单少走弯路">
+  <div class="photo-well full-bleed">
+    <!-- 9:16 视频用 scripts/make-video-contact-sheet.py 挑高情绪帧，放大到胸部以上近景，人眼落在中上安全区 -->
+    <!-- <img class="photo" src="video-cover-frame.jpg" alt="" style="object-position:center 22%"> -->
+    <div class="well-note">[真人近景/半身情绪帧 · 脸占 30–45% 高度 · 眼部落在画布中上安全区，远离右上角播放标]</div>
+  </div>
+  <div class="cover-scrim tall"></div>
+
+  <div class="c03-shell">
+    <!-- 左上极简场景标，右侧留给小红书视频播放图标 -->
+    <div class="target-pill">
+      <span class="tag-dot"></span>
+      <span>海运避坑说真话</span>
+    </div>
+
+    <!-- 底部核心超粗爆点：全锁在 1:1 个人主页安全带内（y ≤ 1260） -->
+    <div class="ctr-stack">
+      <div class="ctr-kicker">大件海运洛杉矶</div>
+      <h1 class="ctr-title">千万别<span class="punch-block">只问单价</span></h1>
+      <div class="ctr-whisper">看懂末端拿货，才是真正省大钱</div>
+    </div>
+  </div>
+
+  <div class="airmail"></div>
+</section>
+
+<!-- ===================== C04 · 物证红圈悬念封面（电子秤/账单/隐患特写 · 图文/视频通用） ===================== -->
+<section class="card kraft" id="xhs-c04" data-recipe="C04" data-role="cover" data-surface="video"
+         data-feed-title="国内打包发货最容易忽略的验货顺序，做对了不耽误船期少花冤枉工时">
+  <div class="photo-well full-bleed">
+    <!-- <img class="photo" src="photo-proof.jpg" alt="" style="object-position:center 48%"> -->
+    <div class="well-note">[高清物证特写：电子秤公斤数 / 账单打码局部 / 护角破损处]</div>
+  </div>
+  <div class="cover-scrim"></div>
+
+  <!-- 精准圈出物证异常点（坐标按实际图片微调，严禁落入右上角 x≥850 & y≤210） -->
+  <svg class="ring" style="left:290px;top:380px" width="360" height="230" viewBox="0 0 360 230">
+    <path class="under" d="M40 120 C 30 50, 150 18, 250 30 C 340 44, 350 150, 260 190 C 170 222, 50 200, 36 132 C 32 108, 60 84, 90 76"/>
+    <path class="over"  d="M40 120 C 30 50, 150 18, 250 30 C 340 44, 350 150, 260 190 C 170 222, 50 200, 36 132 C 32 108, 60 84, 90 76"/>
+  </svg>
+  <div class="callout-flag yellow" style="left:590px;top:350px">少看这眼!</div>
+
+  <div class="cover-shell">
+    <div class="target-pill">
+      <span class="tag-dot"></span>
+      <span>仓库实拍避坑</span>
+    </div>
+
+    <div class="ctr-stack">
+      <div class="ctr-kicker">合箱封箱前</div>
+      <h1 class="ctr-title compact">漏了<span class="alert-block">这步</span>整箱重拆</h1>
+      <div class="ctr-whisper">一分钟自查，少耽误一班船期 →</div>
+    </div>
+  </div>
+
+  <div class="airmail"></div>
+</section>
+
+<!-- ===================== C05 · 半露清单诱饵封面（高收藏攻略/敏感货表专版） ===================== -->
+<section class="card kraft" id="xhs-c05" data-recipe="C05" data-role="cover" data-surface="photo"
+         data-feed-title="2026北美留学生敏感货指南：零食药品带电实测通关攻略，新手收藏">
+  <div class="c05-shell">
+    <div class="target-pill light">
+      <span class="tag-dot"></span>
+      <span>2026 北美敏感货自查</span>
+    </div>
+
+    <!-- 宽度收在 780px 且居左，确保右上角 230×210 区域 100% 干净 -->
+    <div class="c05-tape tape both">
+      <h1 class="tape-title">寄美国<span class="punch">能寄清单</span></h1>
+    </div>
+
+    <!-- 故意只露前 3 条真货，第 4 条虚化 + 渐隐 CTA 拉动点击与收藏 -->
+    <div class="peek-sheet label perf">
+      <ul class="peek-list">
+        <li class="peek-row">
+          <span class="peek-tag">能寄</span>
+          <span class="peek-text">螺蛳粉 / 辣条 / 常规调味料</span>
+        </li>
+        <li class="peek-row">
+          <span class="peek-tag">专线</span>
+          <span class="peek-text">常备中成药 / 处方药（附处方）</span>
+        </li>
+        <li class="peek-row">
+          <span class="peek-tag no">禁寄</span>
+          <span class="peek-text">含肉蛋奶 / 未申报高功率电池</span>
+        </li>
+        <li class="peek-row tease">
+          <span class="peek-tag">专线</span>
+          <span class="peek-text">美妆液体 / 化妆品 / 带电小家电……</span>
+        </li>
+        <li class="peek-row tease-deep">
+          <span class="peek-tag no">禁寄</span>
+          <span class="peek-text">纯锂电 / 压缩喷雾 / 仿牌商品……</span>
+        </li>
+      </ul>
+      <div class="peek-fade">
+        <div class="peek-cta">
+          <span>完整 15 类实测对照</span>
+          <span class="em">右滑图 2 自取 →</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="airmail"></div>
+</section>
+
+<!-- =========================================================================
+     四大内页主力配方（图 2–N：答案闭环、品牌承接、干货收藏）
+     ========================================================================= -->
+
+<!-- ===================== X02 · 骑缝拆解页（图 2 承接 3 步答案 + 自然落品牌名） ===================== -->
 <section class="card" id="xhs-02" data-recipe="X02">
   <div class="photo-well seam-photo-stage">
     <!-- <img class="photo" src="photo-seam.jpg" alt="" style="object-position:center 38%"> -->
@@ -825,7 +1175,7 @@ body {
   <div class="airmail"></div>
 </section>
 
-<!-- ===================== X05 · 寄前核对清单（末页收藏引导卡） ===================== -->
+<!-- ===================== X05 · 寄前核对清单（末页收藏与品牌承接卡） ===================== -->
 <section class="card kraft" id="xhs-05" data-recipe="X05">
   <div style="padding:64px 64px 52px;flex:1 1 auto;display:flex;flex-direction:column;justify-content:space-between;position:relative;z-index:4">
     <div class="tape both" style="align-self:flex-start;padding:34px 68px;transform:rotate(-2.8deg)">
@@ -870,8 +1220,8 @@ body {
 
 <!-- =========================================================================
      OPTIONAL COMPONENT: .tally「正」字计数（默认禁用！）
-     触发条件：仅当用户明确要求写「数坑帖 / N 个容易出错的点」时，才允许复制下方标签挂入右上角。
-     普通攻略、计费、时效、对比、晒单、常规清单帖严禁启用！
+     触发条件：仅当用户明确要求写「数坑帖 / N 个容易出错的点」时，才允许复制下方标签启用。
+     注意：若放在封面上，严禁放到右上角 230×210px 播放标禁区内，建议放在内页或封面左侧。
      =========================================================================
   <div class="label" style="position:absolute;z-index:6;right:48px;top:48px;width:176px;padding:14px 14px 10px;transform:rotate(3deg)">
     <svg class="tally" data-n="3" viewBox="0 0 200 200" width="148" height="148"><g>

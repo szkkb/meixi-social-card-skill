@@ -1,6 +1,6 @@
 ---
 name: meixi-social-card-skill
-description: Generate Guizang-style social card image sets, Live Photo motion cards, material-first Live Photo puzzle layouts, triple Live Photo collages, long-video-to-Live-Photo treatments, and WeChat official account cover pairs from articles, scripts, screenshots, product notes, subtitles, photos, or user-supplied videos. Use when the user asks for 小红书图文, Rednote/Xiaohongshu images, social cards, carousel images, 3:4 covers, Live Photo, 实况照片, 单视频实况拼图, 二宫格实况拼图, 三连实况拼图, 四宫格实况拼图, 微信公众号封面, WeChat 21:9 + 1:1 covers, Swiss Style, 公众号图片消息, 小绿书, 贴图号, WeChat image messages, or magazine-style social images.
+description: Generate Guizang-style social card image sets, high-CTR Xiaohongshu photo and independent video covers, Live Photo motion cards, material-first Live Photo puzzle layouts, triple Live Photo collages, long-video-to-Live-Photo treatments, and WeChat official account cover pairs from articles, scripts, screenshots, product notes, subtitles, photos, or user-supplied videos. Use when the user asks for 小红书图文, 小红书封面, 小红书视频封面, Rednote/Xiaohongshu images, social cards, carousel images, 3:4 covers, Live Photo, 实况照片, 单视频实况拼图, 二宫格实况拼图, 三连实况拼图, 四宫格实况拼图, 微信公众号封面, WeChat 21:9 + 1:1 covers, Swiss Style, 公众号图片消息, 小绿书, 贴图号, WeChat image messages, or magazine-style social images.
 ---
 
 # Guizang Social Card Skill
@@ -17,12 +17,13 @@ Use this skill for:
 
 - Social card / carousel image sets: cover plus content pages, especially Xiaohongshu/Rednote 3:4.
 - Short Live Photo motion cards when the user asks for Live Photo / 实况照片 and supplies video evidence or screen recordings.
-- Material-first Live Photo puzzle layouts when the user has high-quality video assets and wants single-video, two-grid, three-grid, or four-grid motion cards with little or no added text.
+- Single-video, two-grid, three-grid, or four-grid material-first Live Photo puzzle layouts when the user has high-quality video assets and wants motion cards with little or no added text.
 - Triple Live Photo collages when the user has three short videos, three results, three viewpoints, or a high-information comparison that should stay inside one image-card unit.
 - Long-video intake for Live Photo: diagnose whether to trim, speed up, split into a triple collage, or ask the user for a specific time range before rendering.
 - WeChat Official Account cover pairs: one `21:9` main cover plus one `1:1` square cover, composed together in the same HTML for visual checking.
 - WeChat Official Account image messages (公众号图片消息 / 小绿书 / 2026 年后官方称贴图号): 3:4 card sets whose first image must survive WeChat's own 16:9 and 2.35:1 feed crops. Use the Greenbook template, not Editorial or Swiss.
-- 杨美西转运 Xiaohongshu account notes (the 「杨美西转运」 Rednote account, or any 美西转运 / MeixiPro 小红书图文): 3:4 card sets built from real warehouse packing photos, a topic title on brand-blue packing tape, and structured floating waybill slips / manifests (with optional real person cut-out). Use the 封箱 (Taped Shut) template (`X01`–`X05`), not Editorial or Swiss.
+- 杨美西转运 Xiaohongshu account notes & video covers (the 「杨美西转运」 Rednote account, or any 美西转运 / MeixiPro 小红书图文与视频封面): 3:4 high-CTR cover sets (`X01` + `C02`–`C05` cover archetypes, supporting both photo posts and independent `3:4` covers for `9:16` videos + multi-variant A/B cover PK) paired with real-warehouse inner pages (`X02`–`X05`). Use the 封箱 (Taped Shut) template (`X01`–`X05`), not Editorial or Swiss.
+- Xiaohongshu independent video covers (小红书视频独立 3:4 封面): extract high-emotion / high-action frames from `9:16` videos via `scripts/make-video-contact-sheet.py`, optionally lift foreground subjects with `scripts/lift-subject.swift`, and compose `1080×1440` covers that clear the top-right `230×210px` play-icon dead zone.
 - Screenshot-heavy product posts, article covers, tutorial carousels, outdoor/lifestyle notes, AI/product update explainers.
 - Social images that need Guizang-style Swiss or editorial magazine layouts.
 
@@ -56,14 +57,17 @@ When a request falls in the third bucket, name what we cannot do at intake — d
 
 ## Core Principle
 
-Expression comes first. The goal is not to squeeze text into posters; it is to turn the source into a clear visual argument.
+Expression comes first — and on Xiaohongshu, **Cover = Home Feed CTR (首页点击率), Pages 2–N = Save/Trust/Conversion (收藏与转化)**. Do not mix their rules:
+
+- **Cover (Page 1 / Video Cover)**: Built exclusively to stop thumbs in 0.5 seconds at `180pt` double-column feed width. Max 3 visual elements, curiosity gap (anti-spoiler — never dump 3-step answers on the cover), zero hard-ad corporate logo pills in top-left, punch-color keyword highlights, strict top-right `230×210px` UI clearance, and always paired with a non-overlapping feed title (`data-feed-title`). Read `references/xhs-cover-ctr.md` first.
+- **Inner pages (Pages 2–N)**: Turn the source into a clear visual argument with real evidence, comparisons, checklists, and brand trust.
 
 For each page, decide:
 
 - What should the viewer understand in one glance?
 - What evidence, screenshot, or image supports it?
-- Which words must be large, and which can become captions or metadata?
-- What can be removed because it belongs in the post body, not the image?
+- Which words must be large (and highlighted for cover punch), and which can become captions or metadata?
+- What can be removed because it belongs in the post body — or moved from the cover to Page 2 so the cover keeps a curiosity gap?
 
 ## Required References
 
@@ -86,8 +90,9 @@ Read these files as needed:
 - `references/category-cookbook.md` to route a user-named Rednote category (旅行 / 职场 / 游戏 / 影视 / 彩妆 / 美食 / 穿搭 / 家居 / 健身 / 情感 / 推荐) to applicable recipes and to confirm scope.
 - `references/greenbook-specs.md` when the target is a WeChat 公众号图片消息 / 小绿书 / 贴图号 card set — platform specs with evidence grading, the 16:9 / 2.35:1 crop math, recipes G01-G07, and the render/QA rules.
 - `DESIGN.md` (repo root) for the Greenbook card system: color tokens with measured contrast on the warm ground, the five typefaces and their licences, the `--display-zh` swap seam, the three vertical zones, and the do/don't list. Read it before touching `assets/template-greenbook-card.html`.
-- `DESIGN-xhs.md` (repo root) for the 封箱 Taped Shut system used by the 杨美西转运 Xiaohongshu account: recipes `X01` (default full-bleed cover + floating slip), `X02` (seam-taped unobstructed photo + comparison), `X03` (international freight manifest for pricing/schedules), `X04` (photo detail callout), and `X05` (pre-shipment checklist); anti-blur rules for calligraphy fonts (`font-weight: 400; font-synthesis: none`, `.tape::before` separated clip-path, `deviceScaleFactor: 2` supersampling); the opt-in-only `.tally`（「正」字, disabled by default and enabled ONLY when the user explicitly requests a pitfall-counting post); vetoed flat-bottom split-card cover anti-pattern; and empty states for missing photos, optional person cut-out, or unconfirmed `.pending` numbers. Read it before touching `assets/template-xhs-card.html`.
-- `references/font-library.md` when the cover title should be a 花体字 / 毛笔字 / 书法感面（"像剪映花体字那样"）— 53 款免费商用中文花体字的注册表、分组、授权等级、`data-title-font` 用法、Swiss 封面例外边界，以及取用/缺字检查脚本。授权核验记录见 `references/font-license-audit.md`。
+- `references/xhs-cover-ctr.md` (**mandatory before designing any Xiaohongshu photo cover or video cover**): cover vs inner-page decoupling, 0.5-second `180pt` Glance Test, 3-Element Rule, anti-spoiler curiosity gap, cover + feed title dual-track pairing (`data-feed-title`), 6 high-CTR hook formulas, 5 cover archetypes (`X01` / `C02`–`C05`), 9:16-to-3:4 video cover workflow, top-right `230×210px` UI dead zone, and default 2–3 variant A/B Cover PK delivery.
+- `DESIGN-xhs.md` (repo root) for the 封箱 Taped Shut system (v3 CTR-first) used by the 杨美西转运 Xiaohongshu account: 5 high-CTR cover archetypes (`X01` anti-spoiler suspense cover, `C02` Before/After split compare, `C03` human-emotion video cover, `C04` proof-object red-ring suspense, `C05` half-revealed checklist bait) and 4 inner-page recipes (`X02` seam-taped comparison, `X03` international freight manifest, `X04` photo detail callout, `X05` pre-shipment checklist); anti-blur rules for calligraphy fonts (`font-weight: 400; font-synthesis: none`, `.tape::before` separated clip-path, `deviceScaleFactor: 2` supersampling); the opt-in-only `.tally`（「正」字, disabled by default and enabled ONLY when the user explicitly requests a pitfall-counting post); vetoed flat-bottom split-card cover anti-pattern; and empty states for missing photos, optional person cut-out (`scripts/lift-subject.swift`), or unconfirmed `.pending` numbers. Read it before touching `assets/template-xhs-card.html`.
+- `references/font-library.md` when the cover title should be a 花体字 / 毛笔字 / 书法感面（"像剪映花体字那样"）— 52 款免费商用中文花体字的注册表、分组、授权等级、`data-title-font` 用法、Swiss 封面例外边界，以及取用/缺字检查脚本。授权核验记录见 `references/font-license-audit.md`。
 - `references/qa-checklist.md` before delivering final images.
 
 ## Workflow
@@ -122,11 +127,13 @@ If the content involves current product releases, policies, prices, claims, or n
 
 Turn the source into a page plan before designing.
 
-For Rednote:
+For Rednote (图文笔记 & 视频独立封面):
 
-- Page 1 is the cover hook.
-- Pages 2-N each carry one idea only.
-- Use 5-9 pages for most posts. Compress or combine pages when lower areas become empty.
+- Read `references/xhs-cover-ctr.md` first.
+- **Page 1 / Video Cover = CTR only**: Write a `6–10` Chinese-character visual hook with a `2–4` character punch highlight + a complementary **外显笔记标题 (`data-feed-title`, `<35%` overlap)**. Keep a curiosity gap — do NOT print the 3-step answer on the cover; move the full answer to Page 2.
+- **Default A/B Cover PK (一题多封)**: Unless the user explicitly asks for only 1 cover, produce **2–3 genuinely distinct cover variants** (e.g. `X01` 悬念大片 + `C03` 真人情绪 / `C02` 双图对比 / `C04` 物证红圈 / `C05` 半露清单) so the user can pick in the 180px feed simulator or upload directly to Xiaohongshu's official「封面测试 / PK」.
+- **Video covers (`9:16` video → `3:4` cover)**: Never use a random first frame. Run `python3 scripts/make-video-contact-sheet.py <video> assets/video-frames.jpg --frames 12 --cols 4`, pick the highest-emotion / clearest-action frame, crop chest-up for readable facial expression at `180pt`, optionally cut out the subject via `swift scripts/lift-subject.swift <in> <out.png>`, mark `data-role="cover" data-surface="video"`, and keep the top-right `230×210px` play-icon dead zone 100% clear.
+- Pages 2-N each carry one idea only (5-9 pages for most carousels). Brand name (`杨美西转运`) and structured dry goods belong on Pages 2-N and the closing checklist, not as a hard-ad badge on the cover.
 - Keep the post body for nuance; images should carry hooks, comparisons, checklists, and sharp takeaways.
 
 For WeChat:
@@ -195,7 +202,10 @@ Do not write HTML from scratch. Pick one seed template based on the style mode c
 
 - Editorial Magazine × E-ink → copy `assets/template-editorial-card.html` into the task folder as `index.html`.
 - Swiss International → copy `assets/template-swiss-card.html` into the task folder as `index.html`.
-- 杨美西转运 Xiaohongshu account → copy `assets/template-xhs-card.html` into the task folder as `index.html`. This is a brand system with its own fixed fonts and 5 topic recipes (`X01` default full-bleed cover with floating slip, `X02` seam-taped comparison, `X03` freight manifest for pricing/timeline, `X04` detail ring callout, `X05` checklist); it ignores `data-theme` / `data-title-font`. Do NOT render `.tally`（「正」字）unless the user explicitly requests a pitfall-counting ("N 个坑 / 容易出错的点") post, and NEVER slice the cover into a flat full-width bottom white list block. Put `photo-*.jpg` (and optional `person.png`) in `assets/` or next to `index.html`; never substitute AI-generated people or warehouses.
+- 杨美西转运 Xiaohongshu account (图文 & 视频封面) → copy `assets/template-xhs-card.html` into the task folder as `index.html`. This is a brand system with 5 high-CTR cover archetypes (`X01` anti-spoiler suspense cover, `C02` Before/After compare, `C03` human-emotion video cover, `C04` proof red-ring suspense, `C05` half-revealed checklist bait) and 4 inner-page recipes (`X02` seam-taped comparison, `X03` freight manifest, `X04` detail ring callout, `X05` checklist); it ignores `data-theme` / `data-title-font`. Mark every cover with `data-role="cover" data-surface="photo|video" data-feed-title="..."`. Do NOT put `.brand-pill` or a 3-column spoiler slip on covers. Do NOT render `.tally`（「正」字）unless the user explicitly requests a pitfall-counting ("N 个坑 / 容易出错的点") post, and NEVER slice the cover into a flat full-width bottom white list block. Put real `photo-*.jpg` (and optional `person.png` lifted via `scripts/lift-subject.swift`) in `assets/` or next to `index.html`; never substitute AI-generated people or warehouses.
+- WeChat Official Account image messages (小绿书 / 贴图号) → copy `assets/template-greenbook-card.html` into the task folder as `index.html` (follow `DESIGN.md` and `references/greenbook-specs.md`).
+
+When using Editorial or Swiss specifically for a **high-CTR Xiaohongshu cover**, add `data-role="cover" data-ctr-mode="true" data-surface="photo|video" data-feed-title="..."` on the cover `<section>` to unlock bold `700–900` punch weights and cover density exemption while keeping inner pages faithful to the base system.
 
 The seed already wires up: font loading, theme tokens, all three poster sizes (`.poster.xhs` / `.poster.square` / `.poster.wide`), the pair-preview frame, grain/background layers, and all class definitions referenced by the layout recipes.
 
@@ -215,8 +225,9 @@ Default implementation pattern:
 - Start from the seed template copied in Step 4.5, not a blank file. Prefer changing only the `<!-- POSTERS_HERE -->` region page-to-page. If a task needs custom layout CSS, add one clearly named task-scoped block in the copied file and keep semantic defaults reset (`figure { margin:0; }`, no browser-default spacing surprises).
 - Use Playwright (`deviceScaleFactor: 2` recommended when cards contain rotated calligraphy/tape, downsampling to `1080×1440` with `sips -z 1440 1080` if exact 1x dimensions are needed) to export each `.poster`, `.card`, `.board`, or `.cover` node. On macOS machines without Playwright's bundled headless shell, fall back to `/Applications/Google Chrome.app/Contents/MacOS/Google Chrome`.
 - Save rendered images in `output/`.
-- Verify dimensions and inspect the rendered PNGs.
-- Keep `node validate-social-deck.mjs <task-dir>` available for auto-check passes. It checks both `.poster` and XHS `.card` decks: overflow (R1), footer collision (R2), Swiss bold display (R3), minimum font size (R4), 4-band density (R5), `.h-xl` line caps (R6), browser-default figure margin drift (R7), visual bounds / bottom whitespace (R8), title-to-content gaps (R9),花体字 scope/family mismatch (R10), calligraphy faux-bold blur guard (R11), and XHS `.tally` / flat-bottom cover guardrails (R12). Exit code 1 on any FAIL — fix before final delivery when auto-check is requested. WARN is advisory but read it.
+- **For Xiaohongshu covers (图文 & 视频封面), build the 180px real dual-column feed simulator**: run `node scripts/build-feed-preview.mjs <task-dir> --screenshot` to inspect all candidate covers side-by-side in a simulated `180px` iPhone Xiaohongshu feed (with top-right video/photo badges, `230×210px` UI dead-zone overlay, `1:1` profile safe box, paired feed titles, and 0.6s Glance Test).
+- Verify dimensions and inspect the rendered PNGs (including `output/feed-preview-180px.png`).
+- Keep `node validate-social-deck.mjs <task-dir>` available for auto-check passes. It checks both `.poster` and XHS `.card` decks: overflow (R1), footer collision (R2), Swiss bold display (R3, exempt on `data-ctr-mode="true"` covers), minimum font size (R4), 4-band density (R5, inner pages only — covers exempt), `.h-xl` line caps (R6), browser-default figure margin drift (R7), visual bounds / bottom whitespace (R8), title-to-content gaps (R9), 花体字 scope/family mismatch (R10), calligraphy faux-bold blur guard (R11), XHS `.tally` / flat-bottom cover guardrails (R12), top-right `230×210px` UI dead-zone guard (R13, FAIL on video covers), cover anti-ad / anti-spoiler / word-overload guard (R14), and cover vs `data-feed-title` dual-track overlap check (R15). Exit code 1 on any FAIL — fix before final delivery when auto-check is requested. WARN is advisory but read it.
 
 Live Photo branch:
 
@@ -248,7 +259,7 @@ Whenever a poster places text on top of a photo (full-bleed cover, large image w
 - **Selection first, tint only if needed.** A photo covering ≥60% of the canvas must first pass the quiet-zone and light tests in `image-overlay.md`. Compose without a mask first; if the thumbnail check fails, add only a localized, image-toned tint around the title area. Do not default to full-canvas falloffs.
 - **Subject mapping is mandatory.** Before placing the title, read the image with the Read tool, describe in plain language where the subject's face/focal feature sits, and record the subject map as an HTML comment next to the hero block. Place text only in the documented safe zones.
 - **Crop discipline — set `object-position` inline on every photo.** The template default (`center 50%`) is a fallback, not a recommendation. For every `<img>`, decide based on subject location and write it inline: e.g. `style="object-position:center 62%"` for mid-body subjects, `center 30%` for sky-heavy landscapes with horizon-line subjects, `center 70%` for foreground gear. See the table in `references/components.md` for ranges and `image-overlay.md` for face-photo specifics. Skipping this silently crops subjects out of frame on tall ratios (`r-3x4`, `r-21x9`).
-- **Thumbnail test.** Downscale the rendered PNG to 360 px wide and confirm the title is still legible. If the title fights the photo, move the title, swap the photo, or add a localized image-toned tint; if the photo looks dead, the tint is too heavy or the photo was wrong for text-on-image.
+- **Thumbnail test (`180px` true feed width).** Downscale the rendered cover PNG to `180 px` wide (or inspect `output/feed-preview-180px.png` from `scripts/build-feed-preview.mjs`) and confirm the hook reads in 0.5 seconds without strain. If the title fights the photo, move the title, swap the photo, or add a localized dark/image-toned scrim; if the photo looks dead, the tint is too heavy or the photo was wrong for text-on-image.
 
 Editorial dark covers (e.g. game journals on key art) and Swiss covers with hero photos both require these checks. Skipping them is a known failure mode (see `style-system.md` Anti-Pattern D).
 
@@ -331,7 +342,7 @@ Final response (after the user has reviewed or asked for auto-check) should incl
 - When content overflows, measure the amount before editing. Small overflows should get small fixes: `1-40px` means nudge/tighten, `40-90px` means local compaction, `90-160px` means slight title or paragraph compression, and only `160px+` should trigger recipe changes or content removal. After fixing, check R8 bottom whitespace so the page does not swing from overflow to a giant empty lower band.
 - Do not let a title touch the next content block. Main display titles should usually keep at least `28px` below; local headings should keep at least `16px`. Use validator R9 before relying on visual inspection.
 - Do not let text become too small to read on mobile.
-- Do not write inline `font-size` + `font-weight` on display titles in Swiss. Use the typed classes (`.h-hero` / `.h-statement` / `.h-xl` / `.num-mega`). A 80-120px headline at weight 700-900 is not Swiss; "the larger, the lighter" is a hard rule.
+- Do not write inline `font-size` + `font-weight` on display titles in Swiss **inner pages** (use typed classes `.h-hero` / `.h-statement` / `.h-xl` / `.num-mega` — "the larger, the lighter"). On high-CTR Xiaohongshu **covers** with `data-role="cover" data-ctr-mode="true"`, bold `700–900` punch titles are explicitly allowed so 180pt thumbnails remain legible.
 - Do not deliver Editorial posters with a flat paper background, mono labels on every row, and no atmosphere layer. Run the Editorial Identity Test in `references/style-system.md` — a serif title alone does not make a poster Editorial.
 - Do not fake data, release details, or percentages.
 - Do not crop faces, key UI text, or hardware/product details unless the user explicitly accepts it.
@@ -340,4 +351,4 @@ Final response (after the user has reviewed or asked for auto-check) should incl
 - Do not let result videos scroll through section boundaries in a shallow crop; this creates the "overlapping video" failure. Inspect contact sheets and choose a stable time window before packaging.
 - Do not guess the user's visual priority when enlarging/cropping video for readability. Offer the crop/enlarge tradeoff and apply it after the user confirms, unless the request already makes the focal region explicit.
 - Do not reuse a 21:9 cover by blindly cropping it into 1:1. Compose each ratio separately.
-- **3:4 卡必须吃满画布**。Content (text + image + data) 必须覆盖 ≥75% 画布高度。任何 >15% 画布高度的纯空白带都需要"留白理由"：(a) hero image 自带呼吸、(b) 单句宣言式 hero statement、(c) 段落顶/底 leading & trailing whitespace（前后总和 ≤15%）。**禁止用 `<div style="flex: 1"></div>` 上下夹击把内容塞到中段**——杂志页留白逻辑不适用于社交卡（杂志靠对开页吸收留白，社交卡逐张独立刷，欠填看着像 PPT 漏排）。Recipe-by-recipe 最小密度见 `references/layout-recipes.md` 每条 recipe 的「Minimum density」段。Render 后必须跑 `qa-checklist.md` 的 4 横带密度检查。
+- **3:4 内页必须吃满画布；封面豁免以保护单一视觉焦点。** For **inner pages (Pages 2–N)**, content (text + image + data) must cover ≥75% canvas height, and any >15% empty band needs a stated reason (never sandwich content with empty `<div style="flex: 1"></div>`). For **covers (`data-role="cover"`)**, do NOT stuff extra boxes/bullets just to hit 75% density — follow `references/xhs-cover-ctr.md` (3-Element Rule + curiosity gap + clean breathing room for the hero subject).

@@ -12,20 +12,22 @@ Start from the user's original text and compress in layers:
 
 Do not put the full article on images. The image set is a visual outline that makes the user want to read the caption/body.
 
-## Rednote Page Plan Template
+## Rednote Page Plan Template (CTR-First)
 
 ```text
-Title:
-Audience:
-Style:
-Image assets:
+Topic & Audience Target (人群靶子):
+Surface: photo carousel | video cover (3:4 for 9:16 video)
+Style: 封箱 (XHS) | Editorial | Swiss
 
-01 Cover
-- Hook:
-- Visual:
-- Bottom points:
+Cover PK Candidates (默认 2–3 版高差异封面，绑定互补外显标题，重合 <35%):
+- Cover A (Archetype X01/C03/C02/...):
+  - Cover Hook (6–10 字 + 标出 2–4 字撞色爆点):
+  - Complementary Feed Title (外显标题 15–20 字，补场景+搜索词):
+  - Visual Anchor (真人情绪/前后对比/物证特写):
+  - Single Tension Line (反剧透悬念，不写答案):
+- Cover B (...):
 
-02 Page
+02 Page (承接答案闭环与品牌抬头)
 - Point:
 - Copy:
 - Visual:
@@ -58,23 +60,30 @@ Use varied roles instead of repeating the same card page:
 - For outdoor posts, lead with the embodied problem: hot, wet, slippery, heavy, exposed, lost, cold.
 - For AI/tool posts, lead with workflow change: faster capture, less manual work, cross-app automation, editable output.
 
-## Cover Hook Patterns
+## Cover Hook Patterns (High-CTR Engineering)
 
-Use one of these:
+Full rules live in `references/xhs-cover-ctr.md`. Never put the full answer on the cover — **open a curiosity gap on Page 1, close it on Page 2**.
 
-- "终于有 Mac 版了"
-- "新手别急着买"
-- "这个功能真的改变用法"
-- "我替你踩过坑了"
-- "先看这 5 个点"
-- "不要被装备带着走"
-- "从此不用手动..."
+Use one of these 6 proven Xiaohongshu high-CTR patterns (6–10 chars, always mark the 2–4 char punch phrase for color/size contrast):
+
+- **Loss aversion / counter-intuitive warning**: `寄大件去LA` / **`别先问单价！`** · `合箱漏看这步` / **`多付三成泡重`**
+- **Quantified contrast**: `同样 100kg` / **`运费差一半？`** · `拆掉12个鞋盒` / **`立省6公斤`**
+- **Audience call-out**: `洛杉矶搬家党` / **`家具海运避坑`** · `留学生寄零食` / **`哪些直接扣？`**
+- **Before / After visual clash**: left/right split photo + **`体积少一半`**
+- **Proof-object red-ring suspense**: scale/bill close-up + red circle + **`多算18kg？`**
+- **Half-revealed checklist bait**: show rows 1–3 only + `完整15类对照在图2 →`
+
+**Dual-Track Pairing (Mandatory):**
+Always output a paired **外显笔记标题 (`data-feed-title`)** whose literal overlap with the cover hook is **< 35%**:
+- Cover hook = conflict / emotion / bold number / curiosity gap.
+- Feed title = concrete scenario + search SEO keywords + clear takeaway promise.
 
 Avoid:
-
-- Overlong complete article titles.
-- Vague hype without a concrete object.
-- Multiple unrelated claims on one cover.
+- Putting the 3-step conclusion or full checklist on the cover (kills Curiosity Gap).
+- Copying the cover headline verbatim into the post title (wastes half the click real estate).
+- Placing corporate brand pills / logos in the top-left of the cover (triggers ad-defense in 0.3s).
+- Flat Baidu-style question sentences (`大件运洛杉矶怎么最省钱`) with zero tension or highlight.
+- Multiple unrelated claims on one cover (>3 visual elements).
 
 ## WeChat Square Title Compression
 

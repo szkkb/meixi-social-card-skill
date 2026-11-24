@@ -249,6 +249,71 @@ mustInclude(
   "font-synthesis: none",
   "XHS seed template prevents calligraphy faux-bold synthesis",
 );
+mustInclude(
+  "references/xhs-cover-ctr.md",
+  "180pt",
+  "XHS CTR spec defines 180pt dual-column glance standard",
+);
+mustInclude(
+  "references/xhs-cover-ctr.md",
+  "data-feed-title",
+  "XHS CTR spec requires dual-track cover and feed title pairing",
+);
+mustInclude(
+  "references/xhs-cover-ctr.md",
+  "make-video-contact-sheet.py",
+  "XHS CTR spec wires video contact-sheet frame picking for video covers",
+);
+mustInclude(
+  "SKILL.md",
+  "references/xhs-cover-ctr.md",
+  "SKILL.md references XHS cover CTR playbook",
+);
+mustInclude(
+  "SKILL.md",
+  "scripts/build-feed-preview.mjs",
+  "SKILL.md wires 180px dual-column feed simulator",
+);
+mustInclude(
+  "SKILL.md",
+  "scripts/lift-subject.swift",
+  "SKILL.md surfaces local subject cutout script for human covers",
+);
+mustInclude(
+  "assets/template-xhs-card.html",
+  'data-recipe="C02"',
+  "XHS seed template includes C02 compare cover",
+);
+mustInclude(
+  "assets/template-xhs-card.html",
+  'data-recipe="C03"',
+  "XHS seed template includes C03 human-emotion video cover",
+);
+mustInclude(
+  "assets/template-xhs-card.html",
+  'data-recipe="C04"',
+  "XHS seed template includes C04 proof red-ring cover",
+);
+mustInclude(
+  "assets/template-xhs-card.html",
+  'data-recipe="C05"',
+  "XHS seed template includes C05 half-revealed checklist cover",
+);
+mustInclude(
+  "validate-social-deck.mjs",
+  'rule: "R13"',
+  "validator enforces R13 top-right UI dead-zone check",
+);
+mustInclude(
+  "validate-social-deck.mjs",
+  'rule: "R14"',
+  "validator enforces R14 anti-ad / anti-spoiler / word-cap check",
+);
+mustInclude(
+  "validate-social-deck.mjs",
+  'rule: "R15"',
+  "validator enforces R15 cover vs feed-title overlap check",
+);
 checks.push(() => {
   const activeHtml = fileText("assets/template-xhs-card.html").replace(/<!--[\s\S]*?-->/g, "");
   const ok = !/<svg[^>]*class="[^"]*\btally\b/.test(activeHtml);

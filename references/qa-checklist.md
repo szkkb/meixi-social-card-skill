@@ -48,9 +48,11 @@ After fixing overflow, check for over-correction:
 - Do not accept a fix that turns a small overflow into a large empty lower band.
 - Prefer one measured adjustment per render pass, then re-run validation.
 
-### 4-band Density Check (3:4 only — run after render)
+### 4-band Density Check (3:4 inner pages only — covers exempt)
 
-Open the rendered PNG. Mentally divide it into 4 horizontal bands of 360px each (0-25%, 25-50%, 50-75%, 75-100%). For each band, classify as:
+Run this on **Pages 2–N (inner content cards)**. **Covers (`data-role="cover"`, `#xhs-01`, `X01`, `C02–C05`) are exempt** — never pack extra text boxes onto a cover just to satisfy 75% fill; covers follow `references/xhs-cover-ctr.md` (3-Element Rule & single visual focus).
+
+Open the rendered inner-page PNG. Mentally divide it into 4 horizontal bands of 360px each (0-25%, 25-50%, 50-75%, 75-100%). For each band, classify as:
 
 - **Filled** — contains text, image, data, or rule.
 - **Justified empty** — empty for a stated reason: hero-image breathing (M01/M16), single-sentence statement (M04/M13), leading/trailing margin (top 8% / bottom 8%).
@@ -64,6 +66,18 @@ A poster passes when:
 
 If failing: don't shrink the canvas, don't add decorative blobs. Either expand copy (more ledger items, longer paragraphs, supporting evidence row, marginalia column) or switch recipe (M07 → M04 for genuinely-short content; M03 → M11 to add a marginal column; thin ledger → M08 Tall Ledger with bigger rows).
 
+### Xiaohongshu Cover CTR Gate (Mandatory for Page 1 & Video Covers)
+
+Before delivering any Xiaohongshu photo cover or independent video cover (`references/xhs-cover-ctr.md`):
+
+- [ ] **180px Real Feed Glance Test**: generated `feed-preview.html` / `output/feed-preview-180px.png` via `node scripts/build-feed-preview.mjs <task-dir> --screenshot`; cover jumps out next to noisy neighbor cards and reads in **0.5 seconds** at `180px` width.
+- [ ] **Top-Right UI Dead Zone (`R13`)**: no headline text, numbers, faces, or red rings inside `x: 850–1080px, y: 0–210px` (video play icon / multi-photo badge zone). Verified under Video Play Icon mode.
+- [ ] **1:1 Profile Safe Band**: core headline and primary face stay inside `y: 180–1260px` with `≥64px` side padding.
+- [ ] **Anti-Spoiler & Anti-Ad (`R14`)**: no top-left corporate `.brand-pill` ad badge, no 3-column answer spoiler slip (`.floating-slip .slip-grid`), and total visible cover copy obeys the word cap.
+- [ ] **Dual-Track Title Pairing (`R15`)**: every cover declares a complementary `data-feed-title` with `<35%` overlap (cover = conflict/hook; feed title = scenario/SEO/benefit).
+- [ ] **Punch Contrast**: main hook is `6–10` chars with `2–4` kill words highlighted by punch color/block or scale contrast.
+- [ ] **A/B Cover PK Ready**: unless the user explicitly requested only 1 cover, delivered `2–3` genuinely distinct cover candidates ready for Xiaohongshu's official「封面测试 / PK」.
+
 ### Programmatic Layout Checks
 
 `validate-social-deck.mjs` reports:
@@ -71,8 +85,9 @@ If failing: don't shrink the canvas, don't add decorative blobs. Either expand c
 - `R1` / `R8`: DOM overflow and visual overflow, including measured pixel amount and the lowest overflowing element.
 - `R8`: bottom whitespace and active content height, which catches "fixed too much" layouts.
 - `R9`: title-to-content gap, which catches titles visually touching the next block.
+- `R13` / `R14` / `R15`: Xiaohongshu cover CTR guardrails — top-right `230×210px` UI dead zone (`R13`), anti-ad / anti-spoiler / word-overload (`R14`), and cover vs `data-feed-title` overlap (`R15`).
 
-Use these numbers as the first diagnosis. Multimodal inspection is still useful for taste, but overflow, empty lower bands, and title gaps should be handled from measured output first.
+Use these numbers as the first diagnosis. Multimodal inspection is still useful for taste, but overflow, empty lower bands, title gaps, and cover CTR violations should be handled from measured output first.
 
 ## Style
 
@@ -102,7 +117,7 @@ Run these only for posters where text touches a photo (full-bleed cover, large i
 - Subject map is documented as an HTML comment next to the hero block (face / focal feature location + safe zones).
 - No display title (≥72 px) overlaps a face, hand, or key product feature.
 - `object-position` was chosen from the subject-location table, not left at default for face shots.
-- Thumbnail test: downscale the rendered PNG to 360 px wide and confirm the title is still legible without strain.
+- Thumbnail test: downscale the rendered cover PNG to `180 px` wide (or inspect `output/feed-preview-180px.png` from `scripts/build-feed-preview.mjs`) and confirm the title is legible in 0.5 seconds without strain.
 
 ## Final Response
 
