@@ -1,6 +1,6 @@
 # Handoff — meixi-social-card-skill
 
-最后更新：2026-11-25 · 版本：v0.16（小红书首页 CTR 优先重构：图文/视频封面解耦、5 套高 CTR 封面原型 X01+C02–C05、180px 真双列信息流验图台、R13–R15 封面 CTR 校验护栏）
+最后更新：2026-11-25 · 版本：v0.17（美西官网 SEO 配图系统 Waybill Evidence v2 完整收口：SEO 实战专规 `references/web-seo-images.md`、`W01`–`W06` 种子模板、校验器 `R16`–`R20`、一键 WebP/OG/MDX/340px+SERP 打包验图台 `scripts/build-web-seo-pack.mjs`）
 
 这份文档只记录**事实**：当前 skill 由哪些文件组成、每个文件管什么、本轮更新改了什么、怎么验证它还能跑。想读"为什么这样做"或"未来要怎么走"，去看 `PRODUCT.md`。
 
@@ -11,42 +11,61 @@
 ## 1. 目录结构（事实版）
 
 ```
-guizang-social-card-skill/
+meixi-social-card-skill/
 ├── SKILL.md                   # 7 步工作流入口
+├── CLAUDE.md                  # 分发拓扑、真源约束与交付纪律
+├── DESIGN.md                  # Greenbook（公众号小绿书/贴图号）设计真源
+├── DESIGN-xhs.md              # 封箱（小红书图文 & 视频封面 v3 CTR 优先）设计真源
+├── DESIGN-web.md              # 航单实证（美西官网 SEO 配图系统 v2）设计真源
 ├── HANDOFF.md                 # 本文件
 ├── PRODUCT.md                 # 产品思考
 ├── assets/
 │   ├── template-editorial-card.html   # 杂志风种子
 │   ├── template-swiss-card.html       # 瑞士风种子
+│   ├── template-greenbook-card.html   # 公众号贴图号/小绿书种子（G01-G07）
+│   ├── template-xhs-card.html         # 杨美西小红书封箱种子（X01+C02-C05 / X02-X05）
+│   ├── template-web-card.html         # 美西官网 SEO 配图种子（W01-W06，5 档比例）
+│   ├── font-library.json              # 52 款免费商用中文花体字注册表
 │   ├── magazine-bg-webgl.js           # WebGL 墨流背景
 │   └── screenshot-backgrounds/        # 9 张 WebP 截图舞台底（v0.14 从 PPT skill port）
 │       ├── style-a/                   #   5 张 Editorial（dune / forest-ink / indigo-porcelain / kraft-paper / monocle-classic）
 │       └── style-b/                   #   4 张 Swiss（ikb-dot / lemon-green-dot / lemon-grid / safety-orange）
 ├── references/                # 子规范，按需读取
-│   ├── platform-specs.md      平台 × 分辨率 × 命名
-│   ├── style-system.md        两种风格的硬规则与反模式
+│   ├── platform-specs.md      平台 × 分辨率 × 命名（含官网 lib/image-ratios.ts 与 CWV 预算）
+│   ├── web-seo-images.md      官网配图 SEO 实战专规（Organic SERP / Discover / GEO / CWV / W01-W06）
+│   ├── xhs-cover-ctr.md       小红书图文/视频封面 CTR 实战专规
+│   ├── greenbook-specs.md     公众号图片消息/贴图号规格与裁切数学
+│   ├── brand-presets/         租户品牌预设（meixipro.md）
+│   ├── style-system.md        两种通用风格的硬规则与反模式
 │   ├── theme-presets.md       6 套杂志 palette（含 Midnight Ink）+ 4 套 Swiss accent
 │   ├── layout-recipes.md      版式骨架（M01-M16 + S01-S12 + WeChat）
 │   ├── components.md          字体 / 卡片 / 间距 / 图标 / 标题字数表
 │   ├── background-systems.md  墨流 / 网格 / 纸纹层
 │   ├── portrait-fill.md       3:4 板的留白对策
 │   ├── content-planning.md    钩子 / 拆页 / 文案压缩
-│   ├── production-workflow.md 渲染管线与命令
+│   ├── production-workflow.md 渲染管线与命令（含官网 SEO 打包）
 │   ├── image-overlay.md       文字压图：选图 / 局部 tint / 主体映射
 │   ├── screenshot-treatment.md 截图处理
 │   ├── map-component.md       Mapbox / OSM / schematic 地图
 │   ├── title-shortener.md     公众号 1:1 短标题
 │   ├── category-cookbook.md   小红书 11 个品类的版式路由
 │   ├── live-photo-production.md Live Photo 生产、拼图、长视频与发布规范
-│   └── qa-checklist.md        交付前 checklist
+│   ├── font-library.md        52 款免费商用中文花体字选字与换装规范
+│   ├── font-license-audit.md  花体字一手授权核验台账
+│   └── qa-checklist.md        交付前 checklist（含小红书 CTR 门禁与官网 SEO 门禁）
 ├── agents/
 │   └── openai.yaml            # 子代理配置（备用）
 ├── scripts/
 │   ├── check-skill-docs.mjs       # Skill 文档约束测试
-│   ├── make-video-contact-sheet.py # Live Photo 视频抽帧 contact sheet
+│   ├── build-feed-preview.mjs     # 小红书 180px 真双列信息流验图台
+│   ├── build-web-seo-pack.mjs     # 官网 SEO 配图一键 WebP/OG/MDX/JSON-LD 打包与 340px+SERP 验图台
+│   ├── build-font-links.mjs       # 花体字库链接/离线抓取工具
+│   ├── check-font-coverage.mjs    # 花体字逐字缺字检查
+│   ├── lift-subject.swift         # macOS Vision 人像/主体抠图
+│   ├── make-video-contact-sheet.py # 视频抽帧 contact sheet
 │   ├── package-live-photo.py      # JPG+MOV 打包为 .pvt 的入口
 │   └── *.swift                    # Apple Live Photo metadata helper
-├── validate-social-deck.mjs   # R1-R9 渲染后校验器
+├── validate-social-deck.mjs   # R1-R20 渲染后自动校验器（含小红书 CTR R13-R15 与官网 SEO R16-R20）
 ├── package.json / package-lock.json / node_modules   # 仅 playwright
 ├── .gitignore                 # v0.13 新增
 └── local-tests/               # 本地测试与素材（git 忽略，不随 skill 分发）
@@ -84,7 +103,22 @@ v0.13 起：git 仓库。`local-tests/` 整目录在 `.gitignore` 中，commit �
 
 仅记录"什么时候新增/变更了哪些可见资产"，不记录文风调整。
 
-### v0.16 · 2026-11-25（本轮）
+### v0.17 · 2026-11-25（本轮）
+
+主题：**美西官网 SEO 配图系统（Waybill Evidence v2）全面落地 — 一切围绕 Organic SEO、Google Discover、Image Pack、GEO 与 Core Web Vitals**。
+
+**新增**
+- `references/web-seo-images.md`：官网配图 SEO 实战专规（官网 vs 社媒配图解耦、四大 SEO 战场、搜索意图 → `W01`–`W06` 配方路由、十大硬规范：比例零 CLS、WebP/OG CWV 体积预算、`kebab-case` 文件名、`alt`/`caption`/`ImageObject` JSON-LD 互补、移动优先 `340px` 可读性、E-E-A-T 一手实拍、隐私不可逆马赛克脱敏、零 Emoji、非承诺 `.pending` 口径、得意黑单字重防糊，以及 5 步生产流）。
+- `DESIGN-web.md`：航单实证 Waybill Evidence v2 视觉与尺寸真源，修正初稿中 `W03`–`W05` 定义冲突、得意黑 `font-weight: 800` 伪粗体、错别字与缺失的 `og`/`tall` 规范，扩展为 `W01`–`W06` 通用 SEO 搜索意图体系。
+- `assets/template-web-card.html`：官网 SEO 配图种子模板，内置 5 档 `lib/image-ratios.ts` 板型（`wide` `1600×900` / `standard` `1600×1200` / `square` `1200×1200` / `tall` `1200×2400` / `og` `1200×630`）与 `W01`–`W06` 全套配方，全量携带 `data-seo-*` 元数据属性、`.pending` 占位标记、`.photo-slot.is-empty` 诚实空状态，彻底清除装饰性 Emoji 与未核实商业数字。
+- `scripts/build-web-seo-pack.mjs`（`npm run web:pack`）：一键渲染无损 PNG 母版（`output/masters/`）、调用 `cwebp` 按 CWV 预算自动压优官网 WebP（`output/web/*.webp`）、同步导出 `W06` 社媒爬虫通用 JPG（`output/web/*-og.jpg`），并自动生成 `output/seo-manifest.json`、可直接粘贴的 `output/mdx-snippets.md`（含 `<Image />` 与 `ImageObject` JSON-LD）及桌面 `688px` + 手机 `340px` + SERP/Discover/OG 四视图验图台（`web-seo-preview.html` / `output/web-seo-preview.png`）。
+
+**修改**
+- `validate-social-deck.mjs`：新增 `section.board` 扫描与 `style === "web"` 自动识别；新增官网 SEO 五项守卫规则 **`R16`**（严格尺寸比例 + Discover ≥1200px + 手机 340px 字号底线 + 得意黑防伪粗体）、**`R17`**（`kebab-case` 唯一文件名 / `alt` / `caption` / `keyword` / 内图 `alt`）、**`R18`**（Photo-First 实拍占比 / 破图与空状态 / 禁用装饰性 Emoji / 禁黑条压截图）、**`R19`**（反文字墙字数上限 / 占位残留 / 绝对化违规词）、**`R20`**（`W02`/`W05` `object-fit: contain` 防裁切 + 敏感单据源图马赛克核验）。
+- `SKILL.md`：恢复并补全完整的双语 frontmatter 触发词（修复初稿误删既有触发词的回归），完整接入官网 SEO 自动路由、工作流、交付标准与硬底线。
+- `CLAUDE.md`、`package.json`、`references/platform-specs.md`、`references/qa-checklist.md`、`references/theme-presets.md`、`references/components.md`、`references/production-workflow.md`、`scripts/check-skill-docs.mjs`：全量同步官网 SEO 规范、隔离声明与文档测试断言。
+
+### v0.16 · 2026-11-25
 
 主题：**小红书首页点击率（CTR）全面重构 — 图文封面与视频封面彻底转向 0.5 秒双列转化**。
 

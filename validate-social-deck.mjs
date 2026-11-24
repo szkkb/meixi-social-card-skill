@@ -4,12 +4,13 @@
  *
  *   node validate-social-deck.mjs <task-dir|index.html>
  *
- * Checks each <section class="poster …"> or <section class="card …"> in the target HTML
- * against the rules codified in SKILL.md / DESIGN-xhs.md / qa-checklist.md / components.md.
+ * Checks each <section class="poster …">, <section class="card …">, or <section class="board …">
+ * in the target HTML against the rules codified in SKILL.md / DESIGN-xhs.md / DESIGN-web.md /
+ * references/web-seo-images.md / qa-checklist.md / components.md.
  * Exits 1 if any FAIL.
  *
  * Rules implemented:
- *   R1  overflow              scrollHeight > clientHeight on the poster/card
+ *   R1  overflow              scrollHeight > clientHeight on the poster/card/board
  *   R2  footer collision      .foot / .airmail is position:absolute AND text extends into its band
  *   R3  swiss bold display    .h-xl / .h-hero / .h-statement / .num-mega with computed weight >= 600
  *   R4  min readable font     body/lead/caption/label/meta below the mobile-safe floor
@@ -20,11 +21,16 @@
  *   R9  title gap              display title touches the next content block
  *   R10 花体字作用域/族名      data-title-font 生效时花体字只许出现在封面级显示标题上，
  *                              且 font-family 必须写 CSS 族名而不是中文字体名
- *   R11 花体字伪粗体防糊      单字重花体字（如仓耳周珂正大榜书/千图笔锋手写体）computedWeight >= 600 会触发伪粗体糊字
+ *   R11 花体字伪粗体防糊      单字重花体字（如仓耳周珂正大榜书/千图笔锋手写体/得意黑）computedWeight >= 600 会触发伪粗体糊字
  *   R12 小红书封箱专属守卫    拦截已否决的「上图+下满宽贴边死白底列表」封面，并对可选组件 .tally（「正」字）给出启用核对提醒
  *   R13 封面右上角 UI 禁区    拦截落入小红书发现页右上角 230×210px 播放标/多图角标区的封面文字与标注（视频封面 FAIL / 图文 WARN）
  *   R14 封面反剧透/反硬广/过载 拦截封面左上企业硬广标 (.brand-pill)、3 栏剧透回执 (.floating-slip .slip-grid) 及字数过载
  *   R15 封面/外显标题双轨校验  检查封面主钩子与 data-feed-title 的文字重合率，避免双列卡片浪费一半点击面积
+ *   R16 官网尺寸/Discover/字号 校验官网配图严格对齐 lib/image-ratios.ts 尺寸、Hero 宽 ≥1200px、手机 340px 字号底线与得意黑防伪粗体
+ *   R17 官网 SEO 元数据守卫    校验 data-seo-filename (kebab-case 唯一)、data-seo-alt、data-seo-caption、data-target-keyword 与内图 alt
+ *   R18 官网实拍占比与禁令     校验 Photo-First 影像占比、破图/空状态、禁用装饰性 Unicode Emoji、禁用黑条压截图反模式
+ *   R19 官网反文字墙与口径     校验单图可见字数上限（长正文留给 HTML 索引）、占位符残留与绝对化违规表述
+ *   R20 官网截图与隐私脱敏     校验 W02/W05 object-fit:contain 防边缘裁切，以及 W05 敏感证明的不可逆像素马赛克核验标记
  */
 import { chromium } from "playwright";
 import { fileURLToPath } from "node:url";
@@ -51,7 +57,7 @@ for (const a of args) {
   else if (!target) target = a;
 }
 if (!target) {
-  console.error("usage: node validate-social-deck.mjs <task-dir|index.html> [--style=swiss|editorial|xhs]");
+  console.error("usage: node validate-social-deck.mjs <task-dir|index.html> [--style=swiss|editorial|xhs|web]");
   process.exit(2);
 }
 const abs = path.resolve(target);
@@ -70,7 +76,7 @@ const browser = await launchChromium([
   "--enable-unsafe-swiftshader",
 ]);
 const ctx = await browser.newContext({
-  viewport: { width: 1400, height: 1700 },
+  viewport: { width: 1700, height: 2500 },
   deviceScaleFactor: 1,
 });
 const page = await ctx.newPage();
@@ -79,9 +85,14 @@ await page.waitForTimeout(1200);
 
 const style = styleOverride || await page.evaluate(() => {
   const html = document.documentElement;
+  if (
+    html.dataset.system === "web" ||
+    document.querySelector('section.board[data-recipe^="W"], section.board[data-seo-filename]')
+  ) return "web";
   if (html.dataset.theme) return "editorial";
   if (html.dataset.accent) return "swiss";
   if (document.querySelector("section.card") && (html.dataset.brand || document.querySelector(".tape"))) return "xhs";
+  if (document.querySelector("section.board")) return "greenbook";
   // Fallback: any display class using a serif family = editorial; otherwise swiss.
   // Note: "sans-serif" generic name also contains the substring "serif", so we
   // match on serif-only families by token, not substring.
@@ -93,8 +104,17 @@ const style = styleOverride || await page.evaluate(() => {
   return "swiss";
 });
 
-const sections = await page.$$("section.poster, section.card");
+const sections = await page.$$("section.poster, section.card, section.board");
 const report = [];
+const webFilenameSeen = new Map();
+
+const WEB_RATIOS = {
+  wide:     { w: 1600, h: 900 },
+  standard: { w: 1600, h: 1200 },
+  square:   { w: 1200, h: 1200 },
+  tall:     { w: 1200, h: 2400 },
+  og:       { w: 1200, h: 630 },
+};
 
 // "Obviously too small" floors — below these, text becomes unreadable at phone size.
 // Seeds use 26-28px body, 30-32px lead — those are fine. Anything 4+px below is suspect.
@@ -142,14 +162,25 @@ function overflowFix(px) {
 
 for (const s of sections) {
   const meta = await s.evaluate((el, isFirst) => {
+    const r = el.getBoundingClientRect();
     const w = el.clientWidth, h = el.clientHeight;
-    let board = el.classList.contains("xhs") ? "xhs"
+    const outerW = Math.round(r.width), outerH = Math.round(r.height);
+    const dataRatio = (el.dataset.ratio || "").toLowerCase();
+    let board = dataRatio
+              || (el.classList.contains("xhs") ? "xhs"
+              : el.classList.contains("standard") ? "standard"
+              : el.classList.contains("tall") ? "tall"
+              : el.classList.contains("og") ? "og"
               : el.classList.contains("square") ? "square"
-              : el.classList.contains("wide") ? "wide" : null;
+              : el.classList.contains("wide") ? "wide" : null);
     if (!board) {
-      const ratio = w / h;
+      const ratio = outerW / outerH;
       if (Math.abs(ratio - 0.75) < 0.02) board = "xhs";        // 3:4
       else if (Math.abs(ratio - 1.0) < 0.02) board = "square"; // 1:1
+      else if (Math.abs(ratio - 16 / 9) < 0.03) board = "wide";
+      else if (Math.abs(ratio - 4 / 3) < 0.03) board = "standard";
+      else if (Math.abs(ratio - 1200 / 630) < 0.03) board = "og";
+      else if (Math.abs(ratio - 0.5) < 0.03) board = "tall";
       else if (Math.abs(ratio - 7 / 3) < 0.05) board = "wide"; // 21:9
       else board = "unknown";
     }
@@ -168,14 +199,27 @@ for (const s of sections) {
       id: el.id || "(no-id)",
       dataId: el.dataset.id || "",
       board,
+      ratio: dataRatio || board,
       recipe,
       surface,
       feedTitle,
       ctrMode,
       isCover,
+      seoRole: (el.dataset.seoRole || "").toLowerCase(),
+      seoFilename: (el.dataset.seoFilename || "").trim(),
+      seoAlt: (el.dataset.seoAlt || "").trim(),
+      seoCaption: (el.dataset.seoCaption || "").trim(),
+      targetKeyword: (el.dataset.targetKeyword || "").trim(),
+      schemaType: (el.dataset.schemaType || "").trim(),
+      loading: (el.dataset.loading || "").toLowerCase(),
+      privacy: (el.dataset.privacy || "").toLowerCase(),
+      mosaicVerified: el.dataset.mosaicVerified === "true",
+      isPlaceholder: el.dataset.placeholder === "true",
       clientH: h,
       scrollH: el.scrollHeight,
       clientW: w,
+      outerW,
+      outerH,
     };
   }, report.length === 0);
   const fails = [];
@@ -190,8 +234,8 @@ for (const s of sections) {
   // R8 visual bounds — measures the true rendered content extent, not just scrollHeight.
   const visualBounds = await s.evaluate(el => {
     const er = el.getBoundingClientRect();
-    const H = el.clientHeight;
-    const W = el.clientWidth;
+    const H = Math.round(er.height);
+    const W = Math.round(er.width);
     const posterArea = H * W;
     const TRANSPARENT = /rgba?\(\s*0\s*,\s*0\s*,\s*0\s*,\s*0?\s*\)|transparent/;
     const hasDirectText = n => {
@@ -791,6 +835,392 @@ for (const s of sections) {
     }
   }
 
+  // R16–R20 官网配图 SEO 专项守卫（尺寸比例与Discover / SEO元数据 / Photo-First与禁令 / 反文字墙与口径 / 截图防裁切与隐私脱敏）
+  if (style === "web") {
+    // R16: lib/image-ratios.ts 严格像素绑定 + Google Discover >= 1200px + 手机 340px 字号底线 + 得意黑单字重防糊
+    const expected = WEB_RATIOS[meta.ratio];
+    if (!expected) {
+      fails.push({
+        rule: "R16",
+        msg: `未识别的官网配图比例 data-ratio="${meta.ratio}"（允许值：wide / standard / square / tall / og）`,
+        fix: "在 <section class='board ...'> 上声明合法的 lib/image-ratios.ts 比例类与 data-ratio 属性（见 DESIGN-web.md）",
+      });
+    } else if (Math.abs(meta.outerW - expected.w) > 2 || Math.abs(meta.outerH - expected.h) > 2) {
+      fails.push({
+        rule: "R16",
+        msg: `尺寸 ${meta.outerW}×${meta.outerH} 与 data-ratio="${meta.ratio}" 要求的 ${expected.w}×${expected.h} 不符（会导致官网 CLS 比例漂移）`,
+        fix: `恢复 .board.${meta.ratio} 的固定像素尺寸为 ${expected.w}×${expected.h}（严格绑定 lib/image-ratios.ts）`,
+      });
+    }
+    if ((meta.recipe === "W01" || meta.seoRole === "hero") && meta.outerW < 1200) {
+      fails.push({
+        rule: "R16",
+        msg: `文章主封面 (${meta.recipe || "hero"}) 宽仅 ${meta.outerW}px，低于 Google Discover 硬门槛 1200px`,
+        fix: "主封面默认采用 wide (1600×900) 以满足 Google Discover 大图展示与首屏清晰度",
+      });
+    }
+
+    const webDom = await s.evaluate((el, recipe) => {
+      const er = el.getBoundingClientRect();
+      const isVisible = n => {
+        const cs = getComputedStyle(n);
+        if (cs.display === "none" || cs.visibility === "hidden" || parseFloat(cs.opacity) <= 0.05) return false;
+        const r = n.getBoundingClientRect();
+        return r.width > 2 && r.height > 2;
+      };
+      const hasOwnText = n => {
+        for (const c of n.childNodes) {
+          if (c.nodeType === 3 && c.textContent.trim().length > 0) return true;
+        }
+        return false;
+      };
+
+      // R16: 手机 340px 可读字号与得意黑防伪粗体
+      const smallFonts = [];
+      const smileyFauxBold = [];
+      const checkMin = (selector, minPx, role) => {
+        for (const n of el.querySelectorAll(selector)) {
+          if (!isVisible(n) || !n.textContent.trim()) continue;
+          const sz = parseFloat(getComputedStyle(n).fontSize);
+          if (sz > 0 && sz < minPx) {
+            smallFonts.push({ role, size: Math.round(sz), minPx, text: n.textContent.trim().slice(0, 24) });
+          }
+        }
+      };
+      checkMin(".header-title, .w01-heading, .w06-heading", 36, "display");
+      checkMin(".split-tag .title, .w02-pill, .tri-title, .formula-eq", 19, "cardTitle");
+      checkMin(".w01-bullet-item, .split-label-bar, .tri-footer-note, .w04-proof-cap, .w04-verdict-bar, .formula-note, .w06-sub, .route-table td", 17, "body");
+      checkMin(".web-footer, .meta-badge, .brand-capsule", 14, "meta");
+
+      for (const n of el.querySelectorAll("*")) {
+        if (!isVisible(n) || !hasOwnText(n)) continue;
+        const cs = getComputedStyle(n);
+        const firstFam = cs.fontFamily.split(",")[0].replace(/["']/g, "").trim().toLowerCase();
+        if (firstFam.includes("smiley sans")) {
+          const w = parseInt(cs.fontWeight, 10) || 400;
+          if (w >= 600) {
+            smileyFauxBold.push({
+              sel: n.className ? "." + String(n.className).split(" ").filter(Boolean).join(".") : n.tagName.toLowerCase(),
+              weight: w,
+              text: n.textContent.trim().slice(0, 20),
+            });
+          }
+        }
+      }
+
+      // R17: 内部 img alt 检查
+      const missingImgAlts = [];
+      const brokenImgs = [];
+      for (const img of el.querySelectorAll("img")) {
+        if (!isVisible(img)) continue;
+        const alt = (img.getAttribute("alt") || "").trim();
+        if (!alt || /^(image|photo|img|pic|placeholder|图片|配图)$/i.test(alt)) {
+          missingImgAlts.push(img.getAttribute("src") || "(inline img)");
+        }
+        if (img.complete && img.naturalWidth === 0) {
+          brokenImgs.push(img.getAttribute("src") || "(unknown src)");
+        }
+      }
+      const emptySlots = [...el.querySelectorAll(".photo-slot.is-empty")].filter(isVisible).length;
+
+      // R18: Photo-First 实拍影像面积占比 + 装饰性 Emoji + 黑条横压截图中心检查
+      const stageNode = el.querySelector(".web-canvas, .w06-shell") || el;
+      const stageRect = stageNode.getBoundingClientRect();
+      const stageArea = Math.max(1, stageRect.width * stageRect.height);
+      const mediaFrames = [...el.querySelectorAll(".photo-slot, .w01-photo-frame, .w02-screenshot-frame, .split-photo-frame, .w04-proof-photo, .tri-photo-frame, .w06-photo, .tall-photo-frame")]
+        .filter(isVisible);
+      const uniqueFrames = [...new Set(mediaFrames)];
+      let mediaArea = 0;
+      for (const f of uniqueFrames) {
+        const r = f.getBoundingClientRect();
+        mediaArea += r.width * r.height;
+      }
+      const mediaRatio = Math.min(1, mediaArea / stageArea);
+
+      // 装饰性 Emoji 扫描（允许单色几何符号 ✓ ✕ △ → ·）
+      const EMOJI_RE = /[\u{1F300}-\u{1FAFF}\u26A0\u26A1\u2705\u274C\u274E\u2757\u2753\u2B50\u23F0\u23F3]/gu;
+      const rawVisibleTexts = [];
+      for (const n of el.querySelectorAll("*")) {
+        if (n.closest("script, style")) continue;
+        if (!isVisible(n) || !hasOwnText(n)) continue;
+        for (const c of n.childNodes) {
+          if (c.nodeType === 3 && c.textContent.trim()) rawVisibleTexts.push(c.textContent.trim());
+        }
+      }
+      const allVisibleText = rawVisibleTexts.join(" ");
+      const emojiHits = [...new Set(allVisibleText.match(EMOJI_RE) || [])];
+
+      // 拦截深色半透明条横压在截图/实拍中心（放行 .pin-tag 与 .mosaic-layer）
+      const centerOverlays = [];
+      for (const frame of uniqueFrames) {
+        const fr = frame.getBoundingClientRect();
+        const midTop = fr.top + fr.height * 0.25;
+        const midBot = fr.top + fr.height * 0.75;
+        for (const n of frame.querySelectorAll("*")) {
+          if (n.matches("img, .pin-box, .pin-tag, .mosaic-layer, .empty-tag, .empty-hint") || n.closest(".is-empty")) continue;
+          if (!isVisible(n) || !n.textContent.trim()) continue;
+          const nr = n.getBoundingClientRect();
+          const cs = getComputedStyle(n);
+          const m = cs.backgroundColor.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d.]+))?\)/);
+          const isDarkBg = m && (+m[1] < 80 && +m[2] < 80 && +m[3] < 80) && (m[4] === undefined || parseFloat(m[4]) >= 0.35);
+          if (isDarkBg && nr.width >= fr.width * 0.55 && nr.bottom > midTop && nr.top < midBot) {
+            centerOverlays.push(n.textContent.trim().slice(0, 24));
+          }
+        }
+      }
+
+      // R19: 反文字墙字数统计（按内容阅读单元计：1 汉字 = 1 单元，1 英文/数字词 = 1 单元；排除固定眉栏胶囊与底栏路由）+ 占位残留 + 绝对化违规词
+      const contentTexts = [];
+      for (const n of el.querySelectorAll("*")) {
+        if (n.closest("script, style, .web-footer, .meta-badge, .brand-capsule, .w01-kicker, .w01-meta-bar, .w06-foot")) continue;
+        if (!isVisible(n) || !hasOwnText(n)) continue;
+        for (const c of n.childNodes) {
+          if (c.nodeType === 3 && c.textContent.trim()) contentTexts.push(c.textContent.trim());
+        }
+      }
+      const contentJoined = contentTexts.join(" ");
+      const cjkUnits = (contentJoined.match(/[\u4e00-\u9fff]/g) || []).length;
+      const wordUnits = (contentJoined.match(/[A-Za-z0-9]+/g) || []).length;
+      const strippedChars = cjkUnits + wordUnits;
+      const placeholderHits = (allVisibleText.match(/\[必填\]|replace-with-[a-z0-9-]+/gi) || []);
+      const forbiddenClaims = (allVisibleText.match(/绝对最便宜|全网最低|100%\s*包清关|100%\s*必过|永不被税|保证不丢件/g) || []);
+
+      // R20: W02/W05 object-fit: contain 保护 + .mosaic-layer 检测
+      const croppedScreenshots = [];
+      if (recipe === "W02" || recipe === "W05") {
+        for (const img of el.querySelectorAll(".w02-screenshot-frame img, .tri-photo-frame img")) {
+          if (!isVisible(img)) continue;
+          const fit = getComputedStyle(img).objectFit;
+          if (fit !== "contain") {
+            croppedScreenshots.push({ src: img.getAttribute("src") || "(img)", fit });
+          }
+        }
+      }
+      const activeCssMosaic = [...el.querySelectorAll(".mosaic-layer")].filter(isVisible).length;
+
+      return {
+        smallFonts: smallFonts.slice(0, 4),
+        smileyFauxBold: smileyFauxBold.slice(0, 3),
+        missingImgAlts,
+        brokenImgs,
+        emptySlots,
+        mediaCount: uniqueFrames.length,
+        mediaRatio,
+        emojiHits,
+        centerOverlays,
+        strippedChars,
+        placeholderHits,
+        forbiddenClaims,
+        croppedScreenshots,
+        activeCssMosaic,
+      };
+    }, meta.recipe);
+
+    for (const sf of webDom.smallFonts) {
+      warns.push({
+        rule: "R16",
+        msg: `${sf.role} "${sf.text}" 字号 ${sf.size}px < 手机 340px 可读底线 ${sf.minPx}px`,
+        fix: "精简图内文字并保持 1600px 母版字号不低于 DESIGN-web.md 阶梯，长正文放回 HTML/MDX",
+      });
+    }
+    for (const fb of webDom.smileyFauxBold) {
+      fails.push({
+        rule: "R16",
+        msg: `${fb.sel} "${fb.text}" 使用单字重得意黑 Smiley Sans Oblique 却设了 font-weight: ${fb.weight}（会触发伪粗体糊字）`,
+        fix: "显式设置 font-weight: 400 !important; font-synthesis: none;（见 DESIGN-web.md）",
+      });
+    }
+
+    // R17: SEO 元数据完整性校验
+    const slugRe = /^[a-z0-9]+(?:-[a-z0-9]+){1,9}$/;
+    const genericSlugRe = /^(image|img|photo|pic|screenshot|screen|untitled|test|demo|card|web|banner|cover|replace-with)(-\d+)?$/i;
+    if (!meta.seoFilename) {
+      fails.push({
+        rule: "R17",
+        msg: `缺少 data-seo-filename —— 官网配图必须使用语义化英文 kebab-case 文件名`,
+        fix: `在 <section> 上添加 data-seo-filename="topic-entity-role"（全小写英文短横线，3-7 词，不含扩展名）`,
+      });
+    } else if (!slugRe.test(meta.seoFilename) || meta.seoFilename.length > 65 || genericSlugRe.test(meta.seoFilename)) {
+      fails.push({
+        rule: "R17",
+        msg: `data-seo-filename="${meta.seoFilename}" 不符合 SEO 语义命名规范（须为全小写英文 kebab-case、2-10 词、≤65 字符、非通用占位名）`,
+        fix: `改为如 "taobao-pdd-warehouse-address-paste-steps" 的语义化英文短横线文件名（严禁中文/空格/image1）`,
+      });
+    } else if (webFilenameSeen.has(meta.seoFilename)) {
+      fails.push({
+        rule: "R17",
+        msg: `data-seo-filename="${meta.seoFilename}" 与 #${webFilenameSeen.get(meta.seoFilename)} 重复，导出时会互相覆盖`,
+        fix: "为每张官网配图分配唯一的语义化英文文件名",
+      });
+    } else {
+      webFilenameSeen.set(meta.seoFilename, meta.id);
+    }
+
+    if (!meta.seoAlt || /\[必填\]|replace-with/i.test(meta.seoAlt)) {
+      fails.push({
+        rule: "R17",
+        msg: `缺少有效的 data-seo-alt —— Google Images 与无障碍抓取必须提供真实语义 Alt 文本`,
+        fix: `在 <section> 上补充 data-seo-alt="客观描述画面实证 + 自然融入 1 个目标词"（中文 18-55 字）`,
+      });
+    } else {
+      if (/^(图片|配图|这是一张|一张关于|示意图|image of|picture of|photo of)/i.test(meta.seoAlt)) {
+        fails.push({
+          rule: "R17",
+          msg: `data-seo-alt="${meta.seoAlt.slice(0, 28)}..." 以无意义前缀（图片/配图/这是一张等）开头`,
+          fix: "直接描述图中核心实体与实证内容，去掉「图片/这是一张」等废话前缀",
+        });
+      }
+      const cjkCount = (meta.seoAlt.match(/[\u4e00-\u9fff]/g) || []).length;
+      const isCjk = cjkCount >= 6;
+      if ((isCjk && meta.seoAlt.length < 10) || (!isCjk && meta.seoAlt.length < 20)) {
+        fails.push({
+          rule: "R17",
+          msg: `data-seo-alt="${meta.seoAlt}" 过短（${meta.seoAlt.length} 字符），缺乏实体上下文`,
+          fix: "扩展为包含主体对象 + 操作/对比实证 + 1 个目标词的完整描述（中文 18-55 字）",
+        });
+      } else if ((isCjk && meta.seoAlt.length > 80) || (!isCjk && meta.seoAlt.length > 150)) {
+        warns.push({
+          rule: "R17",
+          msg: `data-seo-alt 偏长（${meta.seoAlt.length} 字符），易被截断或像关键词堆砌`,
+          fix: "精简至中文 18-55 字（英文 60-125 字符），细节放到 data-seo-caption 或正文",
+        });
+      }
+      const commaParts = meta.seoAlt.split(/[,，、|\/]/).filter(p => p.trim().length > 0);
+      if (commaParts.length >= 5) {
+        warns.push({
+          rule: "R17",
+          msg: `data-seo-alt 含 ${commaParts.length} 段分隔词，疑似关键词堆砌（Keyword Stuffing）`,
+          fix: "改写为一句自然通顺的中文/英文描述句，仅自然融入 1 个目标搜索词",
+        });
+      }
+    }
+
+    if (!meta.seoCaption && meta.ratio !== "og") {
+      warns.push({
+        rule: "R17",
+        msg: `未声明 data-seo-caption（MDX 图注）`,
+        fix: "补充 1 句行动要点图注，与 data-seo-alt 互补而不机械照抄",
+      });
+    } else if (meta.seoCaption && meta.seoAlt && meta.seoCaption.replace(/^图[:：]\s*/, "") === meta.seoAlt) {
+      warns.push({
+        rule: "R17",
+        msg: `data-seo-caption 与 data-seo-alt 完全相同，浪费一层语义互补位`,
+        fix: "alt 客观描述画面证据，caption 补充读者操作提醒或核对结论",
+      });
+    }
+    if (!meta.targetKeyword) {
+      warns.push({
+        rule: "R17",
+        msg: `未声明 data-target-keyword（单图锚定搜索词）`,
+        fix: `在 <section> 上标注该图服务的 1 个核心长尾搜索词，便于验收主题聚焦度`,
+      });
+    }
+    for (const src of webDom.missingImgAlts) {
+      fails.push({
+        rule: "R17",
+        msg: `内部 <img> (${src}) 缺少有意义的 alt 属性`,
+        fix: "为每张实拍/截图 <img> 填写描述该局部素材的 alt 属性",
+      });
+    }
+
+    // R18: Photo-First 实拍占比、破图与视觉禁令
+    if (webDom.emptySlots > 0 || meta.isPlaceholder) {
+      warns.push({
+        rule: "R18",
+        msg: `存在 ${Math.max(1, webDom.emptySlots)} 处实拍占位态（data-placeholder / .is-empty）—— 上线前须换为真实仓库或操作实拍`,
+        fix: "放入真实照片/截图至 assets/ 并移除 .is-empty 与 data-placeholder（严禁用 AI 假人/假仓顶替）",
+      });
+    } else if (webDom.brokenImgs.length > 0) {
+      fails.push({
+        rule: "R18",
+        msg: `检测到 ${webDom.brokenImgs.length} 张破图/未加载素材：${webDom.brokenImgs.join(", ")}`,
+        fix: "确认 assets/ 下对应图片文件存在且路径正确；若暂缺实拍，请改用 .photo-slot.is-empty 并标 data-placeholder='true'",
+      });
+    }
+    const minMediaRatio = ["W02", "W03", "W05"].includes(meta.recipe) ? 0.48 : 0.25;
+    if (webDom.mediaCount === 0 || webDom.mediaRatio < minMediaRatio) {
+      warns.push({
+        rule: "R18",
+        msg: `实拍/截图影像占比仅 ${Math.round(webDom.mediaRatio * 100)}%（${meta.recipe || "WEB"} 建议 ≥${Math.round(minMediaRatio * 100)}%），偏离 Photo-First / E-E-A-T 实证原则`,
+        fix: "扩大真实照片或操作截图展示面积，删减多余文字框（见 DESIGN-web.md）",
+      });
+    }
+    if (webDom.emojiHits.length > 0) {
+      fails.push({
+        rule: "R18",
+        msg: `检测到装饰性 Unicode Emoji（${webDom.emojiHits.join(" ")}）—— 官网航单实证系统严禁使用 Emoji`,
+        fix: "替换为单色几何符号（✓ / ✕ / △ / →）配合 .status-badge 语义底色",
+      });
+    }
+    if (webDom.centerOverlays.length > 0) {
+      fails.push({
+        rule: "R18",
+        msg: `检测到深色条横压在实拍/截图中心区域："${webDom.centerOverlays[0]}"`,
+        fix: "把标题移回独立顶部眉栏 .web-header 或左侧文字卡，严禁遮挡截图与实拍主体",
+      });
+    }
+
+    // R19: 反文字墙、占位残留与合规口径
+    const charCaps = {
+      W06: { warn: 55, fail: 85 },
+      W01: { warn: 100, fail: 145 },
+      W04: { warn: 175, fail: 245 },
+    };
+    const capCfg = charCaps[meta.recipe] || { warn: 115, fail: 165 };
+    if (webDom.strippedChars > capCfg.fail) {
+      fails.push({
+        rule: "R19",
+        msg: `单图正文可见词数达 ${webDom.strippedChars}（${meta.recipe || "WEB"} 上限 ${capCfg.fail}）—— 图片沦为文字墙，既伤手机 340px 可读性又损失 HTML 爬虫索引`,
+        fix: "把长段解释移回文章 MDX 正文，图片只留标题 + 极简要点标签与一手实拍",
+      });
+    } else if (webDom.strippedChars > capCfg.warn) {
+      warns.push({
+        rule: "R19",
+        msg: `单图正文可见词数 ${webDom.strippedChars}（建议 ≤${capCfg.warn}）`,
+        fix: "精简次要修饰语，优先把信息增量交给实拍截图或 HTML 正文",
+      });
+    }
+    if (webDom.placeholderHits.length > 0) {
+      fails.push({
+        rule: "R19",
+        msg: `画面中残留未替换的模板占位文本：${[...new Set(webDom.placeholderHits)].join(", ")}`,
+        fix: "替换为当前文章的真实实体标题与 URL 路径",
+      });
+    }
+    if (webDom.forbiddenClaims.length > 0) {
+      fails.push({
+        rule: "R19",
+        msg: `检测到绝对化/不可复算商业承诺词：${[...new Set(webDom.forbiddenClaims)].join(", ")}`,
+        fix: "改为可核验的客观表述或使用 .pending 占位并注明以小程序实时试算为准（CLAUDE.md 交付纪律）",
+      });
+    }
+
+    // R20: 截图防边缘裁切与敏感单据隐私打码守卫
+    for (const c of webDom.croppedScreenshots) {
+      fails.push({
+        rule: "R20",
+        msg: `${meta.recipe} 证据图 (${c.src}) 计算出 object-fit: ${c.fit} —— 手机截图与纸质证明必须使用 object-fit: contain 防左右文字裁切`,
+        fix: "确保 .w02-screenshot-frame img 与 .tri-photo-frame img 保持 object-fit: contain",
+      });
+    }
+    if (meta.recipe === "W05" || meta.privacy === "sensitive") {
+      if (!meta.mosaicVerified) {
+        warns.push({
+          rule: "R20",
+          msg: `敏感证明类配图未标注 data-mosaic-verified="true" —— 须确认所有姓名/证件/病名/电话/签章已在源图不可逆马赛克脱敏`,
+          fix: `在源图片完成不可逆像素打码后，在 <section> 补充 data-mosaic-verified="true"`,
+        });
+      }
+      if (webDom.activeCssMosaic > 0) {
+        warns.push({
+          rule: "R20",
+          msg: `检测到 ${webDom.activeCssMosaic} 处 CSS 模拟马赛克层 (.mosaic-layer) —— 仅限草图定位，不能替代源图不可逆打码`,
+          fix: "上线前务必把马赛克烘焙进源图片文件并移除 CSS .mosaic-layer，防止原图外泄",
+        });
+      }
+    }
+  }
+
   report.push({ meta, fails, warns });
 }
 
@@ -799,7 +1229,7 @@ for (const s of sections) {
   const r10 = await page.evaluate(({ allowed, families }) => {
     const out = { enabled: false, scoped: [], mismatch: [], fauxBold: [], greenbook: false };
     const root = document.documentElement;
-    out.greenbook = document.querySelectorAll('[class~="board"]').length > 0;
+    out.greenbook = root.dataset.system !== "web" && document.querySelectorAll('[class~="board"]').length > 0;
 
     const libFams = new Set(families.map(f => f.family.toLowerCase()));
     const famMap = new Map(families.map(f => [f.family.toLowerCase(), f]));
@@ -961,7 +1391,7 @@ for (const { meta, fails, warns } of report) {
 }
 
 lines.push("");
-lines.push(`Legend: R1 overflow · R2 footer collision · R3 swiss bold display · R4 min font · R5 4-band density · R6 h-xl cap · R7 figure margin drift · R8 visual bounds · R9 title gap · R10 花体字作用域/族名 · R11 花体字防伪粗体糊字 · R12 小红书封箱守卫 · R13 封面右上角UI禁区 · R14 封面反剧透/反硬广/过载 · R15 封面与外显标题双轨校验`);
+lines.push(`Legend: R1 overflow · R2 footer collision · R3 swiss bold display · R4 min font · R5 4-band density · R6 h-xl cap · R7 figure margin drift · R8 visual bounds · R9 title gap · R10 花体字作用域/族名 · R11 花体字防伪粗体糊字 · R12 小红书封箱守卫 · R13 封面右上角UI禁区 · R14 封面反剧透/反硬广/过载 · R15 封面与外显标题双轨校验 · R16 官网尺寸/Discover/字号/防糊 · R17 官网SEO元数据 · R18 官网实拍占比与禁令 · R19 官网反文字墙与口径 · R20 官网截图与隐私脱敏`);
 lines.push(`Exit code 1 only on FAIL. Warnings are advisory.`);
 
 console.log(lines.join("\n"));

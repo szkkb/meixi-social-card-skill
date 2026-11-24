@@ -115,6 +115,17 @@ const targets = [
 
 If a local dev server is needed for assets or font loading, start it and tell the user the URL. If `file://` rendering works, no server is required.
 
+### Official Website SEO Pack (`meixipro.com`)
+
+For website SEO decks built from `assets/template-web-card.html`, do **not** hand-write ad-hoc render scripts or deliver unoptimized PNGs. Run the built-in validator and SEO packager:
+
+```bash
+node validate-social-deck.mjs local-tests/<slug>
+node scripts/build-web-seo-pack.mjs local-tests/<slug> --screenshot
+```
+
+This exports exact-pixel PNG masters (`output/masters/`), CWV-budget WebP deliverables (`output/web/*.webp`), crawler-safe OG JPG (`output/web/*-og.jpg` for `W06`), `output/seo-manifest.json`, ready-to-paste `output/mdx-snippets.md`, and the desktop `688px` / mobile `340px` / SERP & Discover preview (`web-seo-preview.html` + `output/web-seo-preview.png`).
+
 ## Verification Commands
 
 Useful checks on macOS:

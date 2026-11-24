@@ -7,6 +7,7 @@
     "test:docs": "node scripts/check-skill-docs.mjs",
     "validate": "node validate-social-deck.mjs",
     "feed:preview": "node scripts/build-feed-preview.mjs",
+    "web:pack": "node scripts/build-web-seo-pack.mjs",
     "fonts": "node scripts/build-font-links.mjs list",
     "fonts:check": "node scripts/check-font-coverage.mjs"
   },

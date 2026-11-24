@@ -1,0 +1,1317 @@
+<!doctype html>
+<html lang="zh-CN" data-brand="meixipro" data-system="web" data-article-slug="replace-with-article-slug" data-page-url="https://meixipro.com/blog/replace-with-article-slug/">
+<head>
+<meta charset="utf-8">
+<title>[必填] 替换为文章标题 · 美西转运官网 SEO 配图系统</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Martian+Mono:wght@400;500;700;800&family=Noto+Sans+SC:wght@400;500;700;900&display=swap">
+<style>
+@import url("https://fontsapi.zeoseven.com/92/main/result.css");   /* 得意黑 Smiley Sans 2.0.1（SIL OFL 1.1 · 单字重 400） */
+</style>
+<style>
+/* =========================================================
+   航单实证 Waybill Evidence v2 — 美西转运官网 SEO 配图种子模板
+   ---------------------------------------------------------
+   设计真源：DESIGN-web.md + references/web-seo-images.md（改动前必读）
+   适用范围：meixipro.com 官网（/blog/*, /guides/*, /services/*, /destinations/*）
+            及美西货运小程序内嵌指南配图
+
+   板型（严格绑定 lib/image-ratios.ts，确保零 CLS）：
+     .board.wide       1600×900   (16:9 官网主力配图，满足 Google Discover ≥1200px)
+     .board.standard   1600×1200  (4:3 多列手机截图实证卡专用)
+     .board.square     1200×1200  (1:1 单点计费公式 / 参数聚焦卡)
+     .board.tall       1200×2400  (9:16 工程比例 1:2 单张竖屏仓库特写)
+     .board.og         1200×630   (1.91:1 OpenGraph / Twitter / 微信外链分享卡)
+
+   六大 SEO 意图配方（Photo-First + Information Gain）：
+     W01 文章 SEO 封面 / Discover Hero (wide 1600×900 · 首屏 LCP)
+     W02 多步操作截图实证 / HowTo 卡   (standard 1600×1200 · object-fit:contain 零裁切)
+     W03 双栏实拍对照 / 正误对比卡     (wide 1600×900 · 支持 ✓/✕/△ 语义徽标)
+     W04 计费算式 / 时效路线决策看板   (wide 1600×900 或 square 1200×1200 · 可复算单据 + 实拍)
+     W05 合规资质 / 敏感货打码证明卡   (wide 1600×900 · 3 列完整实拍 + 不可逆马赛克脱敏)
+     W06 社交分享 OpenGraph 卡片       (og 1200×630 · 同步导出 .jpg + .webp)
+
+   每张 <section> 必须声明的 SEO 属性（由 validate-social-deck.mjs R16-R20 校验，
+   并由 scripts/build-web-seo-pack.mjs 自动导出 WebP + OG JPG + seo-manifest.json + mdx-snippets.md）：
+     data-recipe="W01..W06"
+     data-ratio="wide|standard|square|tall|og"
+     data-seo-role="hero|howto|comparison|pricing|compliance|og"
+     data-seo-filename="english-kebab-case-entity-slug"   (不含扩展名)
+     data-seo-alt="客观描述实证画面 + 自然融入 1 个目标词"
+     data-seo-caption="图注：补充行动要点与实证上下文"
+     data-target-keyword="该图锚定的核心搜索词"
+     data-schema-type="Article|HowTo|FAQPage"
+     data-loading="eager|lazy"
+
+   SEO 与视觉红线：
+     1. 得意黑 Smiley Sans Oblique 单字重必须 font-weight: 400; font-synthesis: none（防伪粗体糊字）。
+     2. 严禁使用装饰性 Unicode Emoji（⚠⚡✅❌🔥 等），状态标识统一用单色几何符号 ✓ / ✕ / △。
+     3. 严禁把半透明黑条标题横压在截图或实拍正中；长段落留给 HTML/MDX 正文索引。
+     4. 价格、时效、省钱比例一律占位（.pending），投放前须换为运营确认且可在小程序复算的真实口径。
+     5. 客户姓名、护照、病名、电话、签章必须在源图片文件上完成不可逆像素马赛克打码。
+   ========================================================= */
+
+/* ---------- 1. 租户品牌预设 ---------- */
+:root,
+[data-brand="meixipro"] {
+  --verify:     #0060C9;          /* config/tenants/meixipro.json brand.primaryColor（严禁用 #037EF3） */
+  --verify-web: #0E6EB8;          /* 官网 globals.css --brand-primary */
+  --brand-name: "美西转运";
+  --brand-en:   "MeixiPro";
+  --brand-host: "meixipro.com";
+}
+
+/* ---------- 2. 跨租户恒定色层（DESIGN-web.md） ---------- */
+:root {
+  --stage:        #F8FAFC;        /* 清冷航单灰底台（与官网 #FFFFFF 正文卡片拉开清晰边界） */
+  --card:         #FFFFFF;        /* 内部单据/子卡背景 */
+  --muted:        #F1F5F9;        /* 底部凭据条与次级参数底 */
+  --border:       #CBD5E1;        /* 2px 外框与发丝分隔线 */
+  --border-sub:   #E2E8F0;
+  --ink:          #0F172A;        /* 航单深墨主标题（15.4:1 对 #F8FAFC） */
+  --body:         #334155;        /* 卡片正文与步骤说明（9.6:1） */
+  --sub:          #64748B;        /* 眉栏编号、英文标识（4.76:1） */
+  --amber:        #D97706;        /* 琥珀金边框/强调色 */
+  --amber-soft:   #FEF3C7;        /* 琥珀浅底 */
+  --amber-text:   #92400E;        /* 琥珀深字（7.1:1 AAA 对 #FEF3C7） */
+  --ok:           #059669;        /* 正确示范/推荐绿 */
+  --ok-soft:      #ECFDF5;
+  --ok-text:      #064E3B;        /* 11.2:1 AAA */
+  --marker:       #D0433B;        /* 记号批注红 / 航空红 */
+  --marker-soft:  #FEF2F2;
+  --marker-text:  #7F1D1D;        /* 10.8:1 AAA */
+  --verify-soft:  #EFF6FF;
+  --verify-line:  #BFDBFE;
+
+  --f-display: "Smiley Sans Oblique", "Noto Sans SC", "PingFang SC", sans-serif;
+  --f-body:    "Noto Sans SC", "PingFang SC", "Hiragino Sans GB", sans-serif;
+  --f-mono:    "Martian Mono", "JetBrains Mono", "SF Mono", "Noto Sans SC", monospace;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+figure { margin: 0; }
+h1, h2, h3, h4, strong, b { font-synthesis: none; }
+body {
+  background: #E2E8F0;
+  font-family: var(--f-body);
+  color: var(--body);
+  -webkit-font-smoothing: antialiased;
+}
+
+.deck {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 48px;
+  padding: 48px 0;
+}
+
+/* ---------- 3. 五档板型容器（严格绑定 lib/image-ratios.ts） ---------- */
+.board {
+  position: relative;
+  background: var(--stage);
+  border: 2px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+}
+
+.board.wide     { width: 1600px; height: 900px; }
+.board.standard { width: 1600px; height: 1200px; }
+.board.square   { width: 1200px; height: 1200px; }
+.board.tall     { width: 1200px; height: 2400px; }
+.board.og       { width: 1200px; height: 630px; }
+
+/* ---------- 4. 顶部红蓝航空斜纹封边（10px） ---------- */
+.airmail-top {
+  height: 10px;
+  width: 100%;
+  flex-shrink: 0;
+  background: repeating-linear-gradient(
+    -45deg,
+    var(--marker) 0,
+    var(--marker) 18px,
+    #FFFFFF 18px,
+    #FFFFFF 28px,
+    var(--verify) 28px,
+    var(--verify) 46px,
+    #FFFFFF 46px,
+    #FFFFFF 56px
+  );
+}
+
+/* ---------- 5. 独立航单实证眉栏 ---------- */
+.web-header {
+  height: 84px;
+  padding: 0 36px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  border-bottom: 1px solid var(--border-sub);
+  background: var(--card);
+  flex-shrink: 0;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  min-width: 0;
+}
+
+.meta-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--verify-soft);
+  border: 1px solid var(--verify-line);
+  color: var(--verify);
+  font-family: var(--f-mono);
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  padding: 6px 14px;
+  border-radius: 6px;
+  text-transform: uppercase;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.header-title {
+  font-family: var(--f-display);
+  font-size: 40px;
+  font-weight: 400 !important;
+  font-synthesis: none;
+  color: var(--ink);
+  letter-spacing: 0.01em;
+  line-height: 1.05;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-shrink: 0;
+}
+
+.brand-capsule {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--muted);
+  border: 1px solid var(--border);
+  padding: 6px 16px;
+  border-radius: 9999px;
+  font-family: var(--f-mono);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--sub);
+  white-space: nowrap;
+}
+
+.brand-capsule .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--verify);
+}
+
+/* ---------- 6. 核心实证主展区 + 底部凭据条 ---------- */
+.web-canvas {
+  flex: 1;
+  min-height: 0;
+  padding: 24px 36px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+}
+
+.web-footer {
+  height: 56px;
+  padding: 0 36px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  border-top: 1px solid var(--border-sub);
+  background: var(--muted);
+  font-family: var(--f-mono);
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--sub);
+  flex-shrink: 0;
+}
+
+.web-footer .highlight-pill {
+  color: var(--amber-text);
+  font-weight: 700;
+  background: var(--amber-soft);
+  border: 1px solid #FDE68A;
+  padding: 3px 10px;
+  border-radius: 5px;
+}
+
+/* 未确认商业数据占位标记（交付前必须替换为运营核实口径） */
+.pending {
+  display: inline-block;
+  color: var(--amber-text);
+  background: var(--amber-soft);
+  border: 1px dashed var(--amber);
+  border-radius: 4px;
+  padding: 0 8px;
+  font-family: var(--f-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+/* 诚实空状态：实拍/截图尚未到位时的干净网格槽位（绝不用纯黑破图框） */
+.photo-slot.is-empty {
+  background:
+    repeating-linear-gradient(
+      -45deg,
+      #F1F5F9 0,
+      #F1F5F9 14px,
+      #E2E8F0 14px,
+      #E2E8F0 28px
+    );
+  border: 2px dashed #94A3B8;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 24px;
+  text-align: center;
+  color: var(--sub);
+}
+
+.photo-slot.is-empty .empty-tag {
+  font-family: var(--f-mono);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--verify);
+  background: var(--card);
+  border: 1px solid var(--verify-line);
+  padding: 4px 12px;
+  border-radius: 9999px;
+}
+
+.photo-slot.is-empty .empty-hint {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--ink);
+  max-width: 85%;
+  line-height: 1.4;
+}
+
+/* 语义状态徽标（严禁 Emoji，仅用单色几何符号 ✓ / ✕ / △） */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--f-mono);
+  font-size: 16px;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 6px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.status-badge.ok   { background: var(--ok-soft);     color: var(--ok-text);     border: 1px solid #A7F3D0; }
+.status-badge.warn { background: var(--amber-soft);  color: var(--amber-text);  border: 1px solid #FDE68A; }
+.status-badge.err  { background: var(--marker-soft); color: var(--marker-text); border: 1px solid #FECACA; }
+.status-badge.info { background: var(--verify-soft); color: var(--verify);      border: 1px solid var(--verify-line); }
+
+/* ---------- 7. W01 文章 SEO 封面 & Discover Hero ---------- */
+.w01-layout {
+  display: grid;
+  grid-template-columns: 590px 1fr;
+  gap: 28px;
+  height: 100%;
+  min-height: 0;
+}
+
+.w01-text-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 34px 36px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 0;
+}
+
+.w01-kicker {
+  font-family: var(--f-mono);
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--verify);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 12px;
+}
+
+.w01-heading {
+  font-family: var(--f-display);
+  font-size: 48px;
+  font-weight: 400 !important;
+  font-synthesis: none;
+  color: var(--ink);
+  line-height: 1.18;
+  letter-spacing: 0.01em;
+  margin-bottom: 24px;
+}
+
+.w01-bullets {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.w01-bullet-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  font-size: 21px;
+  font-weight: 500;
+  line-height: 1.45;
+  color: var(--body);
+}
+
+.w01-bullet-item strong { color: var(--ink); font-weight: 700; }
+
+.w01-bullet-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  background: var(--verify-soft);
+  border: 1px solid var(--verify-line);
+  color: var(--verify);
+  font-family: var(--f-mono);
+  font-weight: 800;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.w01-meta-bar {
+  padding-top: 16px;
+  border-top: 1px solid var(--border-sub);
+  font-family: var(--f-mono);
+  font-size: 16px;
+  color: var(--sub);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.w01-photo-frame {
+  height: 100%;
+  min-height: 0;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background: var(--muted);
+  position: relative;
+}
+
+.w01-photo-frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* ---------- 8. W02 多步操作截图实证（2/3/4 列，零边缘裁切） ---------- */
+.w02-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 18px;
+  height: 100%;
+  min-height: 0;
+}
+.w02-grid.cols-3 { grid-template-columns: repeat(3, 1fr); gap: 22px; }
+.w02-grid.cols-2 { grid-template-columns: repeat(2, 1fr); gap: 28px; }
+
+.w02-col {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-height: 0;
+}
+
+.w02-pill {
+  background: var(--muted);
+  border: 1px solid var(--border);
+  color: var(--ink);
+  font-size: 20px;
+  font-weight: 700;
+  padding: 8px 12px;
+  border-radius: 8px;
+  text-align: center;
+  margin-bottom: 12px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex-shrink: 0;
+}
+
+.w02-screenshot-frame {
+  flex: 1;
+  min-height: 0;
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--stage);
+  border: 1px solid var(--border-sub);
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.w02-screenshot-frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+  display: block;
+}
+
+/* 截图红框批注标注 */
+.pin-box {
+  position: absolute;
+  border: 3px solid var(--marker);
+  border-radius: 6px;
+  background: rgba(208, 67, 59, 0.10);
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.88);
+  pointer-events: none;
+}
+
+.pin-tag {
+  position: absolute;
+  background: var(--marker);
+  color: #FFFFFF;
+  font-family: var(--f-body);
+  font-size: 16px;
+  font-weight: 700;
+  padding: 2px 10px;
+  border-radius: 4px;
+  top: -28px;
+  left: -2px;
+  white-space: nowrap;
+}
+
+/* ---------- 9. W03 双栏实拍对照 / 正误对比 ---------- */
+.split-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 28px;
+  height: 100%;
+  min-height: 0;
+}
+
+.split-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-height: 0;
+}
+
+.split-tag {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+  flex-shrink: 0;
+}
+
+.split-tag .title {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.split-photo-frame {
+  flex: 1;
+  min-height: 0;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid var(--border-sub);
+  position: relative;
+  background: var(--stage);
+}
+
+.split-photo-frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.split-photo-frame.contain img {
+  object-fit: contain;
+}
+
+.split-label-bar {
+  margin-top: 12px;
+  font-size: 19px;
+  font-weight: 500;
+  color: var(--body);
+  line-height: 1.4;
+  background: var(--muted);
+  padding: 10px 16px;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+/* ---------- 10. W04 计费算式 / 时效路线决策看板 ---------- */
+.w04-layout {
+  display: grid;
+  grid-template-columns: 760px 1fr;
+  gap: 28px;
+  height: 100%;
+  min-height: 0;
+}
+
+.board.square .w04-layout {
+  grid-template-columns: 1fr;
+  grid-template-rows: auto 1fr;
+}
+
+.w04-ledger-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 24px 28px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 18px;
+  min-height: 0;
+}
+
+.formula-box {
+  background: var(--verify-soft);
+  border: 1px solid var(--verify-line);
+  border-left: 5px solid var(--verify);
+  border-radius: 10px;
+  padding: 18px 22px;
+}
+
+.formula-label {
+  font-family: var(--f-mono);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--verify);
+  letter-spacing: 0.06em;
+  margin-bottom: 6px;
+}
+
+.formula-eq {
+  font-family: var(--f-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 30px;
+  font-weight: 800;
+  color: var(--ink);
+  line-height: 1.25;
+}
+
+.formula-note {
+  margin-top: 6px;
+  font-size: 19px;
+  color: var(--body);
+}
+
+.route-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+}
+
+.route-table th {
+  text-align: left;
+  font-family: var(--f-mono);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--sub);
+  padding: 10px 12px;
+  border-bottom: 2px solid var(--border);
+  background: var(--stage);
+}
+
+.route-table td {
+  padding: 14px 12px;
+  border-bottom: 1px solid var(--border-sub);
+  font-size: 20px;
+  color: var(--body);
+  vertical-align: middle;
+}
+
+.route-table td.route-name {
+  font-weight: 700;
+  color: var(--ink);
+  white-space: nowrap;
+}
+
+.route-table td.mono-num {
+  font-family: var(--f-mono);
+  font-weight: 700;
+  color: var(--ink);
+  white-space: nowrap;
+}
+
+.w04-verdict-bar {
+  background: var(--muted);
+  border-radius: 8px;
+  padding: 12px 16px;
+  font-size: 19px;
+  color: var(--body);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.w04-proof-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.w04-proof-photo {
+  flex: 1;
+  min-height: 0;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid var(--border-sub);
+  background: var(--stage);
+}
+
+.w04-proof-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.w04-proof-cap {
+  margin-top: 12px;
+  font-size: 19px;
+  color: var(--body);
+  background: var(--muted);
+  padding: 10px 14px;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+/* ---------- 11. W05 合规资质与隐私打码实拍（3 列） ---------- */
+.tri-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 22px;
+  height: 100%;
+  min-height: 0;
+}
+
+.tri-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-height: 0;
+}
+
+.tri-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 10px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.tri-title .mosaic-shield {
+  font-family: var(--f-mono);
+  font-size: 15px;
+  font-weight: 700;
+  background: var(--verify-soft);
+  color: var(--verify);
+  border: 1px solid var(--verify-line);
+  padding: 2px 9px;
+  border-radius: 5px;
+  white-space: nowrap;
+}
+
+.tri-photo-frame {
+  flex: 1;
+  min-height: 0;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--border-sub);
+  position: relative;
+  background: var(--stage);
+}
+
+.tri-photo-frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+.tri-footer-note {
+  margin-top: 10px;
+  font-size: 18px;
+  color: var(--body);
+  line-height: 1.38;
+  background: var(--muted);
+  padding: 8px 12px;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+
+/* 仅用于草图定位预览；正式发布前必须在源图片上完成不可逆像素马赛克脱敏 */
+.mosaic-layer {
+  position: absolute;
+  background: repeating-conic-gradient(#CBD5E1 0% 25%, #94A3B8 0% 50%) 50% / 10px 10px;
+  opacity: 0.92;
+  border-radius: 4px;
+}
+
+/* ---------- 12. W06 OpenGraph 社交分享卡 (1200×630) ---------- */
+.w06-shell {
+  flex: 1;
+  min-height: 0;
+  padding: 36px 48px;
+  display: grid;
+  grid-template-columns: 1fr 440px;
+  gap: 36px;
+  align-items: stretch;
+}
+
+.w06-left {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-width: 0;
+}
+
+.w06-top-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.w06-heading {
+  font-family: var(--f-display);
+  font-size: 48px;
+  font-weight: 400 !important;
+  font-synthesis: none;
+  color: var(--ink);
+  line-height: 1.18;
+  letter-spacing: 0.01em;
+  margin: 18px 0 16px;
+}
+
+.w06-sub {
+  font-size: 24px;
+  font-weight: 500;
+  color: var(--body);
+  line-height: 1.45;
+}
+
+.w06-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 18px;
+  border-top: 1px solid var(--border);
+  font-family: var(--f-mono);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--verify);
+}
+
+.w06-photo {
+  border-radius: 14px;
+  overflow: hidden;
+  border: 2px solid var(--border);
+  background: var(--card);
+  position: relative;
+}
+
+.w06-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* ---------- 13. Tall 竖屏实拍特写 (1200×2400) ---------- */
+.tall-photo-frame {
+  flex: 1;
+  min-height: 0;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background: var(--card);
+}
+.tall-photo-frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+</style>
+</head>
+<body>
+
+<div class="deck">
+
+<!-- =========================================================
+     配方 W01: 官网文章 SEO 封面 / Google Discover Hero (1600×900 wide)
+     适用：/blog/*, /guides/*, /services/* 首屏主图（loading="eager" priority）
+     ========================================================= -->
+<section class="board wide" id="web-w01"
+  data-recipe="W01"
+  data-ratio="wide"
+  data-seo-role="hero"
+  data-seo-filename="taobao-to-usa-warehouse-address-guide-hero"
+  data-seo-alt="中国淘宝与拼多多集运寄美国东莞转运仓收货地址填写与真实包裹打包实拍封面"
+  data-seo-caption="图：美西转运中国集运寄美国地址填写与入库实拍全流程核心要点。"
+  data-target-keyword="淘宝集运寄美国仓库地址怎么填"
+  data-schema-type="Article"
+  data-loading="eager">
+  <div class="airmail-top"></div>
+  <header class="web-header">
+    <div class="header-left">
+      <span class="meta-badge">W01 · SEO GUIDE HERO</span>
+      <h1 class="header-title">淘宝拼多多寄美国：转运仓地址填写实证</h1>
+    </div>
+    <div class="header-right">
+      <div class="brand-capsule"><span class="dot"></span>MEIXIPRO.COM</div>
+    </div>
+  </header>
+
+  <div class="web-canvas">
+    <div class="w01-layout">
+      <div class="w01-text-card">
+        <div>
+          <div class="w01-kicker">WAYBILL EVIDENCE · STEP-BY-STEP</div>
+          <div class="w01-heading">3 分钟一次填对<br>不丢件、算清运费</div>
+          <div class="w01-bullets">
+            <div class="w01-bullet-item">
+              <span class="w01-bullet-icon">1</span>
+              <div><strong>整段粘贴</strong>：淘宝/拼多多识别并保留 GMX 会员号</div>
+            </div>
+            <div class="w01-bullet-item">
+              <span class="w01-bullet-icon">2</span>
+              <div><strong>入库实拍</strong>：东莞仓拆包挂牌，实重尺码透明可查</div>
+            </div>
+            <div class="w01-bullet-item">
+              <span class="w01-bullet-icon">3</span>
+              <div><strong>减重省费</strong>：直寄少一段国内运费，抽真空降泡重</div>
+            </div>
+          </div>
+        </div>
+        <div class="w01-meta-bar">
+          <span>官方指南 · 实时查价以小程序试算为准</span>
+          <strong>meixipro.com</strong>
+        </div>
+      </div>
+
+      <div class="w01-photo-frame photo-slot">
+        <!-- 替换为真实仓库包裹实拍、封箱实拍或单据实景（宽 ≥1200px） -->
+        <img src="assets/photo-cover.jpg" alt="美西转运东莞仓库真实包裹与打包面单作业实拍" style="object-position: center 50%;">
+      </div>
+    </div>
+  </div>
+
+  <footer class="web-footer">
+    <div>MEIXIPRO.COM / BLOG / TAOBAO-TO-USA-WAREHOUSE-ADDRESS</div>
+    <div>入库识别锚点：<span class="highlight-pill">收件地址末尾保留专属 GMX 会员号</span></div>
+  </footer>
+</section>
+
+
+<!-- =========================================================
+     配方 W02: 多步操作截图实证 / HowTo Schema 证据卡 (1600×1200 standard)
+     适用：淘宝、拼多多、京东、小程序并排操作步骤（object-fit: contain 零边缘裁切）
+     ========================================================= -->
+<section class="board standard" id="web-w02"
+  data-recipe="W02"
+  data-ratio="standard"
+  data-seo-role="howto"
+  data-seo-filename="taobao-pdd-warehouse-address-paste-steps"
+  data-seo-alt="淘宝与拼多多手机App收货地址一键粘贴美西转运仓库并保留GMX会员号的4步操作截图实证"
+  data-seo-caption="图：在淘宝和拼多多粘贴仓库地址后，务必核对红框位置是否保留专属会员编号再点保存。"
+  data-target-keyword="淘宝拼多多转运仓收货地址设置步骤"
+  data-schema-type="HowTo"
+  data-loading="lazy">
+  <div class="airmail-top"></div>
+  <header class="web-header">
+    <div class="header-left">
+      <span class="meta-badge">W02 · HOWTO STEPS</span>
+      <h1 class="header-title">淘宝 / 拼多多收货地址一键粘贴对照</h1>
+    </div>
+    <div class="header-right">
+      <div class="brand-capsule"><span class="dot"></span>完整截图 · 零边缘裁切</div>
+    </div>
+  </header>
+
+  <div class="web-canvas">
+    <div class="w02-grid">
+      <div class="w02-col">
+        <div class="w02-pill">1. 淘宝：右上角「地址」</div>
+        <div class="w02-screenshot-frame photo-slot">
+          <img src="assets/screenshot-tb-01.png" alt="淘宝收货地址入口截图">
+          <div class="pin-box" style="top: 18%; left: 14%; width: 72%; height: 8%;">
+            <span class="pin-tag">添加新地址</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="w02-col">
+        <div class="w02-pill">2. 淘宝：点「确认粘贴」</div>
+        <div class="w02-screenshot-frame photo-slot">
+          <img src="assets/screenshot-tb-02.png" alt="淘宝智能识别地址并核对会员号截图">
+          <div class="pin-box" style="top: 42%; left: 10%; width: 80%; height: 11%;">
+            <span class="pin-tag">核对 GMX 尾号</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="w02-col">
+        <div class="w02-pill">3. 拼多多：收货地址管理</div>
+        <div class="w02-screenshot-frame photo-slot">
+          <img src="assets/screenshot-pdd-01.png" alt="拼多多收货地址入口截图">
+          <div class="pin-box" style="top: 25%; left: 12%; width: 76%; height: 9%;">
+            <span class="pin-tag">整段粘贴识别</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="w02-col">
+        <div class="w02-pill">4. 拼多多：保存并设默认</div>
+        <div class="w02-screenshot-frame photo-slot">
+          <img src="assets/screenshot-pdd-02.png" alt="拼多多保存转运仓收货地址截图">
+          <div class="pin-box" style="top: 60%; left: 14%; width: 72%; height: 9%;">
+            <span class="pin-tag">确认保存</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="web-footer">
+    <div>防漏件规则：整段复制小程序最新仓库地址，确认姓名或街道末尾保留个人 GMX 编号</div>
+    <div>原始比例展示 · 严禁拉伸裁切</div>
+  </footer>
+</section>
+
+
+<!-- =========================================================
+     配方 W03: 双栏实拍对照 / 正误对比卡 (1600×900 wide)
+     适用：拆包抽真空前后对比、直寄 vs 亲友转寄、正确填法 ✓ vs 常见踩坑 ✕
+     ========================================================= -->
+<section class="board wide" id="web-w03"
+  data-recipe="W03"
+  data-ratio="wide"
+  data-seo-role="comparison"
+  data-seo-filename="warehouse-unpacking-vacuum-compression-compare"
+  data-seo-alt="美西转运东莞仓签收拆包挂牌清点拍照与衣物抽真空压缩合箱前后实拍对比"
+  data-seo-caption="图：左为签收后拆包挂牌核对清点，右为去除多余纸箱并抽真空压缩合箱以减少体积重。"
+  data-target-keyword="国际集运拆包抽真空合箱减少体积重"
+  data-schema-type="Article"
+  data-loading="lazy">
+  <div class="airmail-top"></div>
+  <header class="web-header">
+    <div class="header-left">
+      <span class="meta-badge">W03 · EVIDENCE COMPARE</span>
+      <h1 class="header-title">到仓拆包挂牌清点 vs 抽真空压缩合箱</h1>
+    </div>
+    <div class="header-right">
+      <div class="brand-capsule"><span class="dot"></span>真实仓储作业实录</div>
+    </div>
+  </header>
+
+  <div class="web-canvas">
+    <div class="split-grid">
+      <div class="split-card">
+        <div class="split-tag">
+          <span class="title">步骤 1：签收拆包挂牌拍照</span>
+          <span class="status-badge ok">✓ 核对单号内件</span>
+        </div>
+        <div class="split-photo-frame photo-slot">
+          <img src="assets/photo-unpack.jpg" alt="东莞仓库签收拆包与挂单号识别牌清点实拍" style="object-position: center 50%;">
+        </div>
+        <div class="split-label-bar">
+          核对国内单号与内件明细，挂专属牌拍照上传小程序。
+        </div>
+      </div>
+
+      <div class="split-card">
+        <div class="split-tag">
+          <span class="title">步骤 2：去多余纸箱抽真空合箱</span>
+          <span class="status-badge info">→ 压缩体积泡重</span>
+        </div>
+        <div class="split-photo-frame photo-slot">
+          <img src="assets/photo-vacuum.jpg" alt="羽绒服与衣物抽真空压缩后紧凑合箱封箱实拍" style="object-position: center 50%;">
+        </div>
+        <div class="split-label-bar">
+          合并多单装入统一外箱，出库实重与三边尺码全程可查。
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="web-footer">
+    <div>对照提示：蓬松衣物、鞋盒类包裹建议提交合箱去包装与抽真空，降低体积泡重占比</div>
+    <div>实际减重幅度因品类与箱型而异 · 以出库复核为准</div>
+  </footer>
+</section>
+
+
+<!-- =========================================================
+     配方 W04: 计费算式 / 时效路线决策看板 (1600×900 wide / 可切换 square 1200×1200)
+     适用：体积重公式、空运 vs 海运选型、费用构成与时效对比（高商业转化 SEO 词）
+     ========================================================= -->
+<section class="board wide" id="web-w04"
+  data-recipe="W04"
+  data-ratio="wide"
+  data-seo-role="pricing"
+  data-seo-filename="volumetric-weight-formula-air-vs-sea-usa"
+  data-seo-alt="中国寄美国国际集运体积重计算公式与空运专线海运快船路线选型对照实证看板"
+  data-seo-caption="图：计费重按实重与体积重（长×宽×高÷6000）取较大值；表中报价与时效为示例占位，下单前请在小程序复算。"
+  data-target-keyword="中国寄美国体积重怎么算运费对比"
+  data-schema-type="Article"
+  data-loading="lazy">
+  <div class="airmail-top"></div>
+  <header class="web-header">
+    <div class="header-left">
+      <span class="meta-badge">W04 · FORMULA &amp; ROUTES</span>
+      <h1 class="header-title">体积重计费公式与中美常用路线选型</h1>
+    </div>
+    <div class="header-right">
+      <div class="brand-capsule"><span class="dot"></span>可复算算式 · 示例口径</div>
+    </div>
+  </header>
+
+  <div class="web-canvas">
+    <div class="w04-layout">
+      <div class="w04-ledger-card">
+        <div class="formula-box">
+          <div class="formula-label">VOLUMETRIC WEIGHT · 计费重取实重与泡重较大值</div>
+          <div class="formula-eq">体积重 (kg) = 长 × 宽 × 高 ÷ 6000</div>
+          <div class="formula-note">例：50×40×30 cm → 体积重 10.0 kg（抛比以线路为准）</div>
+        </div>
+
+        <table class="route-table">
+          <thead>
+            <tr>
+              <th>渠道</th>
+              <th>适用包裹</th>
+              <th>时效（示例）</th>
+              <th>计费要点</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="route-name">空运专线</td>
+              <td>急件、服饰</td>
+              <td class="mono-num"><span class="pending">待确认</span></td>
+              <td>拆盒减泡重</td>
+            </tr>
+            <tr>
+              <td class="route-name">海运快船</td>
+              <td>行李、大件</td>
+              <td class="mono-num"><span class="pending">待确认</span></td>
+              <td>大重合并省</td>
+            </tr>
+            <tr>
+              <td class="route-name">敏感专线</td>
+              <td>食品、个用药品</td>
+              <td class="mono-num"><span class="pending">待确认</span></td>
+              <td>需提前预审</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="w04-verdict-bar">
+          <span>先在小程序输入三边尺寸试算，再选合箱减重</span>
+          <span class="status-badge info">小程序复算</span>
+        </div>
+      </div>
+
+      <div class="w04-proof-card">
+        <div class="w04-proof-photo photo-slot">
+          <img src="assets/photo-scale-measure.jpg" alt="美西转运仓库电子秤称重与纸箱三边尺寸测量实拍" style="object-position: center 50%;">
+        </div>
+        <div class="w04-proof-cap">
+          出库实测重量与外箱尺码，同步记录至运单页。
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="web-footer">
+    <div>重要声明：表格时效与费率栏为占位示例，不构成商业承诺；下单前请于小程序复算最新报价</div>
+    <div>MEIXIPRO.COM</div>
+  </footer>
+</section>
+
+
+<!-- =========================================================
+     配方 W05: 合规资质 / 敏感货处方证明打码实拍 (1600×900 wide)
+     适用：药品集运、医学证明、清关文件留存（强制不可逆像素马赛克脱敏）
+     ========================================================= -->
+<section class="board wide" id="web-w05"
+  data-recipe="W05"
+  data-ratio="wide"
+  data-seo-role="compliance"
+  data-seo-filename="prescription-medicine-china-to-usa-docs-redacted"
+  data-seo-alt="个人自用处方药寄美国原包装清点与脱敏打码中文医学证明英文翻译件实拍示例"
+  data-seo-caption="图：个人合理自用药品寄美国需保留原包装说明书，并准备医院中文处方及英文翻译件（示例隐私已打码）。"
+  data-target-keyword="中国寄处方药到美国需要什么证明"
+  data-schema-type="Article"
+  data-loading="lazy"
+  data-privacy="sensitive"
+  data-mosaic-verified="true">
+  <div class="airmail-top"></div>
+  <header class="web-header">
+    <div class="header-left">
+      <span class="meta-badge">W05 · COMPLIANCE PROOF</span>
+      <h1 class="header-title">个人自用处方药寄美国：证明材料留存示范</h1>
+    </div>
+    <div class="header-right">
+      <div class="brand-capsule"><span class="dot"></span>源图不可逆像素打码</div>
+    </div>
+  </header>
+
+  <div class="web-canvas">
+    <div class="tri-grid">
+      <div class="tri-card">
+        <div class="tri-title">
+          <span>1. 药品原包装清点</span>
+          <span class="mosaic-shield">留说明书</span>
+        </div>
+        <div class="tri-photo-frame photo-slot">
+          <img src="assets/photo-medicine-unpack.jpg" alt="个人自用药品原包装与说明书仓库清点实拍">
+        </div>
+        <div class="tri-footer-note">
+          保留药盒与说明书，管制药物严禁寄运。
+        </div>
+      </div>
+
+      <div class="tri-card">
+        <div class="tri-title">
+          <span>2. 中文《医学证明》</span>
+          <span class="mosaic-shield">已打码</span>
+        </div>
+        <div class="tri-photo-frame photo-slot">
+          <img src="assets/photo-prescription-cn.jpg" alt="医院中文医学证明与处方单隐私马赛克脱敏实拍">
+        </div>
+        <div class="tri-footer-note">
+          姓名、病名与医师签章已在源图不可逆脱敏。
+        </div>
+      </div>
+
+      <div class="tri-card">
+        <div class="tri-title">
+          <span>3. 英文翻译证明</span>
+          <span class="mosaic-shield">已打码</span>
+        </div>
+        <div class="tri-photo-frame photo-slot">
+          <img src="assets/photo-prescription-en.jpg" alt="英文医学证明翻译件含药品通用名与每日剂量脱敏实拍">
+        </div>
+        <div class="tri-footer-note">
+          注明英文通用名与每日剂量，供清关核验。
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="web-footer">
+    <div>合规红线：仅限个人合理自用范围；承运品类与清关要求以目的地海关及最新渠道政策为准</div>
+    <div>发货前请先联系客服预审</div>
+  </footer>
+</section>
+
+
+<!-- =========================================================
+     配方 W06: OpenGraph 社交分享与外链预览卡 (1200×630 og)
+     适用：og:image / twitter:image / 微信、Reddit、一亩三分地转发卡片
+     打包脚本自动同时输出 .jpg（爬虫最稳）与 .webp
+     ========================================================= -->
+<section class="board og" id="web-w06"
+  data-recipe="W06"
+  data-ratio="og"
+  data-seo-role="og"
+  data-seo-filename="taobao-to-usa-warehouse-address-guide-og"
+  data-seo-alt="美西转运淘宝拼多多寄美国仓库地址填写与合箱省钱实拍攻略分享卡片"
+  data-seo-caption="OpenGraph 社交分享封面图（1200×630）。"
+  data-target-keyword="淘宝集运寄美国攻略"
+  data-schema-type="Article"
+  data-loading="lazy">
+  <div class="airmail-top"></div>
+  <div class="w06-shell">
+    <div class="w06-left">
+      <div>
+        <div class="w06-top-row">
+          <span class="meta-badge">MEIXIPRO GUIDE</span>
+          <span class="status-badge ok">✓ 真实仓拍与截图对照</span>
+        </div>
+        <h1 class="w06-heading">淘宝拼多多寄美国<br>转运仓地址与合箱指南</h1>
+        <p class="w06-sub">一步看懂会员号粘贴、入库拍照与体积重公式。</p>
+      </div>
+      <div class="w06-foot">
+        <span>MEIXIPRO.COM</span>
+        <span style="color: var(--sub); font-weight: 500;">美西转运 · 官方实证指南</span>
+      </div>
+    </div>
+
+    <div class="w06-photo photo-slot">
+      <img src="assets/photo-cover.jpg" alt="美西转运东莞仓跨境包裹打包实景" style="object-position: center 50%;">
+    </div>
+  </div>
+</section>
+
+</div>
+
+</body>
+</html>

@@ -326,6 +326,156 @@ checks.push(() => {
   };
 });
 
+// Website SEO image system (Waybill Evidence v2) checks
+mustInclude(
+  "DESIGN-web.md",
+  "Waybill Evidence",
+  "DESIGN-web defines Waybill Evidence website SEO design system",
+);
+mustInclude(
+  "DESIGN-web.md",
+  "font-weight: 400; font-synthesis: none;",
+  "DESIGN-web enforces Smiley Sans single-weight anti-blur rule",
+);
+mustInclude(
+  "DESIGN-web.md",
+  "W06",
+  "DESIGN-web includes W06 OpenGraph share card spec",
+);
+mustInclude(
+  "references/web-seo-images.md",
+  "Google Discover",
+  "web SEO playbook covers Google Discover >=1200px requirements",
+);
+mustInclude(
+  "references/web-seo-images.md",
+  "Core Web Vitals",
+  "web SEO playbook enforces Core Web Vitals WebP budgets and zero CLS",
+);
+mustInclude(
+  "references/web-seo-images.md",
+  "kebab-case",
+  "web SEO playbook enforces semantic English kebab-case filenames",
+);
+mustInclude(
+  "references/web-seo-images.md",
+  "ImageObject",
+  "web SEO playbook wires ImageObject JSON-LD structured data",
+);
+mustInclude(
+  "references/web-seo-images.md",
+  "build-web-seo-pack.mjs",
+  "web SEO playbook references automated SEO packager script",
+);
+mustInclude(
+  "SKILL.md",
+  "references/web-seo-images.md",
+  "SKILL.md references website SEO image playbook",
+);
+mustInclude(
+  "SKILL.md",
+  "DESIGN-web.md",
+  "SKILL.md references DESIGN-web.md",
+);
+mustInclude(
+  "SKILL.md",
+  "scripts/build-web-seo-pack.mjs",
+  "SKILL.md wires build-web-seo-pack.mjs for website SEO delivery",
+);
+mustInclude(
+  "SKILL.md",
+  "小红书视频封面",
+  "SKILL.md preserves Xiaohongshu video cover trigger in description",
+);
+mustInclude(
+  "SKILL.md",
+  "官网SEO配图",
+  "SKILL.md includes website SEO trigger in description",
+);
+mustInclude(
+  "CLAUDE.md",
+  "DESIGN-web.md",
+  "CLAUDE.md documents DESIGN-web.md as third brand truth source",
+);
+mustInclude(
+  "HANDOFF.md",
+  "### v0.17 · 2026-11-25",
+  "HANDOFF records v0.17 website SEO image system release",
+);
+mustInclude(
+  "package.json",
+  '"web:pack": "node scripts/build-web-seo-pack.mjs"',
+  "package.json exposes web:pack script",
+);
+for (const r of ["W01", "W02", "W03", "W04", "W05", "W06"]) {
+  mustInclude(
+    "assets/template-web-card.html",
+    `data-recipe="${r}"`,
+    `web SEO seed template includes ${r}`,
+  );
+}
+mustInclude(
+  "assets/template-web-card.html",
+  'data-system="web"',
+  "web SEO seed template marks data-system=web",
+);
+mustInclude(
+  "assets/template-web-card.html",
+  "data-seo-filename=",
+  "web SEO seed template includes semantic data-seo-filename attributes",
+);
+mustInclude(
+  "assets/template-web-card.html",
+  "data-seo-alt=",
+  "web SEO seed template includes data-seo-alt attributes",
+);
+mustInclude(
+  "assets/template-web-card.html",
+  ".board.og",
+  "web SEO seed template defines .board.og (1200x630)",
+);
+mustInclude(
+  "assets/template-web-card.html",
+  ".board.tall",
+  "web SEO seed template defines .board.tall (1200x2400)",
+);
+checks.push(() => {
+  const raw = fileText("assets/template-web-card.html");
+  const bodyMatch = raw.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
+  const activeBody = (bodyMatch ? bodyMatch[1] : raw).replace(/<!--[\s\S]*?-->/g, "");
+  const EMOJI_RE = /[\u{1F300}-\u{1FAFF}\u26A0\u26A1\u2705\u274C\u274E\u2757\u2753\u2B50]/u;
+  const ok = !EMOJI_RE.test(activeBody);
+  return {
+    ok,
+    label: "web SEO seed template contains zero decorative Unicode Emoji",
+    detail: ok
+      ? "assets/template-web-card.html body uses monochrome geometric symbols only"
+      : "assets/template-web-card.html body must not contain decorative Unicode Emoji",
+  };
+});
+for (const r of ["R16", "R17", "R18", "R19", "R20"]) {
+  mustInclude(
+    "validate-social-deck.mjs",
+    `rule: "${r}"`,
+    `validator enforces website SEO rule ${r}`,
+  );
+}
+mustInclude(
+  "scripts/build-web-seo-pack.mjs",
+  "seo-manifest.json",
+  "web SEO packager generates seo-manifest.json",
+);
+mustInclude(
+  "scripts/build-web-seo-pack.mjs",
+  "mdx-snippets.md",
+  "web SEO packager generates mdx-snippets.md",
+);
+mustInclude(
+  "scripts/build-web-seo-pack.mjs",
+  "web-seo-preview.png",
+  "web SEO packager supports --screenshot preview snapshot",
+);
+
 let failed = 0;
 for (const run of checks) {
   const result = run();

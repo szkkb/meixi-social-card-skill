@@ -132,6 +132,48 @@ output/wechat-cover-pair-preview.png
 
 Use the same `3:4` card standard as Rednote when the user wants a WeChat article body card. If the publisher must use the desktop/web path, export a GIF or short video fallback instead of promising Live Photo support.
 
+## Official Website / Blog SEO Images (`meixipro.com`)
+
+严格对齐 `DESIGN-web.md` 与 `references/web-seo-images.md`（一切围绕 Organic SEO、Google Discover、Google Images、AI Overviews / GEO 与 Core Web Vitals）。
+
+Exact pixel dimensions bound to `lib/image-ratios.ts` (zero CLS):
+
+| `data-ratio` / MDX `ratio` | Aspect | Pixels | WebP Budget (CWV) | Primary Recipes & SEO Role |
+|---|---|---|---|---|
+| `wide` (default) | `16:9` | `1600 x 900` | Hero `≤150KB` / Body `≤180KB` | `W01` Article Hero (Google Discover `≥1200px`, LCP), `W03` Dual Compare, `W04` Formula/Route Ledger, `W05` Compliance & Mosaic Proof |
+| `standard` | `4:3` | `1600 x 1200` | `≤220KB` | `W02` HowTo 2–4 column phone/app screenshots (`object-fit: contain`, zero horizontal crop) |
+| `square` | `1:1` | `1200 x 1200` | `≤140KB` | Single-formula / single-metric focus card (`W04` square) |
+| `tall` | `9:16` (`1:2`) | `1200 x 2400` | `≤180KB` | Single vertical warehouse scale / carton close-up |
+| `og` | `1.91:1` | `1200 x 630` | `≤120KB` (JPG + WebP) | `W06` OpenGraph / Twitter / WeChat link-preview share card |
+
+Export & SEO naming:
+
+- Primary web assets: **WebP** in `output/web/<english-kebab-case-entity-slug>.webp` (lossless PNG masters archived in `output/masters/`).
+- For `W06` (`og`), export BOTH `.jpg` (preferred by WeChat / X / LinkedIn crawlers) and `.webp`.
+- Filenames MUST be lowercase ASCII `kebab-case` (3–7 words, ≤65 chars, no Chinese, no spaces, no generic `image1` / `IMG_4821`):
+
+```text
+output/web/taobao-to-usa-warehouse-address-guide-hero.webp
+output/web/taobao-pdd-warehouse-address-paste-steps.webp
+output/web/warehouse-unpacking-vacuum-compression-compare.webp
+output/web/volumetric-weight-formula-air-vs-sea-usa.webp
+output/web/prescription-medicine-china-to-usa-docs-redacted.webp
+output/web/taobao-to-usa-warehouse-address-guide-og.jpg
+output/seo-manifest.json
+output/mdx-snippets.md
+output/web-seo-preview.png
+```
+
+Packaging & verification commands:
+
+```bash
+node validate-social-deck.mjs local-tests/<slug>
+node scripts/build-web-seo-pack.mjs local-tests/<slug> --screenshot
+```
+
+- Mobile-first readability: desktop article card renders images at ~`688px` wide (`43%` of `1600px`), mobile renders at ~`340px` (`21.25%`). Keep display headings `38–56px`, card labels `≥20px`, explanatory strips `≥19px`, footer `≥16px`, and keep long prose in HTML/MDX rather than rasterized text walls.
+- Hero `W01` uses `loading="eager" fetchPriority="high"` (`<Image priority />`); all below-the-fold body images use `loading="lazy"`. Ensure the article page sets `<meta name="robots" content="max-image-preview:large">` for Google Discover eligibility.
+
 ## Screenshot And Photo Placement
 
 For supplied screenshots/photos:

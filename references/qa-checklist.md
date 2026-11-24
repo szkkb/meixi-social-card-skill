@@ -78,6 +78,17 @@ Before delivering any Xiaohongshu photo cover or independent video cover (`refer
 - [ ] **Punch Contrast**: main hook is `6–10` chars with `2–4` kill words highlighted by punch color/block or scale contrast.
 - [ ] **A/B Cover PK Ready**: unless the user explicitly requested only 1 cover, delivered `2–3` genuinely distinct cover candidates ready for Xiaohongshu's official「封面测试 / PK」.
 
+### Website SEO Image Gate (Mandatory for `meixipro.com` / Blog / Guide / OG Images)
+
+Before delivering any website SEO image pack (`references/web-seo-images.md` & `DESIGN-web.md`):
+
+- [ ] **Exact Ratio & Discover Gate (`R16`)**: every `.board` matches `lib/image-ratios.ts` (`wide` `1600×900`, `standard` `1600×1200`, `square` `1200×1200`, `tall` `1200×2400`, `og` `1200×630`); `W01` hero width `≥1200px`; `Smiley Sans Oblique` stays at `font-weight: 400; font-synthesis: none` (zero faux-bold).
+- [ ] **SEO Metadata Complete (`R17`)**: unique lowercase ASCII `kebab-case` `data-seo-filename` (no Chinese/generic `image1`), descriptive non-stuffed `data-seo-alt` (no「图片/配图/这是一张」filler), complementary `data-seo-caption`, `data-target-keyword`, and non-empty `alt` on every inner `<img>`.
+- [ ] **Photo-First & Visual Hygiene (`R18`)**: real photos/screenshots dominate (`Photo-First`); zero broken images (or explicit `.is-empty` + `data-placeholder="true"` flagged to user); **zero decorative Unicode Emoji** (`⚠⚡✅❌🔥`); zero dark semi-transparent bar overlaying center of screenshots.
+- [ ] **Anti-Wall-of-Text & Non-Commitment (`R19`)**: image copy stays concise (long prose remains indexable in HTML/MDX); zero leftover `[必填]` / `replace-with` placeholders; zero unverified commercial claims (`.pending` used for unconfirmed rates/timelines).
+- [ ] **Zero-Clip Screenshots & Privacy Mosaic (`R20`)**: `W02` / `W05` images use `object-fit: contain` (100% left/right edge preservation); any `W05` / `data-privacy="sensitive"` photo has irreversible pixel mosaic baked into the source file (`data-mosaic-verified="true"`, no reliance on CSS `.mosaic-layer`).
+- [ ] **Core Web Vitals & Multi-Surface Preview**: ran `node scripts/build-web-seo-pack.mjs <task-dir> --screenshot`; WebP sizes pass CWV budgets (Hero `≤150KB`, body `≤180KB`, 4-col screenshots `≤220KB`, OG `≤120KB` JPG+WebP); inspected `output/web-seo-preview.png` to verify clarity at `340px` mobile width, `688px` white article card border separation, and `120px` SERP / Discover / OG preview; delivered `output/mdx-snippets.md`.
+
 ### Programmatic Layout Checks
 
 `validate-social-deck.mjs` reports:
@@ -86,6 +97,7 @@ Before delivering any Xiaohongshu photo cover or independent video cover (`refer
 - `R8`: bottom whitespace and active content height, which catches "fixed too much" layouts.
 - `R9`: title-to-content gap, which catches titles visually touching the next block.
 - `R13` / `R14` / `R15`: Xiaohongshu cover CTR guardrails — top-right `230×210px` UI dead zone (`R13`), anti-ad / anti-spoiler / word-overload (`R14`), and cover vs `data-feed-title` overlap (`R15`).
+- `R16` / `R17` / `R18` / `R19` / `R20`: Website SEO guardrails — exact `lib/image-ratios.ts` dimensions + Google Discover `≥1200px` + mobile `340px` font floor + Smiley Sans anti-blur (`R16`), SEO filename/alt/caption/keyword integrity (`R17`), Photo-First media share / broken images / zero Emoji / no center overlay (`R18`), anti-wall-of-text cap / placeholder / non-commitment claims (`R19`), and `W02`/`W05` `object-fit: contain` + irreversible privacy mosaic verification (`R20`).
 
 Use these numbers as the first diagnosis. Multimodal inspection is still useful for taste, but overflow, empty lower bands, title gaps, and cover CTR violations should be handled from measured output first.
 

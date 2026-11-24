@@ -2,8 +2,8 @@
 
 Use one theme for one image package. Do not mix palettes across pages unless the user explicitly asks for a deliberate multi-chapter system.
 
-> Greenbook（贴图号 / 小绿书）卡系统不使用本文件的任何调色板。它的色板是租户驱动的，
-> 见根目录 `DESIGN.md` 与 `brand-presets/`。不要把本文件的 accent 混进 Greenbook 模板。
+> Greenbook（贴图号 / 小绿书）、小红书封箱（`DESIGN-xhs.md`）与美西官网 SEO 配图（`DESIGN-web.md`）三套品牌系统不使用本文件的任何调色板。它们的色板是租户驱动的，
+> 见根目录 `DESIGN.md`、`DESIGN-xhs.md`、`DESIGN-web.md` 与 `brand-presets/`。不要把本文件的 accent 混进这三套模板。
 
 ## Editorial Magazine x E-ink Palettes
 

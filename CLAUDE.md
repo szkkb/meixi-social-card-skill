@@ -58,8 +58,12 @@ git symbolic-ref -q HEAD || echo "⚠ detached HEAD，先 git checkout -B main"
 `assets/template-greenbook-card.html` 的任何改动都必须与它一致。
 Editorial 与 Swiss 两个既有模式不受它约束，走 `references/style-system.md`。
 
-杨美西转运**小红书号**的卡走另一份真源 `DESIGN-xhs.md`（「封箱」：默认满版真仓 + 胶带 + 悬浮回执 `X01`，以及骑缝拆解 `X02`、国际提单 `X03`、实物批注 `X04`、核对清单 `X05`；「正」字计数仅在明确要求写数坑帖时启用），
-`assets/template-xhs-card.html` 的任何改动都必须与它一致。两套系统共享品牌层，版式不共用，不混排。
+杨美西转运**小红书号**的卡走另一份真源 `DESIGN-xhs.md`（「封箱」v3 CTR 优先：默认满版真仓悬念 `X01` + `C02`–`C05` 封面原型，以及骑缝拆解 `X02`、国际提单 `X03`、实物批注 `X04`、核对清单 `X05`；「正」字计数仅在明确要求写数坑帖时启用），
+`assets/template-xhs-card.html` 的任何改动都必须与它一致。
+
+美西转运**官网与教程 SEO 配图**（`meixipro.com` `/blog/*`, `/guides/*`, `/services/*`, `/destinations/*`）走第三份真源 `DESIGN-web.md` 与 SEO 实战专规 `references/web-seo-images.md`（「航单实证」Waybill Evidence v2 SEO-First：围绕 Google Organic SERP / Discover `≥1200px` / Image Pack / GEO / Core Web Vitals，严格对齐 `lib/image-ratios.ts` 的 `wide`/`standard`/`square`/`tall`/`og` 尺寸，内置 `W01`–`W06` 配方与 `scripts/build-web-seo-pack.mjs` 一键 WebP/OG/MDX 打包管线），`assets/template-web-card.html` 的任何改动都必须与它一致。
+
+三套品牌卡系统共享品牌主色 `#0060C9`，版式与优化目标互不共用、不混排。
 出镜人与仓库照片只用真实素材，不用 AI 生成顶替。
 
 字体只用 `references/font-license-audit.md` 里核验过的；换 display 面走
